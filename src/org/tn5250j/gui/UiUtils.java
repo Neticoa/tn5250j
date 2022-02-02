@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
@@ -92,6 +93,15 @@ public final class UiUtils {
                 });
             }
         });
+    }
+
+    public static Rect toRect(final Rectangle2D bounds) {
+        return new Rect(
+            round(bounds.getMinX()),
+            round(bounds.getMinY()),
+            round(bounds.getWidth()),
+            round(bounds.getHeight())
+        );
     }
 
     /**
@@ -292,10 +302,32 @@ public final class UiUtils {
     }
 
     public static void showError(final String message, final String title) {
-        final Alert alert = new Alert(AlertType.ERROR);
+        showAlert(message, title, AlertType.ERROR);
+    }
+
+    public static void showWarning(final String message, final String title) {
+        showAlert(message, title, AlertType.WARNING);
+    }
+
+    private static void showAlert(final String message, final String title, final AlertType alertType) {
+        final Alert alert = new Alert(alertType);
         alert.setContentText(message);
-        alert.setTitle(title);
+        if (title != null) {
+            alert.setTitle(title);
+        }
         alert.setHeaderText("");
         alert.showAndWait();
+    }
+
+    public static boolean showYesNoWarning(final String message, final String title) {
+        final Alert alert = new Alert(AlertType.WARNING, message, ButtonType.YES, ButtonType.NO);
+        alert.setTitle(title);
+        return alert.showAndWait().orElse(null) == ButtonType.YES;
+    }
+
+    public static boolean showYesNoConfirm(final String message, final String title) {
+        final Alert alert = new Alert(AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
+        alert.setTitle(title);
+        return alert.showAndWait().orElse(null) == ButtonType.YES;
     }
 }

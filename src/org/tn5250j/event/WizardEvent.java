@@ -20,7 +20,7 @@
  */
 package org.tn5250j.event;
 
-import java.awt.Component;
+import org.tn5250j.gui.WizardPage;
 
 /**
  * The event object for Wizard pages.
@@ -28,13 +28,13 @@ import java.awt.Component;
 public class WizardEvent extends java.util.EventObject {
 
     private static final long serialVersionUID = 1L;
-    protected Component currentPage;
-    protected Component newPage;
+    protected WizardPage currentPage;
+    protected WizardPage newPage;
     protected boolean isLastPage;
     protected boolean allowChange;
 
-    public WizardEvent(Object source, Component current_page, Component new_page,
-                       boolean is_last_page, boolean allow_change) {
+    public WizardEvent(final Object source, final WizardPage current_page, final WizardPage new_page,
+                       final boolean is_last_page, final boolean allow_change) {
 
         super(source);
         this.currentPage = current_page;
@@ -60,28 +60,28 @@ public class WizardEvent extends java.util.EventObject {
     /**
      * Sets whether the event should be allowed to finish processing.
      */
-    public void setAllowChange(boolean v) {
+    public void setAllowChange(final boolean v) {
         allowChange = v;
     }
 
     /**
      * Returns the next page.
      */
-    public Component getNewPage() {
+    public WizardPage getNewPage() {
         return newPage;
     }
 
     /**
      * Sets the next page.
      */
-    public void setNewPage(Component p) {
+    public void setNewPage(final WizardPage p) {
         newPage = p;
     }
 
     /**
      * Returns the current page on which the <code>JCWizardEvent</code> occured.
      */
-    public Component getCurrentPage() {
+    public WizardPage getCurrentPage() {
         return currentPage;
     }
 
