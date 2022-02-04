@@ -26,9 +26,7 @@ package org.tn5250j.sessionsettings;
  */
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
@@ -37,9 +35,6 @@ import org.tn5250j.tools.LangTool;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.print.PageLayout;
-import javafx.print.PageOrientation;
-import javafx.print.Paper;
-import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -49,12 +44,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 class PrinterAttributesController extends AbstractAttributesController {
-    // One unit is `1/72 of inch
-    // 1 mm = 0,0393701 inch
-    // 1 / 72 = 0,0393701 (incha / 72) = 0,0393701 of unit
-    // 1 mm = 72 * 0,0393701
-    private static final double ROUND_QUALITY = 72 * 0.0393701 / 2;
-
     @FXML
     BorderPane view;
 
@@ -72,9 +61,7 @@ class PrinterAttributesController extends AbstractAttributesController {
     @FXML
     ComboBox<String> fonts;
 
-    private final Printer printer = Printer.getDefaultPrinter();
-    private PageLayout pappyPort;
-    private PageLayout pappyLand;
+    private PrinterAttributesHelper helper;
 
     PrinterAttributesController(final SessionConfig config) {
         super(config, "Printer");
@@ -88,28 +75,7 @@ class PrinterAttributesController extends AbstractAttributesController {
         defaultPrinter.setText(LangTool.getString("sa.defaultPrinter"));
         defaultPrinter.setSelected("Yes".equals(getStringProperty("defaultPrinter")));
 
-        pappyPort = getDefaultPageLayout(PageOrientation.PORTRAIT);
-        pappyLand = getDefaultPageLayout(PageOrientation.LANDSCAPE);
-
-        // Portrait paper parameters
-        pappyPort = getPageLayout(
-                "print.portImage.X",
-                "print.portImage.Y",
-                "print.portImageWidth",
-                "print.portImageHeight",
-                "print.portWidth",
-                "print.portHeight",
-                PageOrientation.PORTRAIT).orElse(pappyPort);
-
-        // Landscape paper parameters
-        pappyLand = getPageLayout(
-                "print.landImage.X",
-                "print.landImage.Y",
-                "print.landImageWidth",
-                "print.landImageHeight",
-                "print.landWidth",
-                "print.landHeight",
-                PageOrientation.LANDSCAPE).orElse(pappyLand);
+        helper = new PrinterAttributesHelper(changes);
 
         // define page panel
         printerScreenPageParametersPanel.setTitle(LangTool.getString("sa.pageParameters"));
@@ -131,81 +97,12 @@ class PrinterAttributesController extends AbstractAttributesController {
         }
     }
 
-    private PageLayout getDefaultPageLayout(final PageOrientation oritntation) {
-        final PageLayout def = printer.getDefaultPageLayout();
-        return printer.createPageLayout(def.getPaper(), oritntation,
-                def.getLeftMargin(), def.getRightMargin(),
-                def.getTopMargin(), def.getBottomMargin());
-    }
-
-    private Optional<PageLayout> getPageLayout(final String propImageX,
-            final String propImageY,
-            final String propImageWidth,
-            final String propImageHeight,
-            final String propWidth,
-            final String propHeight,
-            final PageOrientation orientation) {
-        if (hasProperty(propImageX)
-                && hasProperty(propImageY)
-                && hasProperty(propImageWidth)
-                && hasProperty(propImageHeight)
-                && hasProperty(propWidth)
-                && hasProperty(propHeight)) {
-
-            try {
-                final double imageX = getDoubleProperty(propImageX);
-                final double imageY = getDoubleProperty(propImageY);
-                final double imageWidth = getDoubleProperty(propImageWidth);
-                final double imageHeight = getDoubleProperty(propImageHeight);
-                final double width = getDoubleProperty(propWidth);
-                final double height = getDoubleProperty(propHeight);
-
-                final Optional<Paper> paperOptional = findPaper(width, height);
-                if (paperOptional.isPresent()) {
-                    final Paper paper = paperOptional.get();
-
-                    final double left = Math.min(imageX, paper.getWidth() - imageWidth);
-                    final double top = Math.min(imageY, paper.getHeight() - imageHeight);
-                    final double right = Math.max(0, width - imageWidth - left);
-                    final double bottom = Math.max(0, height - imageHeight - top);
-
-                    final PageLayout pageLayout = printer.createPageLayout(paper, orientation, left, right, top, bottom);
-                    return Optional.of(pageLayout);
-                }
-            } catch (final Exception e) {
-                e.printStackTrace();
-                // nothing, just return empty optional
-            }
-       }
-
-        return Optional.empty();
-    }
-
-    private Optional<Paper> findPaper(final double w, final double h) {
-        final Set<Paper> papers = printer.getPrinterAttributes().getSupportedPapers();
-        for (final Paper paper : papers) {
-            if (equalsInches(paper.getWidth(), w) && equalsInches(paper.getHeight(), h)) {
-                return Optional.of(paper);
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private boolean equalsInches(final double l1, final double l2) {
-        return Math.abs(l1 - l2) <= ROUND_QUALITY;
-    }
-
-    private double getDoubleProperty(final String name) {
-        return Double.parseDouble(getStringProperty(name));
-    }
-
     private void getPortraitAttributes() {
-        pappyPort = getPrintAttibutes(pappyPort);
+        helper.setPappyPort(getPrintAttibutes(helper.getPappyPort()));
     }
 
     private void getLandscapeAttributes() {
-        pappyLand = getPrintAttibutes(pappyLand);
+        helper.setPappyLand(getPrintAttibutes(helper.getPappyLand()));
     }
 
     private PageLayout getPrintAttibutes(final PageLayout layout) {
@@ -228,6 +125,7 @@ class PrinterAttributesController extends AbstractAttributesController {
             fireStringPropertyChanged("defaultPrinter", "No");
         }
 
+        final PageLayout pappyPort = helper.getPappyPort();
         // portrait parameters
         Rectangle2D imageableArea = getImageableArea(pappyPort);
 
@@ -240,6 +138,7 @@ class PrinterAttributesController extends AbstractAttributesController {
 
         // landscape parameters
         imageableArea = getImageableArea(pappyPort);
+        final PageLayout pappyLand = helper.getPappyLand();
 
         fireDoublePropertyChanged("print.landWidth", pappyLand.getPaper().getWidth());
         fireDoublePropertyChanged("print.landImageWidth", imageableArea.getWidth());

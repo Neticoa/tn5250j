@@ -4,6 +4,7 @@
 package org.tn5250j.gui;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.Dimension2D;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -56,5 +57,14 @@ public class FontMetrics {
         final double leading = lineHeight - ascent - descent;
 
         return new FontMetrics(ascent, descent, leading);
+    }
+
+    public static Dimension2D getStringBounds(final String str, final Font font) {
+        final Text text = new Text();
+        text.setFont(font);
+        text.setText(str);
+
+        final Bounds b = text.getLayoutBounds();
+        return new Dimension2D(b.getWidth(), b.getHeight());
     }
 }
