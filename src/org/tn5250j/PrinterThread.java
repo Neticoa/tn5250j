@@ -30,6 +30,7 @@ import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.sessionsettings.PrinterAttributesHelper;
 
+import javafx.print.JobSettings;
 import javafx.print.PageLayout;
 import javafx.print.PrintQuality;
 import javafx.print.PrinterJob;
@@ -90,13 +91,12 @@ class PrinterThread {
         // set the cursor back
         session.setDefaultCursor();
 
-
         //--- Show a print dialog to the user. If the user
         //--- clicks the print button, then print, otherwise
         //--- cancel the print job
         if (printJob.showPrintDialog(session.getWindow())) {
             try {
-                final Node node = buildPrintable(printJob.getJobSettings().getPageLayout());
+                final Node node = buildPrintable(printJob.getJobSettings());
                 printJob.getJobSettings().setPrintQuality(PrintQuality.HIGH);
                 if (printJob.printPage(node)) {
                     printJob.endJob();
@@ -107,30 +107,26 @@ class PrinterThread {
         } else {
             // we do this because of loosing focus with jdk 1.4.0
         }
-
-        session.requestFocus();
     }
 
-    private Node buildPrintable(final PageLayout pageFormat) {
+    private Node buildPrintable(final JobSettings settings) {
+        final PageLayout pageFormat = settings.getPageLayout();
         final Canvas canvas = new Canvas(pageFormat.getPrintableWidth(), pageFormat.getPrintableHeight());
+
+        final Font font = getBetterFont(pageFormat);
+        final FontMetrics f = FontMetrics.deriveFrom(font);
 
         //--- Create a graphic2D object and set the default parameters
         final GraphicsContext g2 = canvas.getGraphicsContext2D();
         g2.setStroke(Color.BLACK);
         g2.setFill(Color.BLACK);
-
-        final Font k = getBetterFont(pageFormat);
-        final FontMetrics f = FontMetrics.deriveFrom(k);
-
-        // set the font of the print job
-        g2.setFont(k);
+        g2.setFont(font);
+        g2.setLineWidth(2);
 
         // get the width and height of the character bounds
-        final double w1 = FontMetrics.getStringBounds("W", k).getWidth();
-        final double h1 = (FontMetrics.getStringBounds("y", k).getHeight() +
+        final double w1 = FontMetrics.getStringBounds("W", font).getWidth();
+        final double h1 = (FontMetrics.getStringBounds("y", font).getHeight() +
                 f.getDescent() + f.getLeading());
-
-//     int pos = 0;
 
         // loop through all the screen characters and print them out.
         for (int m = 0; m < numRows; m++) {
@@ -142,11 +138,11 @@ class PrinterThread {
                 if (screen[getPos(m, i)] >= ' ' && ((screenExtendedAttr[getPos(m, i)]
                         & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
 
-                    g2.fillText(new String(screen, getPos(m, i), 1), x, y + h1 - (f.getDescent() + f.getLeading()) - 2);
+                    final String text = new String(screen, getPos(m, i), 1);
+                    g2.fillText(text, x, y + h1 - (f.getDescent() + f.getLeading()) - 2);
                 }
 
                 // if it is underlined then underline the character
-//           if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
                 if ((screenExtendedAttr[getPos(m, i)] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
                         screenAttrPlace[getPos(m, i)] != 1)
                     g2.strokeLine(x, y + (h1 - f.getLeading() - 3), (x + w1), (int) (y + (h1 - f.getLeading()) - 3));
@@ -181,7 +177,6 @@ class PrinterThread {
     }
 
     private int getPos(final int row, final int col) {
-
         return (row * numCols) + col;
     }
 }

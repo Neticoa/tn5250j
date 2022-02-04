@@ -37,11 +37,13 @@ import javafx.print.Paper;
 import javafx.print.Printer;
 
 public class PrinterAttributesHelper extends AttributesSupport {
+
     // One unit is `1/72 of inch
     // 1 mm = 0,0393701 inch
     // 1 / 72 = 0,0393701 (incha / 72) = 0,0393701 of unit
     // 1 mm = 72 * 0,0393701
-    private static final double ROUND_QUALITY = 72 * 0.0393701 / 2;
+    public static final double INCHES_IN_MM = 0.0393701;
+    public static final double ROUND_QUALITY = 72 * INCHES_IN_MM / 2;
 
     private final Printer printer = Printer.getDefaultPrinter();
     private PageLayout pappyPort;
