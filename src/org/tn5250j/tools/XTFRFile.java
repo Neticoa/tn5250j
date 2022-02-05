@@ -282,7 +282,6 @@ public class XTFRFile
     }
 
     private void emailMe() {
-
         final SendEMailDialog semd =
                 new SendEMailDialog(
                         session,

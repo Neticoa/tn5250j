@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.gui.TitledBorderedPane;
@@ -51,7 +51,7 @@ import javafx.stage.FileChooser;
 /**
  *
  */
-public class SpoolExportWizard extends GenericTn5250JFrame implements WizardListener {
+public class SpoolExportWizard extends GenericTn5250Frame implements WizardListener {
     BorderPane contentPane;
     Label statusBar = new Label();
 

@@ -34,7 +34,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * Direct known subclasses:
  * <ul>
  * <li>{@link org.tn5250j.interfaces.GUIViewInterface}</li>
- * <li>{@link org.tn5250j.mailtools.SendEMailDialog}</li>
+ * <li>{@link org.tn5250j.mailtools.SendEMailDialogSwing}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExporterSwing}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExportWizardSwing}</li>
  * <li>{@link org.tn5250j.tools.XTFRFile}</li>

@@ -303,8 +303,10 @@ public class SessionPopup {
 
     private MenuItem createMenuItem(final String label, final Runnable action, final String accelKey) {
         final MenuItem mi = createMenuItem(label, action);
-        if (sessiongui.getKeyHandler().isKeyStrokeDefined(accelKey)) {
-            mi.setAccelerator(sessiongui.getKeyHandler().getKeyStroke(accelKey));
+        final KeyCodeCombination accelerator = sessiongui.getKeyHandler().isKeyStrokeDefined(accelKey)
+                ? sessiongui.getKeyHandler().getKeyStroke(accelKey) : null;
+        if (accelerator != null) {
+            mi.setAccelerator(accelerator);
         } else {
             for (final Map.Entry<KeyCodeCombination, EmulatorAction> e : sessiongui.getKeyActions().entrySet()) {
                 if (accelKey.equals(e.getValue().getName())) {

@@ -26,62 +26,62 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.StringTokenizer;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.gui.GenericTn5250JFrameSwing;
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnable {
+public class SendEMailDialog extends GenericTn5250Frame {
 
-    private static final long serialVersionUID = 1L;
-
-    JComboBox toAddress;
-    JTextField subject;
-    JTextArea bodyText;
-    JTextField attachmentName;
+    ComboBox<String> toAddress;
+    TextField subject;
+    TextArea bodyText;
+    TextField attachmentName;
     SessionConfig config;
     SessionGui session;
     String fileName;
-    JRadioButton text;
-    JRadioButton graphic;
-    GridBagConstraints gbc;
-    JRadioButton normal;
-    JRadioButton screenshot;
-    JButton browse;
+    RadioButton text;
+    RadioButton graphic;
+    RadioButton normal;
+    RadioButton screenshot;
+    Button browse;
     boolean sendScreen;
     SendEMail sendEMail;
-    Thread myThread = new Thread(this);
     private final Window parent;
 
     /**
@@ -105,150 +105,231 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
         } else {
 
             this.session = session;
-            final Screen5250 screen = session.getScreen();
             this.sendScreen = sendScreen;
 
-            final Object[] message = new Object[1];
-            message[0] = setupMailPanel("tn5250j.txt");
+            final GridPane content = setupMailPanel("tn5250j.txt");
 
-            final String[] options = new String[3];
-
-            int result = 0;
-            while (result == 0 || result == 2) {
-
-                // setup the dialog options
-                setOptions(options);
-
-                result = JOptionPane.showOptionDialog(SwingToFxUtils.SHARED_FRAME,
-                        // the parent that the dialog blocks
-                        message, // the dialog message array
-                        LangTool.getString("em.title"),
-                        // the title of the dialog window
-                        JOptionPane.DEFAULT_OPTION, // option type
-                        JOptionPane.PLAIN_MESSAGE, // message type
-                        null, // optional icon, use null to use the default icon
-                        options, // options string array, will be made into buttons
-                        options[0] // option that should be made into a default btn
-                );
-
-                switch (result) {
-                    case 0: // Send it
-                        sendEMail = new SendEMail();
-                        sendEMail.setConfigFile("SMTPProperties.cfg");
-                        sendEMail.setTo((String) toAddress.getSelectedItem());
-                        sendEMail.setSubject(subject.getText());
-                        if (bodyText.getText().length() > 0)
-                            sendEMail.setMessage(bodyText.getText());
-
-                        if (attachmentName.getText().length() > 0)
-                            if (!normal.isSelected())
-                                sendEMail.setAttachmentName(attachmentName.getText());
-                            else
-                                sendEMail.setAttachmentName(fileName);
-
-                        if (text.isSelected()) {
-
-                            char[] screenTxt;
-                            char[] screenExtendedAttr;
-                            char[] screenAttrPlace;
-
-                            final int len = screen.getScreenLength();
-                            screenTxt = new char[len];
-                            screenExtendedAttr = new char[len];
-                            screenAttrPlace = new char[len];
-                            screen.GetScreen(screenTxt, len, TN5250jConstants.PLANE_TEXT);
-                            screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
-                            screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-
-                            final StringBuffer sb = new StringBuffer();
-//							char[] s = screen.getScreenAsChars();
-                            final int c = screen.getColumns();
-                            final int l = screen.getRows() * c;
-
-                            int col = 0;
-                            for (int x = 0; x < l; x++, col++) {
-
-                                // only draw printable characters (in this case >= ' ')
-                                if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
-
-                                    if (
-                                            (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
-                                                    screenAttrPlace[x] != 1) {
-                                        sb.append('_');
-                                    } else {
-                                        sb.append(screenTxt[x]);
-
-                                    }
-
-                                } else {
-
-                                    if (
-                                            (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
-                                                    screenAttrPlace[x] != 1) {
-                                        sb.append('_');
-                                    } else {
-                                        sb.append(' ');
-                                    }
-                                }
-
-                                if (col == c) {
-                                    sb.append('\n');
-                                    col = 0;
-                                }
-                            }
-
-                            sendEMail.setAttachment(sb.toString());
-                        } else if (graphic.isSelected()) {
-
-                            final File dir = new File(System.getProperty("user.dir"));
-
-                            //  setup the temp file name
-                            final String tempFile = "tn5250jTemp";
-
-                            try {
-                                // create the temporary file
-                                final File f =
-                                        File.createTempFile(tempFile, ".png", dir);
-
-                                System.out.println(f.getName());
-                                System.out.println(f.getCanonicalPath());
-
-                                // set it to delete on exit
-                                f.deleteOnExit();
-
-                                EncodeComponent.encode(
-                                        EncodeComponent.PNG,
-                                        session,
-                                        f);
-                                sendEMail.setFileName(f.getName());
-                            } catch (final Exception ex) {
-                                System.out.println(ex.getMessage());
-                            }
-
-                        } else if (attachmentName.getText().length() > 0) {
-                            final File f = new File(attachmentName.getText());
-                            sendEMail.setFileName(f.toString());
-                        }
-
-                        // send the information
-                        sendIt(parent, sendEMail);
-
-//						sendEMail.release();
-//						sendEMail = null;
-
-                        break;
-                    case 1: // Cancel
-                        //		      System.out.println("Cancel");
-                        break;
-                    case 2: // Configure SMTP
-                        configureSMTP(parent);
-                        //		      System.out.println("Cancel");
-                        break;
-                    default:
-                        break;
+            ButtonType result = ButtonType.NEXT;
+            while (result == ButtonType.NEXT) {
+                result = showDialog(content, LangTool.getString("em.title"), this::sendEmail1);
+                if (result == ButtonType.NEXT) {
+                    configureSMTP(parent);
                 }
             }
         }
+    }
+
+    private void sendEmail1(final Dialog<ButtonType> dialog) {
+        final Screen5250 screen = session.getScreen();
+
+        sendEMail = new SendEMail();
+        sendEMail.setConfigFile("SMTPProperties.cfg");
+        sendEMail.setTo(toAddress.getValue());
+        sendEMail.setSubject(subject.getText());
+        if (bodyText.getText().length() > 0)
+            sendEMail.setMessage(bodyText.getText());
+
+        if (attachmentName.getText().length() > 0)
+            if (!normal.isSelected())
+                sendEMail.setAttachmentName(attachmentName.getText());
+            else
+                sendEMail.setAttachmentName(fileName);
+
+        if (text.isSelected()) {
+            sendEMail.setAttachment(getScreenTextContent(screen));
+        } else if (graphic.isSelected()) {
+
+            final File dir = new File(System.getProperty("user.dir"));
+
+            //  setup the temp file name
+            final String tempFile = "tn5250jTemp";
+
+            try {
+                // create the temporary file
+                final File f = File.createTempFile(tempFile, ".png", dir);
+                // set it to delete on exit
+                f.deleteOnExit();
+
+                EncodeComponent.encode(
+                        EncodeComponent.PNG,
+                        session,
+                        f);
+                sendEMail.setFileName(f.getName());
+            } catch (final Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+        } else if (attachmentName.getText().length() > 0) {
+            final File f = new File(attachmentName.getText());
+            sendEMail.setFileName(f.toString());
+        }
+
+        // send the information
+        launchSendService(dialog);
+    }
+    private void sendEmail2(final Dialog<ButtonType> dialog) {
+        sendEMail = new SendEMail();
+
+        sendEMail.setConfigFile("SMTPProperties.cfg");
+        sendEMail.setTo(toAddress.getValue());
+        sendEMail.setSubject(subject.getText());
+        if (bodyText.getText().length() > 0)
+            sendEMail.setMessage(bodyText.getText());
+
+        if (attachmentName.getText().length() > 0)
+            sendEMail.setAttachmentName(attachmentName.getText());
+
+        if (fileName != null && fileName.length() > 0)
+            sendEMail.setFileName(fileName);
+
+        // send the information
+        launchSendService(dialog);
+    }
+
+    /**
+     * @param dialog
+     */
+    private void launchSendService(final Dialog<ButtonType> dialog) {
+        final Service<Void> service = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        runSendEmail();
+                        return null;
+                    }
+                    @Override
+                    protected void done() {
+                        try {
+                            afterSendEmail();
+                        } finally {
+                            closeDialogWithOk(dialog);
+                        }
+                    }
+                    @Override
+                    protected void failed() {
+                        closeDialogWithOk(dialog);
+                    }
+                };
+            }
+        };
+
+        service.start();
+    }
+
+    private static void closeDialogWithOk(final Dialog<ButtonType> dialog) {
+        Platform.runLater(() -> {
+            dialog.setResult(ButtonType.OK);
+            dialog.close();
+        });
+    }
+
+    private static String getScreenTextContent(final Screen5250 screen) {
+
+        char[] screenTxt;
+        char[] screenExtendedAttr;
+        char[] screenAttrPlace;
+
+        final int len = screen.getScreenLength();
+        screenTxt = new char[len];
+        screenExtendedAttr = new char[len];
+        screenAttrPlace = new char[len];
+        screen.GetScreen(screenTxt, len, TN5250jConstants.PLANE_TEXT);
+        screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+        screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+
+        final StringBuffer sb = new StringBuffer();
+//      char[] s = screen.getScreenAsChars();
+        final int c = screen.getColumns();
+        final int l = screen.getRows() * c;
+
+        int col = 0;
+        for (int x = 0; x < l; x++, col++) {
+
+            // only draw printable characters (in this case >= ' ')
+            if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
+
+                if (
+                        (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
+                                screenAttrPlace[x] != 1) {
+                    sb.append('_');
+                } else {
+                    sb.append(screenTxt[x]);
+
+                }
+
+            } else {
+
+                if (
+                        (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
+                                screenAttrPlace[x] != 1) {
+                    sb.append('_');
+                } else {
+                    sb.append(' ');
+                }
+            }
+
+            if (col == c) {
+                sb.append('\n');
+                col = 0;
+            }
+        }
+        return sb.toString();
+    }
+
+    private static ButtonType showDialog(final GridPane content, final String title,
+            final Consumer<Dialog<ButtonType>> okButtonHandler) {
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        //replace ok button
+        final DialogPane dialogPane = new DialogPane() {
+            @Override
+            protected Node createButton(final ButtonType buttonType) {
+                if (buttonType == ButtonType.OK) {
+                    final Button button = new Button(buttonType.getText());
+                    final ButtonData buttonData = buttonType.getButtonData();
+                    ButtonBar.setButtonData(button, buttonData);
+                    button.setDefaultButton(buttonType != null && buttonData.isDefaultButton());
+                    button.addEventHandler(ActionEvent.ACTION, e -> {
+                        if (okButtonHandler != null) {
+                            try {
+                                okButtonHandler.accept(dialog);
+                            } catch (final Throwable exc) {
+                                exc.printStackTrace();
+                                dialog.close();
+                            }
+                        }
+                    });
+
+                    return button;
+                } else {
+                    return super.createButton(buttonType);
+                }
+            }
+        };
+
+        dialog.setDialogPane(dialogPane);
+
+        // setup the dialog options
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL, ButtonType.NEXT);
+
+        UiUtils.changeButtonText(dialogPane, ButtonType.OK, LangTool.getString("em.optSendLabel"));
+        UiUtils.changeButtonText(dialogPane, ButtonType.CANCEL, LangTool.getString("em.optCancelLabel"));
+
+        final File smtp = new File("SMTPProperties.cfg");
+
+        if (smtp.exists()) {
+            UiUtils.changeButtonText(dialogPane, ButtonType.NEXT, LangTool.getString("em.optEditLabel"));
+        } else {
+            UiUtils.changeButtonText(dialogPane, ButtonType.NEXT, LangTool.getString("em.optConfigureLabel"));
+        }
+
+        dialog.getDialogPane().setContent(content);
+        dialog.setTitle(title);
+
+        final ButtonType result = dialog.showAndWait().orElse(ButtonType.CANCEL);
+        //dialog.close();
+        return result;
     }
 
     /**
@@ -259,123 +340,29 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
         this.parent = session.getWindow();
 
         if (!isEMailAvailable()) {
-
-            JOptionPane.showMessageDialog(
-                    SwingToFxUtils.SHARED_FRAME,
-                    LangTool.getString("messages.noEmailAPI"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE,
-                    null);
+            UiUtils.showError(LangTool.getString("messages.noEmailAPI"), "Error");
         } else {
 
             this.session = session;
 
-            final Object[] message = new Object[1];
-            message[0] = setupMailPanel(fileName);
-            final String[] options = new String[3];
+            final GridPane content = setupMailPanel(fileName);
 
-            int result = 0;
-            while (result == 0 || result == 2) {
+            ButtonType result = ButtonType.NEXT;
+            while (result == ButtonType.NEXT) {
+                result = showDialog(content, LangTool.getString("em.titleFileTransfer"), this::sendEmail2);
 
-                // setup the dialog options
-                setOptions(options);
-                result = JOptionPane.showOptionDialog(SwingToFxUtils.SHARED_FRAME,
-                        // the parent that the dialog blocks
-                        message, // the dialog message array
-                        LangTool.getString("em.titleFileTransfer"),
-                        // the title of the dialog window
-                        JOptionPane.DEFAULT_OPTION, // option type
-                        JOptionPane.PLAIN_MESSAGE, // message type
-                        null, // optional icon, use null to use the default icon
-                        options, // options string array, will be made into buttons//
-                        options[0] // option that should be made into a default button
-                );
-
-                switch (result) {
-                    case 0: // Send it
-
-                        sendEMail = new SendEMail();
-
-                        sendEMail.setConfigFile("SMTPProperties.cfg");
-                        sendEMail.setTo((String) toAddress.getSelectedItem());
-                        sendEMail.setSubject(subject.getText());
-                        if (bodyText.getText().length() > 0)
-                            sendEMail.setMessage(bodyText.getText());
-
-                        if (attachmentName.getText().length() > 0)
-                            sendEMail.setAttachmentName(attachmentName.getText());
-
-                        if (fileName != null && fileName.length() > 0)
-                            sendEMail.setFileName(fileName);
-
-                        // send the information
-                        sendIt(parent, sendEMail);
-
-//						sendEMail.release();
-//						sendEMail = null;
-
-                        break;
-                    case 1: // Cancel
-                        //		      System.out.println("Cancel");
-                        break;
-                    case 2: // Configure SMTP
-                        configureSMTP(parent);
-                        //		      System.out.println("Cancel");
-                        break;
-                    default:
-                        break;
+                if (result == ButtonType.NEXT) {
+                    configureSMTP(parent);
                 }
             }
         }
-    }
-
-    /**
-     * Send the e-mail on its way.
-     * @param sem
-     */
-    private void sendIt(final Window parent, final SendEMail sem) {
-
-//      setSendEMail(sem);
-
-//      new Thread(this).start();
-        myThread.start();
-//		if (parent == null)
-//			parent = new JFrame();
-//
-//		try {
-//			if (sem.send()) {
-//
-//				JOptionPane.showMessageDialog(
-//					parent,
-//					LangTool.getString("em.confirmationMessage")
-//						+ " "
-//						+ (String) toAddress.getSelectedItem(),
-//					LangTool.getString("em.titleConfirmation"),
-//					JOptionPane.INFORMATION_MESSAGE);
-//
-//				if (session != null) {
-//					config.setProperty(
-//						"emailTo",
-//						getToTokens(
-//							config.getStringProperty("emailTo"),
-//							toAddress));
-//					config.saveSessionProps();
-//					setToCombo(config.getStringProperty("emailTo"), toAddress);
-//				}
-//			}
-//		} catch (IOException ioe) {
-//			System.out.println(ioe.getMessage());
-//		} catch (Exception ex) {
-//			System.out.println(ex.getMessage());
-//		}
     }
 
     public void setSendEMail(final SendEMail sem) {
         sendEMail = sem;
     }
 
-    @Override
-    public void run() {
+    private void runSendEmail() {
 
 //		if (parent == null)
 //			parent = new JFrame();
@@ -384,25 +371,6 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
             if (sendEMail.send()) {
                 sendEMail.release();
                 sendEMail = null;
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        LangTool.getString("em.confirmationMessage")
-                                + " "
-                                + (String) toAddress.getSelectedItem(),
-                        LangTool.getString("em.titleConfirmation"),
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                if (session != null) {
-                    config.setProperty(
-                            "emailTo",
-                            getToTokens(
-                                    config.getStringProperty("emailTo"),
-                                    toAddress));
-                    config.saveSessionProps();
-                    setToCombo(config.getStringProperty("emailTo"), toAddress);
-
-                }
             }
 
 //		} catch (IOException ioe) {
@@ -412,15 +380,29 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
         }
     }
 
+    private void afterSendEmail() {
+        UiUtils.showInfo(LangTool.getString("em.confirmationMessage")
+                + " " + toAddress.getValue(),
+                LangTool.getString("em.titleConfirmation"));
+
+        if (session != null) {
+            config.setProperty(
+                    "emailTo",
+                    getToTokens(
+                            config.getStringProperty("emailTo"),
+                            toAddress));
+            config.saveSessionProps();
+            setToCombo(config.getStringProperty("emailTo"), toAddress);
+        }
+    }
+
     /**
      * Configure the SMTP server information
      *
      * @param parent
      */
     private void configureSMTP(final Window parent) {
-        final SMTPConfig smtp = new SMTPConfig(parent, "", true);
-        smtp.setVisible(true);
-        smtp.dispose();
+        new SMTPConfig(parent, null, true).show();
     }
 
     /**
@@ -429,72 +411,62 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
      * @param fileName
      * @return
      */
-    private JPanel setupMailPanel(final String fileName) {
+    private GridPane setupMailPanel(final String fileName) {
+        final GridPane semp = new GridPane();
+        semp.getStylesheets().add("/application.css");
 
-        final JPanel semp = new JPanel();
-        semp.setLayout(new GridBagLayout());
+        semp.getStyleClass().add("etched-border");
 
-        text = new JRadioButton(LangTool.getString("em.text"));
-        graphic = new JRadioButton(LangTool.getString("em.graphic"));
-        normal = new JRadioButton(LangTool.getString("em.normalmail"), true);
-        screenshot = new JRadioButton(LangTool.getString("em.screenshot"));
+        text = new RadioButton(LangTool.getString("em.text"));
+        graphic = new RadioButton(LangTool.getString("em.graphic"));
+        normal = new RadioButton(LangTool.getString("em.normalmail"));
+        screenshot = new RadioButton(LangTool.getString("em.screenshot"));
 
         // Group the radio buttons.
-        final ButtonGroup tGroup = new ButtonGroup();
-        tGroup.add(text);
-        tGroup.add(graphic);
-        final ButtonGroup mGroup = new ButtonGroup();
-        mGroup.add(normal);
-        mGroup.add(screenshot);
+        final ToggleGroup tGroup = new ToggleGroup();
+        tGroup.getToggles().add(text);
+        tGroup.getToggles().add(graphic);
+
+        final ToggleGroup mGroup = new ToggleGroup();
+        mGroup.getToggles().add(normal);
+        mGroup.getToggles().add(screenshot);
 
         text.setSelected(false);
-        text.setEnabled(false);
-        graphic.setEnabled(false);
+        text.setDisable(true);
+        graphic.setDisable(true);
+        normal.setSelected(true);
 
-        final JLabel screenDump = new JLabel(LangTool.getString("em.screendump"));
-        final JLabel tol = new JLabel(LangTool.getString("em.to"));
-        final JLabel subl = new JLabel(LangTool.getString("em.subject"));
-        final JLabel bodyl = new JLabel(LangTool.getString("em.body"));
-        final JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
-        final JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
+        final Label screenDump = new Label(LangTool.getString("em.screendump"));
+        final Label tol = new Label(LangTool.getString("em.to"));
+        final Label subl = new Label(LangTool.getString("em.subject"));
+        final Label bodyl = new Label(LangTool.getString("em.body"));
+        final Label fnl = new Label(LangTool.getString("em.fileName"));
+        final Label tom = new Label(LangTool.getString("em.typeofmail"));
 
-        browse = new JButton(LangTool.getString("em.choosefile"));
-        browse.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                browse_actionPerformed(e);
-            }
-        });
+        browse = new Button(LangTool.getString("em.choosefile"));
+        browse.setOnAction(e -> browse_actionPerformed());
 
-        toAddress = new JComboBox();
-        toAddress.setPreferredSize(new Dimension(175, 25));
+        toAddress = new ComboBox<String>();
+        toAddress.setMaxWidth(Double.POSITIVE_INFINITY);
         toAddress.setEditable(true);
 
-        subject = new JTextField(30);
-        bodyText = new JTextArea(6, 30);
-        final JScrollPane bodyScrollPane = new JScrollPane(bodyText);
-        bodyScrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        bodyScrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        attachmentName = new JTextField(fileName, 30);
+        subject = new TextField();
+        subject.setPrefColumnCount(30);
+
+        bodyText = new TextArea();
+        bodyText.setPrefRowCount(6);
+        bodyText.setPrefColumnCount(30);
+
+        attachmentName = new TextField(fileName);
+        attachmentName.setPrefColumnCount(30);
+
         if (fileName != null && fileName.length() > 0)
             attachmentName.setText(fileName);
         else
             attachmentName.setText("");
 
-        text.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(final java.awt.event.ItemEvent e) {
-                setAttachmentName();
-            }
-        });
-        normal.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(final java.awt.event.ItemEvent e) {
-                setTypeOfMail();
-            }
-        });
+        text.selectedProperty().addListener((src, old, value) -> setAttachmentName());
+        normal.selectedProperty().addListener((src, old, value) -> setTypeOfMail());
 
         if (sendScreen) {
             screenshot.setSelected(true);
@@ -512,114 +484,60 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
             }
         }
 
-        semp.setBorder(BorderFactory.createEtchedBorder());
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        semp.add(tom, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 15, 5, 5);
-        semp.add(normal, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 45, 5, 10);
-        semp.add(screenshot, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 10, 5, 5);
-        semp.add(screenDump, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 15, 5, 5);
-        semp.add(text, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 45, 5, 10);
-        semp.add(graphic, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        semp.add(tol, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        semp.add(toAddress, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        semp.add(subl, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        semp.add(subject, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridheight = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        semp.add(bodyl, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.gridheight = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        semp.add(bodyScrollPane, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        semp.add(fnl, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 7;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        semp.add(attachmentName, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 8;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(5, 5, 10, 10);
-        semp.add(browse, gbc);
+        //mail type row
+        semp.getChildren().add(addSimpleConstraints(tom, 0, 0, insets(5, 10, 5, 5)));
+        semp.getChildren().add(addSimpleConstraints(normal, 0, 1, insets(5, 15, 5, 5)));
+        semp.getChildren().add(addSimpleConstraints(screenshot, 0, 2, insets(5, 45, 5, 10)));
+
+        //screen dump row
+        semp.getChildren().add(addSimpleConstraints(screenDump, 1, 0, insets(0, 10, 5, 5)));
+        semp.getChildren().add(addSimpleConstraints(text, 1, 1, insets(0, 15, 5, 5)));
+        semp.getChildren().add(addSimpleConstraints(graphic, 1, 2, insets(0, 45, 5, 10)));
+
+        //to row
+        semp.getChildren().add(addSimpleConstraints(tol, 2, 0, insets(5, 10, 5, 5)));
+        semp.getChildren().add(addTwoColumnsConstraints(toAddress, 2, 1, insets(5, 5, 5, 10)));
+
+        //subject row
+        semp.getChildren().add(addSimpleConstraints(subl, 3, 0, insets(5, 10, 5, 5)));
+        semp.getChildren().add(addTwoColumnsConstraints(subject, 3, 1, insets(5, 5, 5, 10)));
+
+        //message row
+        semp.getChildren().add(addSimpleConstraints(bodyl, 4, 0, insets(5, 10, 5, 5)));
+
+        addTwoColumnsConstraints(bodyText, 4, 1, insets(5, 5, 5, 10));
+        GridPane.setRowSpan(bodyText, 3);
+        semp.getChildren().add(bodyText);
+
+        semp.getChildren().add(addSimpleConstraints(fnl, 7, 0, insets(5, 10, 5, 5)));
+        semp.getChildren().add(addTwoColumnsConstraints(attachmentName, 7, 1, insets(5, 5, 5, 10)));
+
+        semp.getChildren().add(addTwoColumnsConstraints(browse, 8, 1, insets(5, 10, 5, 5)));
 
         return semp;
 
     }
 
-    private void browse_actionPerformed(final ActionEvent e) {
+    private static Node addTwoColumnsConstraints(final Node node, final int row, final int column, final Insets insets) {
+        addSimpleConstraints(node, row, column, insets);
+        GridPane.setColumnSpan(node, 2);
+        GridPane.setHgrow(node, Priority.ALWAYS);
+        return node;
+    }
+
+    private static Node addSimpleConstraints(final Node node, final int row, final int column, final Insets insets) {
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnIndex(node, column);
+        GridPane.setMargin(node, insets);
+        GridPane.setHalignment(node, HPos.LEFT);
+        return node;
+    }
+
+    private static Insets insets(final double top, final double left, final double bottom, final double right) {
+        return new Insets(top, right, bottom, left);
+    }
+
+    private void browse_actionPerformed() {
         final FileChooser pcFileChooser = new FileChooser();
         pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
@@ -647,31 +565,17 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
     private void setTypeOfMail() {
 
         if (normal.isSelected()) {
-            text.setEnabled(false);
-            graphic.setEnabled(false);
+            text.setDisable(true);
+            graphic.setDisable(true);
             attachmentName.setText("");
-            browse.setEnabled(true);
+            browse.setDisable(false);
         } else {
-            text.setEnabled(true);
-            graphic.setEnabled(true);
+            text.setDisable(false);
+            graphic.setDisable(false);
             text.setSelected(true);
             setAttachmentName();
-            browse.setEnabled(false);
+            browse.setDisable(true);
         }
-    }
-
-    private void setOptions(final String[] options) {
-
-        options[0] = LangTool.getString("em.optSendLabel");
-        options[1] = LangTool.getString("em.optCancelLabel");
-
-        final File smtp = new File("SMTPProperties.cfg");
-
-        if (smtp.exists())
-            options[2] = LangTool.getString("em.optEditLabel");
-        else
-            options[2] = LangTool.getString("em.optConfigureLabel");
-
     }
 
     /**
@@ -681,15 +585,11 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
      * @param to
      * @param boxen
      */
-    private void setToCombo(final String to, final JComboBox boxen) {
+    private void setToCombo(final String to, final ComboBox<String> boxen) {
+        final String[] tos = to.split(Pattern.quote("|"));
 
-        final StringTokenizer tokenizer = new StringTokenizer(to, "|");
-
-        boxen.removeAllItems();
-
-        while (tokenizer.hasMoreTokens()) {
-            boxen.addItem(tokenizer.nextToken());
-        }
+        boxen.getItems().clear();
+        boxen.getItems().addAll(tos);
     }
 
     /**
@@ -700,19 +600,19 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
      * @param boxen
      * @return
      */
-    private String getToTokens(final String to, final JComboBox boxen) {
+    private String getToTokens(final String to, final ComboBox<String> boxen) {
 
-        final StringBuffer sb = new StringBuffer();
-        final String selected = (String) boxen.getSelectedItem();
+        final StringBuilder sb = new StringBuilder();
+        final String selected = boxen.getValue();
 
         sb.append(selected + '|');
 
-        final int c = boxen.getItemCount();
-
-        for (int x = 0; x < c; x++) {
-            if (!selected.equals(boxen.getItemAt(x)))
-                sb.append((String) boxen.getItemAt(x) + '|');
+        for (final String item : boxen.getItems()) {
+            if (!selected.equals(item)) {
+                sb.append(item + '|');
+            }
         }
+
         return sb.toString();
     }
 
@@ -732,103 +632,4 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
         }
 
     }
-
-    /* ***** NEVER USED LOCALLY ******************************************** */
-//	/**
-//	 * Create a option pane to show status of the transfer
-//	 */
-//	private class ProgressOptionPane extends JOptionPane {
-//
-//		ProgressOptionPane(Object messageList) {
-//
-//			super(
-//				messageList,
-//				JOptionPane.INFORMATION_MESSAGE,
-//				JOptionPane.DEFAULT_OPTION,
-//				null,
-//				new Object[] {
-//					 UIManager.getString("OptionPane.cancelButtonText")},
-//				null);
-//			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//
-//		}
-//
-//		public void setDone() {
-//			Object[] option = this.getOptions();
-//			option[0] = LangTool.getString("xtfr.tableDone");
-//			this.setOptions(option);
-//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//		}
-//
-//		public void reset() {
-//
-//			Object[] option = this.getOptions();
-//			option[0] = UIManager.getString("OptionPane.cancelButtonText");
-//			this.setOptions(option);
-////			monitor.setValue(null);
-//
-//		}
-//
-//		public int getMaxCharactersPerLineCount() {
-//			return 60;
-//		}
-//
-//		/**
-//		 * Returns true if the user hits the Cancel button in the progress dialog.
-//		 *
-//		 * @return whether or not dialog was cancelled
-//		 */
-//		public boolean isCanceled() {
-//			if (this == null)
-//				return false;
-//			Object v = this.getValue();
-//			return (v != null);
-//		}
-//
-//		// Equivalent to JOptionPane.createDialog,
-//		// but create a modeless dialog.
-//		// This is necessary because the Solaris implementation doesn't
-//		// support Dialog.setModal yet.
-//		public JDialog createDialog(Component parentComponent, String title) {
-//
-//			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
-//			final JDialog dialog = new JDialog(frame, title, false);
-//			Container contentPane = dialog.getContentPane();
-//
-//			contentPane.setLayout(new BorderLayout());
-//			contentPane.add(this, BorderLayout.CENTER);
-//			dialog.pack();
-//			dialog.setLocationRelativeTo(parentComponent);
-//			dialog.addWindowListener(new WindowAdapter() {
-//				boolean gotFocus = false;
-//
-//				public void windowClosing(WindowEvent we) {
-//					setValue(null);
-//				}
-//
-//				public void windowActivated(WindowEvent we) {
-//					// Once window gets focus, set initial focus
-//					if (!gotFocus) {
-//						selectInitialValue();
-//						gotFocus = true;
-//					}
-//				}
-//			});
-//
-//			addPropertyChangeListener(new PropertyChangeListener() {
-//				public void propertyChange(PropertyChangeEvent event) {
-//					if (dialog.isVisible()
-//						&& event.getSource() == ProgressOptionPane.this
-//						&& (event.getPropertyName().equals(VALUE_PROPERTY)
-//							|| event.getPropertyName().equals(
-//								INPUT_VALUE_PROPERTY))) {
-//						dialog.setVisible(false);
-//						dialog.dispose();
-//					}
-//				}
-//			});
-//			return dialog;
-//		}
-//	}
-
 }

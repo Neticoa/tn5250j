@@ -42,6 +42,7 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.LangTool;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
@@ -53,6 +54,14 @@ public class KeyMapper {
     private static KeyStroker workStroke;
     private static String lastKeyMnemonic;
     private static Vector<KeyChangeListener> listeners;
+
+    private static final Modifier[] POSSIBLE_MODIFIERS = {
+        KeyCombination.SHIFT_DOWN, KeyCombination.SHIFT_ANY,
+        KeyCombination.CONTROL_DOWN, KeyCombination.CONTROL_ANY,
+        KeyCombination.ALT_DOWN, KeyCombination.ALT_ANY,
+        KeyCombination.META_DOWN, KeyCombination.META_ANY,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHORTCUT_ANY
+    };
 
     public static void init() {
 
@@ -364,20 +373,31 @@ public class KeyMapper {
             if (keyVal.equals(which)) {
                 final List<Modifier> modifiers = new LinkedList<>();
 
-                if (ks.isShiftDown())
-                    modifiers.add(KeyCombination.SHIFT_DOWN);
-                if (ks.isControlDown())
-                    modifiers.add(KeyCombination.CONTROL_DOWN);
-                if (ks.isAltDown())
-                    modifiers.add(KeyCombination.ALT_DOWN);
-//                if (ks.isAltGrDown()) JavaFX does not support it
-//                    mask |= InputEvent.ALT_GRAPH_MASK;
-
-                return new KeyCodeCombination(ks.getKeyCode(), modifiers.toArray(new Modifier[modifiers.size()]));
+                if (!isModifier(ks.getKeyCode())) {
+                    try {
+                        return new KeyCodeCombination(ks.getKeyCode(), modifiers.toArray(new Modifier[modifiers.size()]));
+                    } catch (final RuntimeException exc) {
+                        System.out.println("Key code: " + ks.getKeyCode());
+                        throw exc;
+                    }
+                } else {
+                    System.err.println("Key code " + ks.getKeyCode() + "is modifier and can't be registered");
+                }
             }
         }
 
-        return new KeyCodeCombination(KeyStrokeHelper.getCode(0));
+        return null;
+    }
+
+    private static boolean isModifier(final KeyCode keyCode) {
+        final String name = keyCode.getName();
+        for (final Modifier modifier: POSSIBLE_MODIFIERS) {
+            if (modifier.toString().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public final static void removeKeyStroke(final String which) {

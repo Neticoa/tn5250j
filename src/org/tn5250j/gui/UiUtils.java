@@ -330,4 +330,10 @@ public final class UiUtils {
         alert.setTitle(title);
         return alert.showAndWait().orElse(null) == ButtonType.YES;
     }
+
+    public static void showInfo(final String message, final String title) {
+        final Alert alert = new Alert(AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setTitle(title);
+        alert.showAndWait();
+    }
 }

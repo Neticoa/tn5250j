@@ -63,12 +63,14 @@ public abstract class EmulatorAction implements EventHandler<ActionEvent> {
             ks = KeyMapper.getKeyStroke(action);
         }
 
-        this.session.addKeyAction(ks, this);
-
-        // check for alternate
-        if (KeyMapper.isKeyStrokeDefined(action + ".alt2")) {
-            ks = KeyMapper.getKeyStroke(action + ".alt2");
+        if (ks != null) {
             this.session.addKeyAction(ks, this);
+
+            // check for alternate
+            if (KeyMapper.isKeyStrokeDefined(action + ".alt2")) {
+                ks = KeyMapper.getKeyStroke(action + ".alt2");
+                this.session.addKeyAction(ks, this);
+            }
         }
     }
 

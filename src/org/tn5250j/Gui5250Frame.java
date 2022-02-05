@@ -33,7 +33,7 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -50,11 +50,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 
 /**
- * This is the main {@link javax.swing.JFrame}, which contains multiple tabs.
- *
  * @see GUIViewInterface
  */
-public class Gui5250Frame extends GenericTn5250JFrame implements
+public class Gui5250Frame extends GenericTn5250Frame implements
         SessionListener, SessionJumpListener {
 
     private BorderPane contentPane;

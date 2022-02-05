@@ -33,12 +33,12 @@ import javafx.stage.Window;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class GenericTn5250JFrame {
+public class GenericTn5250Frame {
 
     protected boolean packFrame = false;
     protected final Stage stage = new Stage();
 
-    public GenericTn5250JFrame() {
+    public GenericTn5250Frame() {
         super();
         stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
     }

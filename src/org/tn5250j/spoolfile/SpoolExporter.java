@@ -34,7 +34,7 @@ import javax.swing.JFrame;
 
 import org.tn5250j.SessionGui;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -71,7 +71,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class SpoolExporter extends GenericTn5250JFrame {
+public class SpoolExporter extends GenericTn5250Frame {
 
     SpoolFilterPane filter;
 
