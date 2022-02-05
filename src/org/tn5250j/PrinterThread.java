@@ -97,6 +97,7 @@ class PrinterThread {
         if (printJob.showPrintDialog(session.getWindow())) {
             try {
                 final Node node = buildPrintable(printJob.getJobSettings());
+
                 printJob.getJobSettings().setPrintQuality(PrintQuality.HIGH);
                 if (printJob.printPage(node)) {
                     printJob.endJob();
@@ -109,11 +110,14 @@ class PrinterThread {
         }
     }
 
-    private Node buildPrintable(final JobSettings settings) {
+    private Canvas buildPrintable(final JobSettings settings) {
         final PageLayout pageFormat = settings.getPageLayout();
-        final Canvas canvas = new Canvas(pageFormat.getPrintableWidth(), pageFormat.getPrintableHeight());
 
-        final Font font = getBetterFont(pageFormat);
+        final double w = pageFormat.getPrintableWidth();
+        final double h = pageFormat.getPrintableHeight();
+        final Canvas canvas = new Canvas(w, h);
+
+        final Font font = getBetterFont(pageFormat, w, h);
         final FontMetrics f = FontMetrics.deriveFrom(font);
 
         //--- Create a graphic2D object and set the default parameters
@@ -121,7 +125,7 @@ class PrinterThread {
         g2.setStroke(Color.BLACK);
         g2.setFill(Color.BLACK);
         g2.setFont(font);
-        g2.setLineWidth(2);
+        g2.setLineWidth(1);
 
         // get the width and height of the character bounds
         final double w1 = FontMetrics.getStringBounds("W", font).getWidth();
@@ -152,9 +156,9 @@ class PrinterThread {
         return canvas;
     }
 
-    private Font getBetterFont(final PageLayout pageFormat) {
-        final double w = pageFormat.getPrintableWidth() / numCols;     // proposed width
-        final double h = pageFormat.getPrintableHeight() / numRows;     // proposed height
+    private Font getBetterFont(final PageLayout pageFormat, final double width, final double height) {
+        final double w = width / numCols;     // proposed width
+        final double h = height / numRows;     // proposed height
 
         Font k;
         float j = 1;
