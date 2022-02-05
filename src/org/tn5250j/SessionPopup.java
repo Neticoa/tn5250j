@@ -383,7 +383,6 @@ public class SessionPopup {
 
     private void printMe() {
         sessiongui.printMe();
-        sessiongui.getFocusForMe();
     }
 
     private void showHexMap() {

@@ -39,7 +39,7 @@ public class Sessions implements SessionsInterface {
 
     private List<Session5250> sessions = new ArrayList<Session5250>();
     private int count = 0;
-    private final Timer heartBeater = new Timer();
+    private Timer heartBeater;
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -69,6 +69,7 @@ public class Sessions implements SessionsInterface {
         sessions.add(newSession);
         log.debug("adding Session: " + newSession.getSessionName());
         if (newSession.isSendKeepAlive() && heartBeater == null) {
+            this.heartBeater = new Timer();
             this.heartBeater.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {

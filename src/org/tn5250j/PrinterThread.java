@@ -26,16 +26,21 @@
 package org.tn5250j;
 
 import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.gui.FontMetrics;
+import org.tn5250j.gui.UiUtils;
+import org.tn5250j.sessionsettings.PrinterAttributesHelper;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.Printable;
-import java.awt.print.PrinterJob;
+import javafx.print.JobSettings;
+import javafx.print.PageLayout;
+import javafx.print.PrintQuality;
+import javafx.print.PrinterJob;
+import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-class PrinterThread extends Thread implements Printable {
+class PrinterThread {
 
     private char[] screen;
     private char[] screenExtendedAttr;
@@ -46,16 +51,12 @@ class PrinterThread extends Thread implements Printable {
     private SessionGui session;
     private SessionConfig config;
 
-    PrinterThread(Screen5250 scr, Font font, int cols, int rows,
-                  Color colorBg, boolean toDefaultPrinter, SessionGui ses) {
-
-
-        setPriority(1);
+    PrinterThread(final Screen5250 scr, final Font font, final int cols, final int rows, final SessionGui ses) {
         session = ses;
         session.setWaitCursor();
         config = ses.getSession().getConfiguration();
 
-        int len = scr.getScreenLength();
+        final int len = scr.getScreenLength();
         screen = new char[len];
         screenExtendedAttr = new char[len];
         screenAttrPlace = new char[len];
@@ -69,206 +70,117 @@ class PrinterThread extends Thread implements Printable {
     }
 
     public void run() {
-// Toolkit tk = Toolkit.getDefaultToolkit();
-//int [][] range = new int[][] {
-//new int[] { 1, 1 }
-//};
-// JobAttributes jobAttributes = new JobAttributes(1, JobAttributes.DefaultSelectionType.ALL, JobAttributes.DestinationType.PRINTER, JobAttributes.DialogType.NONE, "file", 1, 1, JobAttributes.MultipleDocumentHandlingType.SEPARATE_DOCUMENTS_COLLATED_COPIES, range, "HP LaserJet", JobAttributes.SidesType.ONE_SIDED);
-//PrintJob job = tk.getPrintJob(null, "Print", jobAttributes, null);
-//if (job != null) {
         //--- Create a printerJob object
-        PrinterJob printJob = PrinterJob.getPrinterJob();
-        printJob.setJobName("tn5250j");
+        final PrinterJob printJob = PrinterJob.createPrinterJob();
+        printJob.getJobSettings().setJobName("tn5250j");
 
         // will have to remember this for the next time.
         //   Always set a page format before call setPrintable to
         //   set the orientation.
-        PageFormat pf = printJob.defaultPage();
-        if (numCols == 132)
-            pf.setOrientation(PageFormat.LANDSCAPE);
-        else
-            pf.setOrientation(PageFormat.PORTRAIT);
+        final PrinterAttributesHelper helper = new PrinterAttributesHelper(config);
+        printJob.getJobSettings().setPageLayout(numCols != 132 ? helper.getPappyPort() : helper.getPappyLand());
 
-
-        if (numCols != 132) {
-            if (config.getStringProperty("print.portWidth").length() != 0 &&
-                    config.getStringProperty("print.portHeight").length() != 0 &&
-                    config.getStringProperty("print.portImageWidth").length() != 0 &&
-                    config.getStringProperty("print.portImageHeight").length() != 0 &&
-                    config.getStringProperty("print.portImage.X").length() != 0 &&
-                    config.getStringProperty("print.portImage.Y").length() != 0) {
-
-                Paper paper = pf.getPaper();
-
-                paper.setSize(
-                        Double.parseDouble(config.getStringProperty("print.portWidth")),
-                        Double.parseDouble(config.getStringProperty("print.portHeight")));
-
-                paper.setImageableArea(
-                        Double.parseDouble(config.getStringProperty("print.portImage.X")),
-                        Double.parseDouble(config.getStringProperty("print.portImage.Y")),
-                        Double.parseDouble(config.getStringProperty("print.portImageWidth")),
-                        Double.parseDouble(config.getStringProperty("print.portImageHeight")));
-                pf.setPaper(paper);
-            }
-        } else {
-
-            if (config.getStringProperty("print.landWidth").length() != 0 &&
-                    config.getStringProperty("print.landHeight").length() != 0 &&
-                    config.getStringProperty("print.landImageWidth").length() != 0 &&
-                    config.getStringProperty("print.landImageHeight").length() != 0 &&
-                    config.getStringProperty("print.landImage.X").length() != 0 &&
-                    config.getStringProperty("print.landImage.Y").length() != 0) {
-
-                Paper paper = pf.getPaper();
-
-                paper.setSize(
-                        Double.parseDouble(config.getStringProperty("print.landWidth")),
-                        Double.parseDouble(config.getStringProperty("print.landHeight")));
-
-                paper.setImageableArea(
-                        Double.parseDouble(config.getStringProperty("print.landImage.X")),
-                        Double.parseDouble(config.getStringProperty("print.landImage.Y")),
-                        Double.parseDouble(config.getStringProperty("print.landImageWidth")),
-                        Double.parseDouble(config.getStringProperty("print.landImageHeight")));
-            }
-        }
-
-        if (config.getStringProperty("print.font").length() > 0) {
-
-            font = new Font(config.getStringProperty("print.font"),
-                    Font.PLAIN, 8);
+        final Font fontFromProperties = helper.getFontProperty("print.font", 8);
+        if (fontFromProperties != null) {
+            font = fontFromProperties;
         }
 
         //--- Set the printable class to this one since we
         //--- are implementing the Printable interface
-        printJob.setPrintable(this, pf);
 
         // set the cursor back
         session.setDefaultCursor();
 
-
         //--- Show a print dialog to the user. If the user
         //--- clicks the print button, then print, otherwise
         //--- cancel the print job
-        if (printJob.printDialog()) {
+        if (printJob.showPrintDialog(session.getWindow())) {
             try {
-                // we do this because of loosing focus with jdk 1.4.0
-                session.requestFocus();
-                printJob.print();
-            } catch (Exception PrintException) {
-                PrintException.printStackTrace();
+                final Node node = buildPrintable(printJob.getJobSettings());
+
+                printJob.getJobSettings().setPrintQuality(PrintQuality.HIGH);
+                if (printJob.printPage(node)) {
+                    printJob.endJob();
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
         } else {
             // we do this because of loosing focus with jdk 1.4.0
-            session.requestFocus();
         }
-
-        session = null;
-
-        screen = null;
-        screenExtendedAttr = null;
-
     }
 
-    /**
-     * Method: print <p>
-     * <p>
-     * This routine is responsible for rendering a page using
-     * the provided parameters. The result will be a screen
-     * print of the current screen to the printer graphics object
-     *
-     * @param g          a value of type Graphics
-     * @param pageFormat a value of type PageFormat
-     * @param page       a value of type int
-     * @return a value of type int
-     */
-    public int print(Graphics g, PageFormat pageFormat, int page) {
+    private Canvas buildPrintable(final JobSettings settings) {
+        final PageLayout pageFormat = settings.getPageLayout();
 
-        Graphics2D g2;
+        final double w = pageFormat.getPrintableWidth();
+        final double h = pageFormat.getPrintableHeight();
+        final Canvas canvas = new Canvas(w, h);
 
-        //--- Validate the page number, we only print the first page
-        if (page == 0) {
+        final Font font = getBetterFont(pageFormat, w, h);
+        final FontMetrics f = FontMetrics.deriveFrom(font);
 
-            //--- Create a graphic2D object and set the default parameters
-            g2 = (Graphics2D) g;
-            g2.setColor(Color.black);
+        //--- Create a graphic2D object and set the default parameters
+        final GraphicsContext g2 = canvas.getGraphicsContext2D();
+        g2.setStroke(Color.BLACK);
+        g2.setFill(Color.BLACK);
+        g2.setFont(font);
+        g2.setLineWidth(1);
 
-            //--- Translate the origin to be (0,0)
-            g2.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+        // get the width and height of the character bounds
+        final double w1 = FontMetrics.getStringBounds("W", font).getWidth();
+        final double h1 = (FontMetrics.getStringBounds("y", font).getHeight() +
+                f.getDescent() + f.getLeading());
 
-            int w = (int) pageFormat.getImageableWidth() / numCols;     // proposed width
-            int h = (int) pageFormat.getImageableHeight() / numRows;     // proposed height
+        // loop through all the screen characters and print them out.
+        for (int m = 0; m < numRows; m++) {
+            for (int i = 0; i < numCols; i++) {
+                final double x = w1 * i;
+                final double y = h1 * (m + 1);
 
+                // only draw printable characters (in this case >= ' ')
+                if (screen[getPos(m, i)] >= ' ' && ((screenExtendedAttr[getPos(m, i)]
+                        & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
 
-            LineMetrics l;
-            FontRenderContext f = null;
-
-            float j = 1;
-            Font k;
-            for (; j < 50; j++) {
-
-                // derive the font and obtain the relevent information to compute
-                // the width and height
-                k = font.deriveFont(j);
-                f = new FontRenderContext(k.getTransform(), true, true);
-                l = k.getLineMetrics("Wy", f);
-
-                if (
-                        (w < (int) k.getStringBounds("W", f).getWidth()) ||
-                                h < (int) (k.getStringBounds("y", f).getHeight() +
-                                        l.getDescent() + l.getLeading())
-
-                )
-                    break;
-            }
-
-            // since we were looking for an overrun of the width or height we need
-            // to adjust the font one down to get the last one that fit.
-            k = font.deriveFont(--j);
-            f = new FontRenderContext(k.getTransform(), true, true);
-            l = k.getLineMetrics("Wy", f);
-
-            // set the font of the print job
-            g2.setFont(k);
-
-            // get the width and height of the character bounds
-            int w1 = (int) k.getStringBounds("W", f).getWidth();
-            int h1 = (int) (k.getStringBounds("y", f).getHeight() +
-                    l.getDescent() + l.getLeading());
-            int x;
-            int y;
-
-//         int pos = 0;
-
-            // loop through all the screen characters and print them out.
-            for (int m = 0; m < numRows; m++)
-                for (int i = 0; i < numCols; i++) {
-                    x = w1 * i;
-                    y = h1 * (m + 1);
-
-                    // only draw printable characters (in this case >= ' ')
-                    if (screen[getPos(m, i)] >= ' ' && ((screenExtendedAttr[getPos(m, i)] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
-
-                        g2.drawChars(screen, getPos(m, i), 1, x, (int) (y + h1 - (l.getDescent() + l.getLeading()) - 2));
-
-                    }
-
-                    // if it is underlined then underline the character
-//               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
-                    if ((screenExtendedAttr[getPos(m, i)] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
-                            screenAttrPlace[getPos(m, i)] != 1)
-                        g.drawLine(x, (int) (y + (h1 - l.getLeading() - 3)), (x + w1), (int) (y + (h1 - l.getLeading()) - 3));
-
+                    final String text = new String(screen, getPos(m, i), 1);
+                    g2.fillText(text, x, y + h1 - (f.getDescent() + f.getLeading()) - 2);
                 }
 
-            return (PAGE_EXISTS);
-        } else
-            return (NO_SUCH_PAGE);
+                // if it is underlined then underline the character
+                if ((screenExtendedAttr[getPos(m, i)] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
+                        screenAttrPlace[getPos(m, i)] != 1)
+                    g2.strokeLine(x, y + (h1 - f.getLeading() - 3), (x + w1), (int) (y + (h1 - f.getLeading()) - 3));
+            }
+        }
+
+        return canvas;
     }
 
-    private int getPos(int row, int col) {
+    private Font getBetterFont(final PageLayout pageFormat, final double width, final double height) {
+        final double w = width / numCols;     // proposed width
+        final double h = height / numRows;     // proposed height
 
+        Font k;
+        float j = 1;
+
+        for (; j < 50; j++) {
+            // derive the font and obtain the relevent information to compute
+            // the width and height
+            k = UiUtils.deriveFont(font, j);
+            final FontMetrics l = FontMetrics.deriveFrom(k);
+
+            if ((w < FontMetrics.getStringBounds("W", k).getWidth()) ||
+                    h < (FontMetrics.getStringBounds("y", k).getHeight() + l.getDescent() + l.getLeading()) ) {
+                break;
+            }
+        }
+
+        // since we were looking for an overrun of the width or height we need
+        // to adjust the font one down to get the last one that fit.
+        return UiUtils.deriveFont(font, --j);
+    }
+
+    private int getPos(final int row, final int col) {
         return (row * numCols) + col;
     }
 }

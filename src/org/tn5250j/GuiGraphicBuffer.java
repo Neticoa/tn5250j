@@ -710,4 +710,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     protected double getHeight() {
         return bi.getHeight();
     }
+
+    public Canvas getBi() {
+        return bi;
+    }
 }

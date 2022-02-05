@@ -45,7 +45,6 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ResizablePane;
-import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.keyboard.KeyboardHandler;
@@ -58,6 +57,7 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -84,7 +84,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -758,12 +757,12 @@ public class SessionPanel extends BorderPane implements
      */
     @Override
     public final void printMe() {
-
-        final Thread printerThread = new PrinterThread(screen, SwingToFxUtils.toAwtFont(guiGraBuf.font),
-                screen.getColumns(), screen.getRows(), SwingToFxUtils.toAwtColor(Color.BLACK), true, this);
-
-        printerThread.start();
-
+        Platform.runLater(() -> {
+            final PrinterThread printerThread = new PrinterThread(screen, guiGraBuf.font,
+                    screen.getColumns(), screen.getRows(), this);
+            printerThread.run();
+            getFocusForMe();
+        });
     }
 
     /**
