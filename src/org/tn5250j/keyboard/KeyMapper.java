@@ -381,7 +381,7 @@ public class KeyMapper {
                         throw exc;
                     }
                 } else {
-                    System.err.println("Key code " + ks.getKeyCode() + "is modifier and can't be registered");
+                    System.err.println("Key code " + ks.getKeyCode() + " is a modifier and can't be registered");
                 }
             }
         }
@@ -401,62 +401,29 @@ public class KeyMapper {
     }
 
     public final static void removeKeyStroke(final String which) {
-
-        final Collection<String> v = mappedKeys.values();
-        final Set<KeyStroker> o = mappedKeys.keySet();
-        final Iterator<KeyStroker> k = o.iterator();
-        final Iterator<String> i = v.iterator();
-        while (k.hasNext()) {
-            final KeyStroker ks = k.next();
-            final String keyVal = i.next();
+        for (final Map.Entry<KeyStroker, String> e : mappedKeys.entrySet()) {
+            final KeyStroker ks = e.getKey();
+            final String keyVal = e.getValue();
             if (keyVal.equals(which)) {
                 mappedKeys.remove(ks);
                 return;
             }
         }
-
     }
 
     public final static void setKeyStroke(final String which, final KeyEvent ke) {
 
         if (ke == null)
             return;
-        final Collection<String> v = mappedKeys.values();
-        final Set<KeyStroker> o = mappedKeys.keySet();
-        final Iterator<KeyStroker> k = o.iterator();
-        final Iterator<String> i = v.iterator();
-        while (k.hasNext()) {
-            final KeyStroker ks = k.next();
-            final String keyVal = i.next();
-            if (keyVal.equals(which)) {
-                mappedKeys.remove(ks);
-                mappedKeys.put(new KeyStroker(ke), keyVal);
-                return;
-            }
-        }
 
         // if we got here it was a dead key and we need to add it.
         mappedKeys.put(new KeyStroker(ke), which);
-
     }
 
     public final static void setKeyStroke(final String which, final KeyEvent ke, final boolean isAltGr) {
 
         if (ke == null)
             return;
-        final Collection<String> v = mappedKeys.values();
-        final Set<KeyStroker> o = mappedKeys.keySet();
-        final Iterator<KeyStroker> k = o.iterator();
-        final Iterator<String> i = v.iterator();
-        while (k.hasNext()) {
-            final KeyStroker ks = k.next();
-            final String keyVal = i.next();
-            if (keyVal.equals(which)) {
-                mappedKeys.remove(ks);
-                mappedKeys.put(new KeyStroker(ke, isAltGr), keyVal);
-                return;
-            }
-        }
 
         // if we got here it was a dead key and we need to add it.
         mappedKeys.put(new KeyStroker(ke, isAltGr), which);

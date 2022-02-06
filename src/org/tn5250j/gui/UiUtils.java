@@ -264,15 +264,15 @@ public final class UiUtils {
         try {
             if (Platform.isFxApplicationThread()) {
                 call.call();
+            } else {
+                Platform.runLater(() -> {
+                    try {
+                        call.call();
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
-
-            Platform.runLater(() -> {
-                try {
-                    call.call();
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

@@ -265,7 +265,7 @@ public class SessionPanel extends BorderPane implements
     private void processKeyEvent(final KeyEvent evt) {
         keyHandler.processKeyEvent(evt);
 
-        if (!evt.isConsumed()) {
+        if (!evt.isConsumed() && evt.getEventType() == KeyEvent.KEY_PRESSED) {
             final EmulatorAction action = getKeyAction(evt);
             if (action != null) {
                 action.handle(new ActionEvent(this, null));

@@ -31,7 +31,6 @@ import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.mailtools.SendEMailDialog;
 
-import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -49,6 +48,6 @@ public class QuickEmailAction extends EmulatorAction {
 
     @Override
     public void handle() {
-        Platform.runLater(() -> new SendEMailDialog(session, false));
+        new SendEMailDialog(session, false);
     }
 }

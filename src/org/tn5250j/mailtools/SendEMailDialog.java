@@ -99,6 +99,7 @@ public class SendEMailDialog extends GenericTn5250Frame {
      */
     public SendEMailDialog(final SessionGui session, final boolean sendScreen) {
         super();
+
         this.parent = session.getWindow();
         if (!isEMailAvailable()) {
             UiUtils.showError(LangTool.getString("messages.noEmailAPI"), "Error");
