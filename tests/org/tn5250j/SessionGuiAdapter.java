@@ -366,7 +366,7 @@ public class SessionGuiAdapter extends Pane implements SessionGui {
         stage.setHeight(h);
         stage.centerOnScreen();
 
-        stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+        stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
         stage.setScene(new Scene(gui));
         stage.setTitle("Demo");
         stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, e -> System.exit(0));

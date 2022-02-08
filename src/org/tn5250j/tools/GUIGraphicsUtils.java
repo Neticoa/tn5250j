@@ -25,30 +25,24 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+//import javax.swing.ImageIcon;
+//import javax.swing.JPopupMenu;
+//import javax.swing.SwingUtilities;
 
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Paint;
 
 public class GUIGraphicsUtils {
@@ -61,10 +55,7 @@ public class GUIGraphicsUtils {
     public static final int WINDOW_GRAPHIC = 4;
     private static String defaultFont;
 
-    private static ImageIcon lockImgOpen;
-    private static ImageIcon lockImgClose;
-    private static List<Image> tnicon;
-    private static LinkedList<javafx.scene.image.Image> tniconFx;
+    private static LinkedList<Image> tnicon;
 
     public static void draw3DLeft(final GraphicsContext g, final int which,
             final double x, final double y, final double fmWidth, final double fmHeight) {
@@ -1154,24 +1145,6 @@ public class GUIGraphicsUtils {
         return k;
     }
 
-    public static void positionPopup(final Component component, final JPopupMenu jpm,
-                                     final int xCoord, final int yCoord) {
-
-        Dimension popupSize = jpm.getSize();
-        if (popupSize.width == 0)
-            popupSize = jpm.getPreferredSize();
-        final Point point = new Point(xCoord + popupSize.width, yCoord + popupSize.height);
-        SwingUtilities.convertPointToScreen(point, component);
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = 0;
-        int y = 0;
-        if (point.y > screenSize.height - 25)
-            y = yCoord - popupSize.height;
-        if (point.x > screenSize.width)
-            x = xCoord - popupSize.width;
-        jpm.show(component, x != 0 ? x : xCoord, y != 0 ? y : yCoord);
-    }
-
     /**
      * Windows fonts to search for in order of precedence
      */
@@ -1245,45 +1218,14 @@ public class GUIGraphicsUtils {
         return false;
     }
 
-    /**
-     * This routine will extract image resources from jar file and create
-     * an ImageIcon
-     */
-    public static ImageIcon createImageIcon(final String image) {
-        URL file = null;
-
-        ClassLoader classLoader = GUIGraphicsUtils.class.getClassLoader();
-        if (classLoader == null)
-            classLoader = ClassLoader.getSystemClassLoader();
-
-        try {
-            file = classLoader.getResource(image);
-
-        } catch (final Exception e) {
-            System.err.println(e);
-        }
-        return new ImageIcon(file);
-    }
-
-    public final static List<Image> getApplicationIcons() {
-
+    public static List<javafx.scene.image.Image> getApplicationIcons() {
         if (tnicon == null) {
-            tnicon = new ArrayList<Image>();
-            tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png")).getImage());
-            tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png")).getImage());
-            tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png")).getImage());
+            tnicon = new LinkedList<>();
+            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png").toString()));
+            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png").toString()));
+            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png").toString()));
         }
         return tnicon;
-    }
-
-    public static List<javafx.scene.image.Image> getApplicationIconsFx() {
-        if (tniconFx == null) {
-            tniconFx = new LinkedList<>();
-            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png").toString()));
-            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png").toString()));
-            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png").toString()));
-        }
-        return tniconFx;
     }
 
     private static int round(final double width) {

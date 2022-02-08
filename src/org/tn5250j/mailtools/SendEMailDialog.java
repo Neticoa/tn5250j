@@ -278,7 +278,7 @@ public class SendEMailDialog {
 
         final ActionDelegateDialogPane<ButtonType> dialogPane = new ActionDelegateDialogPane<>(dialog, okButtonHandler);
         dialog.setDialogPane(dialogPane);
-        ((Stage) dialogPane.getScene().getWindow()).getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+        ((Stage) dialogPane.getScene().getWindow()).getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
 
         // setup the dialog options
         dialogPane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.NEXT);

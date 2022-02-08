@@ -73,7 +73,7 @@ public class SqlWizard extends Stage {
         this.name = name;
         this.password = password;
 
-        getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+        getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
         // set title
         setTitle(LangTool.getString("xtfr.wizardTitle"));
         setScene(new Scene(contentPane));

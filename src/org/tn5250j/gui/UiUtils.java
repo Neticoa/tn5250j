@@ -168,7 +168,7 @@ public final class UiUtils {
             }
 
             final Stage stage = new Stage();
-            stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+            stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
             stage.setScene(new Scene(parent));
             stage.setTitle(title);
 

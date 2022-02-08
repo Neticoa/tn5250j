@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.swing.JFrame;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.ThirdPartySwing;
 import org.tn5250j.framework.tn5250.tnvt;
@@ -50,6 +48,7 @@ import com.ibm.as400.vaccess.SpooledFileViewer;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingNode;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -71,6 +70,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class SpoolExporter extends GenericTn5250Frame {
 
@@ -421,12 +421,19 @@ public class SpoolExporter extends GenericTn5250Frame {
         final SpooledFileViewer sfv = new SpooledFileViewer(splf, 1);
         try {
             sfv.load();
-            final JFrame viewer = new JFrame(LangTool.getString("spool.viewerTitle"));
-            viewer.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
-            viewer.getContentPane().add(sfv);
-            viewer.pack();
-            viewer.setVisible(true);
+            final Stage stage = new Stage();
+            stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
+            stage.setTitle(LangTool.getString("spool.viewerTitle"));
+
+            final BorderPane contentPane = new BorderPane();
+            final SwingNode swingNode = new SwingNode();
+            swingNode.setContent(sfv);
+
+            contentPane.setCenter(swingNode);
+
+            stage.setScene(new Scene(contentPane));
+            stage.show();
         } catch (final Exception exc) {
             updateStatus(exc.getMessage(), true);
         }

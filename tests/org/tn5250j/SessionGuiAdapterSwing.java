@@ -24,7 +24,6 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.keyboard.actions.EmulatorAction;
-import org.tn5250j.tools.GUIGraphicsUtils;
 
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
@@ -357,7 +356,6 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
         final int h = bounds.height * 2 / 3;
 
         frame.setBounds((bounds.width - w) / 2, (bounds.height - h) / 2, w, h);;
-        frame.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

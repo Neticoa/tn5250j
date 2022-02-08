@@ -40,7 +40,7 @@ public class GenericTn5250Frame {
 
     public GenericTn5250Frame() {
         super();
-        stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+        stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIcons());
     }
 
     public void centerStage() {
