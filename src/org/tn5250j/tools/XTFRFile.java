@@ -25,27 +25,6 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,73 +36,80 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.table.AbstractTableModel;
-
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.GenericTn5250JFrameSwing;
+import org.tn5250j.gui.ActionDelegateDialogPane;
+import org.tn5250j.gui.GenericTn5250Frame;
+import org.tn5250j.gui.NotClosableDialogPane;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
+import org.tn5250j.gui.TitledBorderedPane;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
 import org.tn5250j.tools.filters.XTFRFileFilterBuilder;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 public class XTFRFile
-        extends GenericTn5250JFrameSwing
-        implements ActionListener, FTPStatusListener, ItemListener {
+        extends GenericTn5250Frame
+        implements FTPStatusListener {
 
-    private static final long serialVersionUID = 1L;
     private FTP5250Prot ftpProtocol;
     private AS400Xtfr axtfr;
 
-    private GridBagConstraints gbc;
-    private JTextField user;
-    private JPasswordField password;
-    private JTextField systemName;
-    private JTextField hostFile;
-    private JTextField localFile;
-    private JRadioButton allFields;
-    private JRadioButton selectedFields;
-    private JComboBox decimalSeparator;
-    private JComboBox fileFormat;
-    private JCheckBox useQuery;
-    private JButton queryWizard;
-    private JTextArea queryStatement;
-    private JButton customize;
-    private JButton xtfrButton;
+    private TextField user;
+    private PasswordField password;
+    private TextField systemName;
+    private TextField hostFile;
+    private TextField localFile;
+    private RadioButton allFields;
+    private RadioButton selectedFields;
+    private ComboBox<String> decimalSeparator;
+    private ComboBox<String> fileFormat;
+    private CheckBox useQuery;
+    private Button queryWizard;
+    private TextArea queryStatement;
+    private Button customize;
+    private Button xtfrButton;
 
-    private JRadioButton intDesc;
-    private JRadioButton txtDesc;
+    private RadioButton intDesc;
+    private RadioButton txtDesc;
 
-    private JPanel as400QueryP;
-    private JPanel as400p;
+    private BorderPane as400QueryP;
+    private GridPane as400p;
 
     boolean fieldsSelected;
     boolean emailIt;
@@ -140,15 +126,13 @@ public class XTFRFile
     // default file filter used.
     XTFRFileFilterBuilder fileFilter;
 
-    ProgressMonitor pm;
-    JProgressBar progressBar;
-    JTextArea taskOutput;
-    JLabel fieldsLabel;
-    JLabel textDescLabel;
-    JLabel label;
-    JLabel note;
+    ProgressBar progressBar;
+    TextArea taskOutput;
+    Label fieldsLabel;
+    Label textDescLabel;
+    Label label;
+    Label note;
     ProgressOptionPane monitor;
-    JDialog dialog;
     XTFRFileFilterBuilder filter;
     SessionGui session;
     private final Window parent;
@@ -156,59 +140,43 @@ public class XTFRFile
     static String messageProgress;
 
     public XTFRFile(final tnvt pvt, final SessionGui session) {
-
         this(pvt, session, null);
-//		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//		this.session = session;
-//		vt = pvt;
-//		ftpProtocol = new FTP5250Prot(vt);
-//		ftpProtocol.addFTPStatusListener(this);
-//		axtfr = new AS400Xtfr(vt);
-//		axtfr.addFTPStatusListener(this);
-//		createProgressMonitor();
-//		initFileFilters();
-//		initXTFRInfo(null);
-//
-//		addWindowListener(new WindowAdapter() {
-//
-//			public void windowClosing(WindowEvent we) {
-//				if (ftpProtocol.isConnected())
-//					ftpProtocol.disconnect();
-//			}
-//
-//		});
-//
-//		messageProgress = LangTool.getString("xtfr.messageProgress");
-//		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     public XTFRFile(final tnvt pvt, final SessionGui session, final Properties XTFRProps) {
-
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         this.session = session;
         this.parent = session.getWindow();
+        this.vt = pvt;
 
-        vt = pvt;
+        final BorderPane contentPane = new BorderPane();
+
+        final Scene scene = new Scene(contentPane);
+        scene.getStylesheets().add("/application.css");
+
+        stage.setTitle(LangTool.getString("xtfr.title"));
+        stage.setScene(scene);
+
+        contentPane.setCursor(Cursor.WAIT);
+        initFileFilters();
+        contentPane.setCenter(initXTFRInfo(XTFRProps));
+
+        stage.setOnHiding(e -> {
+            if (ftpProtocol != null && ftpProtocol.isConnected()) {
+                ftpProtocol.disconnect();
+            }
+        });
+
         ftpProtocol = new FTP5250Prot(vt);
         ftpProtocol.addFTPStatusListener(this);
         axtfr = new AS400Xtfr(vt);
         axtfr.addFTPStatusListener(this);
         createProgressMonitor();
-        initFileFilters();
-        initXTFRInfo(XTFRProps);
-
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(final WindowEvent we) {
-                if (ftpProtocol != null && ftpProtocol.isConnected())
-                    ftpProtocol.disconnect();
-            }
-
-        });
 
         messageProgress = LangTool.getString("xtfr.messageProgress");
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        contentPane.setCursor(Cursor.DEFAULT);
+
+        // now show the world what we can do
+        setVisible(true);
     }
 
     private void initFileFilters() {
@@ -246,26 +214,21 @@ public class XTFRFile
         } else {
             final int prog = statusevent.getCurrentRecord();
             final int len = statusevent.getFileLength();
-            final Runnable udp = new Runnable() {
-                @Override
-                public void run() {
+            final Runnable udp = () -> {
+                if (prog >= len) {
+                    progressBar.setProgress(len);
+                    label.setText(LangTool.getString("xtfr.labelComplete"));
+                    note.setText(getTransferredNote(len));
+                    monitor.setDone();
+                    if (emailIt)
+                        emailMe();
 
-                    if (prog >= len) {
-
-                        progressBar.setValue(len);
-                        label.setText(LangTool.getString("xtfr.labelComplete"));
-                        note.setText(getTransferredNote(len));
-                        monitor.setDone();
-                        if (emailIt)
-                            emailMe();
-
-                    } else {
-                        progressBar.setValue(prog);
-                        note.setText(getProgressNote(prog, len));
-                    }
+                } else {
+                    progressBar.setProgress((double) prog / len);
+                    note.setText(getProgressNote(prog, len));
                 }
             };
-            SwingUtilities.invokeLater(udp);
+            Platform.runLater(udp);
         }
     }
 
@@ -282,11 +245,7 @@ public class XTFRFile
     }
 
     private void emailMe() {
-        final SendEMailDialog semd =
-                new SendEMailDialog(
-                        session,
-                        localFile.getText());
-
+        new SendEMailDialog(session, localFile.getText());
     }
 
     private String getTransferredNote(final int len) {
@@ -306,14 +265,7 @@ public class XTFRFile
     @Override
     public void commandStatusReceived(final FTPStatusEvent statusevent) {
         final String message = statusevent.getMessage() + '\n';
-        final Runnable cdp = new Runnable() {
-            @Override
-            public void run() {
-                taskOutput.setText(taskOutput.getText() + message);
-            }
-        };
-        SwingUtilities.invokeLater(cdp);
-
+        Platform.runLater(() -> taskOutput.setText(taskOutput.getText() + message));
     }
 
     @Override
@@ -328,39 +280,29 @@ public class XTFRFile
         }
     }
 
-    @Override
-    public void actionPerformed(final ActionEvent e) {
+    private void actionPerformed(final ActionEvent e) {
+        final String command = (String) ((Node) e.getSource()).getUserData();
 
         // process the save transfer information button
-        if (e.getActionCommand().equals("SAVE")) {
-
+        if (command.equals("SAVE")) {
             saveXTFRInfo();
-
-        }
-
-        // process the save transfer information button
-        if (e.getActionCommand().equals("LOAD")) {
-
+        } else if (command.equals("LOAD")) {
+            // process the save transfer information button
             loadXTFRInfo();
-
-        }
-
-        if (e.getActionCommand().equals("XTFR")
-                || e.getActionCommand().equals("EMAIL")) {
-
+        } else if (command.equals("XTFR") || command.equals("EMAIL")) {
             saveXTFRFields();
 
-            if (e.getActionCommand().equals("EMAIL"))
+            if (command.equals("EMAIL"))
                 emailIt = true;
             else
                 emailIt = false;
 
             initializeMonitor();
-            dialog.setVisible(true);
+            monitor.showDialog();
 
             if (useQuery.isSelected()) {
 
-                axtfr.login(user.getText(), new String(password.getPassword()));
+                axtfr.login(user.getText(), password.getText());
                 // this will execute in it's own thread and will send a
                 //    fileInfoReceived(FTPStatusEvent statusevent) event when
                 //    finished without an error.
@@ -370,54 +312,33 @@ public class XTFRFile
             } else {
                 if (ftpProtocol != null && ftpProtocol.connect(systemName.getText(), 21)) {
 
-                    if (ftpProtocol
-                            .login(
-                                    user.getText(),
-                                    new String(password.getPassword()))) {
+                    if (ftpProtocol.login(user.getText(), password.getText())) {
                         // this will execute in it's own thread and will send a
                         //    fileInfoReceived(FTPStatusEvent statusevent) event when
                         //    finished without an error.
                         ftpProtocol.setDecimalChar(getDecimalChar());
-                        ftpProtocol.getFileInfo(
-                                hostFile.getText(),
-                                intDesc.isSelected());
+                        ftpProtocol.getFileInfo(hostFile.getText(), intDesc.isSelected());
                     }
                 } else {
-
                     disconnect();
                 }
             }
-        }
-
-        if (e.getActionCommand().equals("BROWSEPC")) {
-
+        } else if (command.equals("BROWSEPC")) {
             getPCFile();
-
-        }
-
-        if (e.getActionCommand().equals("CUSTOMIZE")) {
-
+        } else if (command.equals("CUSTOMIZE")) {
             filter.getOutputFilterInstance().setCustomProperties();
-
         }
-
     }
 
     private char getDecimalChar() {
-        final String ds = (String) decimalSeparator.getSelectedItem();
+        final String ds = decimalSeparator.getValue();
         return ds.charAt(1);
     }
 
     private void initializeMonitor() {
-
-        progressBar.setValue(0);
-        progressBar.setMinimum(0);
-        progressBar.setMaximum(0);
+        progressBar.setProgress(0);
         label.setText(LangTool.getString("xtfr.labelInProgress"));
         note.setText(LangTool.getString("xtfr.labelFileInfo"));
-        progressBar.setStringPainted(false);
-        monitor.reset();
-
     }
 
     private void disconnect() {
@@ -425,14 +346,9 @@ public class XTFRFile
             ftpProtocol.disconnect();
             ftpProtocol = null;
         }
-
     }
 
     private void doTransfer() {
-
-        progressBar.setMaximum(ftpProtocol.getFileSize());
-        progressBar.setStringPainted(true);
-
         fileFilter = getFilterByDescription();
 
         if (useQuery.isSelected()) {
@@ -453,34 +369,9 @@ public class XTFRFile
         }
     }
 
-    /* *** NEVER USED LOCALLY ************************************************** */
-//	private XTFRFileFilter getFilterByExtension() {
-//
-//		if (filter != null && filter.isExtensionInList(localFile.getText()))
-//			return filter;
-//
-//		if (KSpreadFilter.isExtensionInList(localFile.getText()))
-//			return KSpreadFilter;
-//		if (OOFilter.isExtensionInList(localFile.getText()))
-//			return OOFilter;
-//		if (ExcelFilter.isExtensionInList(localFile.getText()))
-//			return ExcelFilter;
-//		if (DelimitedFilter.isExtensionInList(localFile.getText()))
-//			return DelimitedFilter;
-//		if (FixedWidthFilter.isExtensionInList(localFile.getText()))
-//			return FixedWidthFilter;
-//		//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
-//		//         return ExcelWorkbookFilter;
-//
-//		return htmlFilter;
-//	}
-
     private XTFRFileFilterBuilder getFilterByDescription() {
 
-        final String desc = (String) fileFormat.getSelectedItem();
-
-        //      if (filter.getDescription().equals(desc))
-        //         return filter;
+        final String desc = fileFormat.getValue();
 
         if (KSpreadFilter.getDescription().equals(desc))
             return KSpreadFilter;
@@ -499,57 +390,42 @@ public class XTFRFile
     }
 
     private void createProgressMonitor() {
+        progressBar = new ProgressBar();
+        progressBar.setProgress(0);
 
-        progressBar = new JProgressBar(0, 0);
-        progressBar.setValue(0);
-
-        taskOutput = new JTextArea(5, 20);
-        taskOutput.setMargin(new Insets(5, 5, 5, 5));
+        taskOutput = new TextArea();
+        taskOutput.setPrefColumnCount(20);
+        taskOutput.setPrefRowCount(6);
+        taskOutput.setStyle("-fx-padding: 5px;");
         taskOutput.setEditable(false);
 
-        final JPanel panel = new JPanel();
-        note = new JLabel();
-        note.setForeground(Color.blue);
-        label = new JLabel();
-        label.setForeground(Color.blue);
-        panel.setLayout(new BorderLayout());
-        panel.add(label, BorderLayout.NORTH);
-        panel.add(note, BorderLayout.CENTER);
-        panel.add(progressBar, BorderLayout.SOUTH);
+        final BorderPane panel = new BorderPane();
 
-        final JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(panel, BorderLayout.NORTH);
-        contentPane.add(new JScrollPane(taskOutput), BorderLayout.CENTER);
+        note = new Label();
+        note.setTextFill(Color.BLUE);
+        label = new Label();
+        label.setTextFill(Color.BLUE);
+
+        panel.setTop(label);
+        panel.setCenter(note);
+        panel.setBottom(progressBar);
+
+        final BorderPane contentPane = new BorderPane();
+        contentPane.setTop(panel);
+        contentPane.setCenter(taskOutput);
 
         monitor = new ProgressOptionPane(contentPane);
-
-        taskOutput.setRows(6);
-
-        dialog =
-                monitor.createDialog(
-                        this,
-                        LangTool.getString("xtfr.progressTitle"));
-
     }
 
     private void startWizard() {
 
         try {
-            final SqlWizard wizard =
-                    new SqlWizard(
-                            systemName.getText().trim(),
-                            user.getText(),
-                            new String(password.getPassword()));
-
+            final SqlWizard wizard = new SqlWizard(
+                    systemName.getText().trim(), user.getText(), password.getText());
             wizard.setQueryTextArea(queryStatement);
+            wizard.show();
         } catch (final NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    LangTool.getString("messages.noAS400Toolbox"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE,
-                    null);
+            UiUtils.showError(LangTool.getString("messages.noAS400Toolbox"), "Error");
         } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
@@ -580,360 +456,240 @@ public class XTFRFile
      * Creates the dialog components for prompting the user for the information
      * of the transfer
      */
-    private void initXTFRInfo(final Properties XTFRProps) {
+    private BorderPane initXTFRInfo(final Properties XTFRProps) {
 
         // create some reusable borders and layouts
-        final BorderLayout borderLayout = new BorderLayout();
-        final Border emptyBorder = BorderFactory.createEmptyBorder(10, 10, 0, 10);
-
         // main panel
-        final JPanel mp = new JPanel();
-        mp.setLayout(borderLayout);
+        final BorderPane mp = new BorderPane();
 
         // system panel
-        final JPanel sp = new JPanel();
-        sp.setLayout(new BorderLayout());
-        sp.setBorder(emptyBorder);
+        final VBox sp = new VBox();
+        sp.setSpacing(5);
+        sp.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
 
         // host panel for as400
-        as400p = new JPanel();
-        as400p.setBorder(
-                BorderFactory.createTitledBorder(
-                        LangTool.getString("xtfr.labelAS400")));
+        final TitledBorderedPane as400pTitle = new TitledBorderedPane();
+        as400pTitle.setTitle(LangTool.getString("xtfr.labelAS400"));
 
-        as400p.setLayout(new GridBagLayout());
+        as400p = new GridPane();
+        as400p.setMaxWidth(Double.POSITIVE_INFINITY);
+        as400pTitle.setContent(as400p);
 
-        final JLabel snpLabel =
-                new JLabel(LangTool.getString("xtfr.labelSystemName"));
+        final Label snpLabel = new Label(LangTool.getString("xtfr.labelSystemName"));
+        as400p.getChildren().add(addSimpleConstraints(snpLabel, 0, 0, insets(5, 10, 5, 5)));
 
-        systemName = new JTextField(vt.getHostName());
-        systemName.setColumns(30);
+        systemName = new TextField(vt.getHostName());
+        GridPane.setColumnSpan(systemName, 2);
+        systemName.setPrefColumnCount(30);
+        as400p.getChildren().add(addWideComponentConstraints(systemName, 0, 1, insets(5, 5, 5, 10), 2));
 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(snpLabel, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        as400p.add(systemName, gbc);
-        final JLabel hfnpLabel = new JLabel(LangTool.getString("xtfr.labelHostFile"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(hfnpLabel, gbc);
-        hostFile = new JTextField();
-        hostFile.setColumns(30);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 10);
-        as400p.add(hostFile, gbc);
-        final JLabel idpLabel = new JLabel(LangTool.getString("xtfr.labelUserId"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(idpLabel, gbc);
-        user = new JTextField();
-        user.setColumns(15);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        as400p.add(user, gbc);
+        final Label hfnpLabel = new Label(LangTool.getString("xtfr.labelHostFile"));
+        as400p.getChildren().add(addSimpleConstraints(hfnpLabel, 1, 0, insets(5, 10, 5, 5)));
+
+        hostFile = new TextField();
+        GridPane.setColumnSpan(hostFile, 2);
+        as400p.getChildren().add(addWideComponentConstraints(hostFile, 1, 1, insets(5, 5, 5, 10), 2));
+
+        final Label idpLabel = new Label(LangTool.getString("xtfr.labelUserId"));
+        as400p.getChildren().add(addSimpleConstraints(idpLabel, 2, 0, insets(5, 10, 5, 5)));
+
+        user = new TextField();
+        user.setPrefColumnCount(5);
+        as400p.getChildren().add(addWideComponentConstraints(user, 2, 1, insets(5, 5, 5, 5), 1));
+
         // password panel
-        final JLabel pwpLabel = new JLabel(LangTool.getString("xtfr.labelPassword"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(pwpLabel, gbc);
-        password = new JPasswordField();
-        password.setColumns(15);
-        password.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(final java.awt.event.KeyEvent evt) {
-                txtONKeyPressed(evt);
-            }
-        });
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        as400p.add(password, gbc);
-        // Query Wizard
-        useQuery = new JCheckBox(LangTool.getString("xtfr.labelUseQuery"));
-        useQuery.addItemListener(this);
+        final Label pwpLabel = new Label(LangTool.getString("xtfr.labelPassword"));
+        as400p.getChildren().add(addSimpleConstraints(pwpLabel, 3, 0, insets(5, 10, 5, 5)));
 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(useQuery, gbc);
+        password = new PasswordField();
+        password.setPrefColumnCount(5);
+        password.addEventHandler(KeyEvent.KEY_TYPED, this::txtONKeyPressed);
+        as400p.getChildren().add(addWideComponentConstraints(password, 3, 1, insets(5, 5, 5, 5), 1));
+
+        // Query Wizard
+        useQuery = new CheckBox(LangTool.getString("xtfr.labelUseQuery"));
+        useQuery.selectedProperty().addListener((src, old, value) -> useQueryStateChanged());;
+        as400p.getChildren().add(addSimpleConstraints(useQuery, 4, 0, insets(5, 10, 5, 5)));
+
         //query button
-        queryWizard = new JButton(LangTool.getString("xtfr.labelQueryWizard"));
-        queryWizard.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                startWizard();
-            }
-        });
-        queryWizard.setEnabled(false);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 5, 0, 5);
-        as400p.add(queryWizard, gbc);
+        queryWizard = new Button(LangTool.getString("xtfr.labelQueryWizard"));
+        queryWizard.setOnAction(e -> startWizard());
+        queryWizard.setDisable(true);
+        as400p.getChildren().add(addWideComponentConstraints(queryWizard, 4, 1, insets(0, 5, 0, 5), 1));
+
         // Field Selection panel
-        fieldsLabel = new JLabel(LangTool.getString("xtfr.labelFields"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(fieldsLabel, gbc);
-        allFields = new JRadioButton(LangTool.getString("xtfr.labelAllFields"));
+        fieldsLabel = new Label(LangTool.getString("xtfr.labelFields"));
+        as400p.getChildren().add(addSimpleConstraints(fieldsLabel, 5, 0, insets(5, 10, 5, 5)));
+
+        allFields = new RadioButton(LangTool.getString("xtfr.labelAllFields"));
         allFields.setSelected(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(0, 5, 0, 5);
-        as400p.add(allFields, gbc);
-        selectedFields =
-                new JRadioButton(LangTool.getString("xtfr.labelSelectedFields"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(0, 5, 0, 10);
-        as400p.add(selectedFields, gbc);
-        final ButtonGroup fieldGroup = new ButtonGroup();
-        fieldGroup.add(allFields);
-        fieldGroup.add(selectedFields);
+        as400p.getChildren().add(addSimpleConstraints(allFields, 5, 1, insets(0, 5, 0, 5)));
+
+        selectedFields = new RadioButton(LangTool.getString("xtfr.labelSelectedFields"));
+        as400p.getChildren().add(addSimpleConstraints(selectedFields, 5, 2, insets(0, 5, 0, 10)));
+
+        final ToggleGroup fieldGroup = new ToggleGroup();
+        fieldGroup.getToggles().add(allFields);
+        fieldGroup.getToggles().add(selectedFields);
+
         // Field Text Description panel
-        textDescLabel =
-                new JLabel(LangTool.getString("xtfr.labelTxtDesc"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        as400p.add(textDescLabel, gbc);
-        txtDesc = new JRadioButton(LangTool.getString("xtfr.labelTxtDescFull"));
+        textDescLabel = new Label(LangTool.getString("xtfr.labelTxtDesc"));
+        as400p.getChildren().add(addSimpleConstraints(textDescLabel, 6, 0, insets(5, 10, 5, 5)));
+
+        txtDesc = new RadioButton(LangTool.getString("xtfr.labelTxtDescFull"));
         txtDesc.setSelected(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(0, 5, 5, 5);
-        as400p.add(txtDesc, gbc);
-        intDesc = new JRadioButton(LangTool.getString("xtfr.labelTxtDescInt"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(0, 5, 5, 10);
-        as400p.add(intDesc, gbc);
-        final ButtonGroup txtDescGroup = new ButtonGroup();
-        txtDescGroup.add(txtDesc);
-        txtDescGroup.add(intDesc);
+        as400p.getChildren().add(addSimpleConstraints(txtDesc, 6, 1, insets(0, 5, 5, 5)));
+
+        intDesc = new RadioButton(LangTool.getString("xtfr.labelTxtDescInt"));
+        as400p.getChildren().add(addSimpleConstraints(intDesc, 6, 2, insets(0, 5, 5, 10)));
+
+        final ToggleGroup txtDescGroup = new ToggleGroup();
+        txtDescGroup.getToggles().add(txtDesc);
+        txtDescGroup.getToggles().add(intDesc);
 
         // pc panel for pc information
-        final JPanel pcp = new JPanel(new GridBagLayout());
-        pcp.setBorder(
-                BorderFactory.createTitledBorder(
-                        LangTool.getString("xtfr.labelpc")));
+        final TitledBorderedPane pcpTitle = new TitledBorderedPane();
+        pcpTitle.setTitle(LangTool.getString("xtfr.labelpc"));
 
-        final JLabel pffLabel =
-                new JLabel(LangTool.getString("xtfr.labelFileFormat"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        pcp.add(pffLabel, gbc);
-        fileFormat = new JComboBox();
-        fileFormat.setPreferredSize(new Dimension(220, 25));
-        fileFormat.addItem(htmlFilter.getDescription());
-        fileFormat.addItem(OOFilter.getDescription());
-        fileFormat.addItem(ExcelFilter.getDescription());
-        fileFormat.addItem(KSpreadFilter.getDescription());
-        fileFormat.addItem(DelimitedFilter.getDescription());
-        fileFormat.addItem(FixedWidthFilter.getDescription());
-        fileFormat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                filter = getFilterByDescription();
-                if (filter.getOutputFilterInstance().isCustomizable())
-                    customize.setEnabled(true);
-                else
-                    customize.setEnabled(false);
-            }
+        final GridPane pcp = new GridPane();
+        pcp.setVgap(5);
+        pcp.setMaxWidth(Double.POSITIVE_INFINITY);
+        pcpTitle.setContent(pcp);
+
+        final Label pffLabel = new Label(LangTool.getString("xtfr.labelFileFormat"));
+        pcp.getChildren().add(addSimpleConstraints(pffLabel, 0, 0, insets(5, 10, 5, 5)));
+
+        fileFormat = new ComboBox<>();
+        fileFormat.getItems().add(htmlFilter.getDescription());
+        fileFormat.getItems().add(OOFilter.getDescription());
+        fileFormat.getItems().add(ExcelFilter.getDescription());
+        fileFormat.getItems().add(KSpreadFilter.getDescription());
+        fileFormat.getItems().add(DelimitedFilter.getDescription());
+        fileFormat.getItems().add(FixedWidthFilter.getDescription());
+        fileFormat.getSelectionModel().selectedItemProperty().addListener((src, old, value) -> {
+            filter = getFilterByDescription();
+            customize.setDisable(!filter.getOutputFilterInstance().isCustomizable());
         });
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 5, 0, 5);
-        pcp.add(fileFormat, gbc);
-        customize = new JButton(LangTool.getString("xtfr.labelCustomize"));
-        customize.setPreferredSize(new Dimension(110, 25));
-        customize.setActionCommand("CUSTOMIZE");
-        customize.addActionListener(this);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 5, 0, 10);
-        pcp.add(customize, gbc);
+        pcp.getChildren().add(addWideComponentConstraints(fileFormat, 0, 1, insets(0, 5, 0, 5), 2));
+
+        customize = new Button(LangTool.getString("xtfr.labelCustomize"));
+        customize.setUserData("CUSTOMIZE");
+        customize.setOnAction(this::actionPerformed);
+        customize.setMaxWidth(Double.POSITIVE_INFINITY);
+        GridPane.setFillWidth(customize, true);
+        pcp.getChildren().add(addSimpleConstraints(customize, 0, 3, insets(0, 5, 0, 10)));
+
         // now make sure we set the customizable button enabled or not
         // depending on the filter.
-        fileFormat.setSelectedIndex(0);
+        fileFormat.getSelectionModel().selectFirst();
 
-        final JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 5, 5);
-        pcp.add(pcpLabel, gbc);
-        localFile = new JTextField();
-        localFile.setColumns(15);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 5, 0, 5);
-        pcp.add(localFile, gbc);
-        final JButton browsePC =
-                new JButton(LangTool.getString("xtfr.labelPCBrowse"));
-        browsePC.setActionCommand("BROWSEPC");
-        browsePC.addActionListener(this);
-        browsePC.setPreferredSize(new Dimension(110, 25));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 5, 0, 10);
-        pcp.add(browsePC, gbc);
+        final Label pcpLabel = new Label(LangTool.getString("xtfr.labelPCFile"));
+        pcp.getChildren().add(addSimpleConstraints(pcpLabel, 1, 0, insets(5, 10, 5, 5)));
 
-        decimalSeparator = new JComboBox();
-        decimalSeparator.setPreferredSize(new Dimension(220, 25));
-        decimalSeparator.addItem(LangTool.getString("xtfr.period"));
-        decimalSeparator.addItem(LangTool.getString("xtfr.comma"));
+        localFile = new TextField();
+        pcp.getChildren().add(addWideComponentConstraints(localFile, 1, 1, insets(0, 5, 0, 5), 2));
+
+        final Button browsePC = new Button(LangTool.getString("xtfr.labelPCBrowse"));
+        browsePC.setUserData("BROWSEPC");
+        browsePC.setOnAction(this::actionPerformed);
+        browsePC.setMaxWidth(Double.POSITIVE_INFINITY);
+        GridPane.setFillWidth(browsePC, true);
+        pcp.getChildren().add(addSimpleConstraints(browsePC, 1, 3, insets(0, 5, 0, 10)));
+
+        // decimal separator
+        pcp.getChildren().add(addSimpleConstraints(new Label(LangTool.getString("xtfr.labelDecimal")),
+                2, 0, insets(5, 10, 10, 5)));
+
+        decimalSeparator = new ComboBox<>();
+        decimalSeparator.getItems().add(LangTool.getString("xtfr.period"));
+        decimalSeparator.getItems().add(LangTool.getString("xtfr.comma"));
 
         // obtain the decimal separator for the machine locale
         final DecimalFormat formatter =
                 (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
         if (formatter.getDecimalFormatSymbols().getDecimalSeparator() == '.')
-            decimalSeparator.setSelectedIndex(0);
+            decimalSeparator.getSelectionModel().select(0);
         else
-            decimalSeparator.setSelectedIndex(1);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 10, 10, 5);
-        pcp.add(new JLabel(LangTool.getString("xtfr.labelDecimal")), gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 5, 5, 5);
-        pcp.add(decimalSeparator, gbc);
+            decimalSeparator.getSelectionModel().select(1);
 
-        sp.add(as400p, BorderLayout.NORTH);
-        sp.add(pcp, BorderLayout.SOUTH);
+        pcp.getChildren().add(addWideComponentConstraints(decimalSeparator, 2, 1, insets(0, 5, 5, 5), 2));
+
+        sp.getChildren().add(as400pTitle);
+        sp.getChildren().add(pcpTitle);
 
         // options panel
-        final JPanel op = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        xtfrButton = new JButton(LangTool.getString("xtfr.labelXTFR"));
-        xtfrButton.addActionListener(this);
-        xtfrButton.setActionCommand("XTFR");
-        op.add(xtfrButton);
+        final HBox op = new HBox();
+        op.setSpacing(5);
+        op.setAlignment(Pos.CENTER);
+        op.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
 
-        final JButton emailButton =
-                new JButton(LangTool.getString("xtfr.labelXTFREmail"));
-        emailButton.addActionListener(this);
-        emailButton.setActionCommand("EMAIL");
-        op.add(emailButton);
+        xtfrButton = new Button(LangTool.getString("xtfr.labelXTFR"));
+        xtfrButton.setOnAction(this::actionPerformed);
+        xtfrButton.setUserData("XTFR");
+        op.getChildren().add(xtfrButton);
+
+        final Button emailButton =
+                new Button(LangTool.getString("xtfr.labelXTFREmail"));
+        emailButton.setOnAction(this::actionPerformed);
+        emailButton.setUserData("EMAIL");
+        op.getChildren().add(emailButton);
 
         // add transfer save information button
-        final JButton saveButton =
-                new JButton(LangTool.getString("xtfr.labelXTFRSave"));
-        saveButton.addActionListener(this);
-        saveButton.setActionCommand("SAVE");
-        op.add(saveButton);
+        final Button saveButton = new Button(LangTool.getString("xtfr.labelXTFRSave"));
+        saveButton.setOnAction(this::actionPerformed);
+        saveButton.setUserData("SAVE");
+        op.getChildren().add(saveButton);
 
         // add transfer load information button
-        final JButton loadButton =
-                new JButton(LangTool.getString("xtfr.labelXTFRLoad"));
-        loadButton.addActionListener(this);
-        loadButton.setActionCommand("LOAD");
-        op.add(loadButton);
+        final Button loadButton = new Button(LangTool.getString("xtfr.labelXTFRLoad"));
+        loadButton.setOnAction(this::actionPerformed);
+        loadButton.setUserData("LOAD");
+        op.getChildren().add(loadButton);
 
-        mp.add(sp, BorderLayout.CENTER);
-        mp.add(op, BorderLayout.SOUTH);
+        mp.setCenter(sp);
+        mp.setBottom(op);
 
-        this.getContentPane().add(mp, BorderLayout.CENTER);
+        //This QueryPanel will added when Use Query selected
+        as400QueryP = new BorderPane();
+        GridPane.setRowSpan(as400QueryP, 3);
+        GridPane.setColumnSpan(as400QueryP, 3);
+        addSimpleConstraints(as400QueryP, 5, 0, insets(5, 10, 10, 10));
 
-        //      this.setModal(false);
-        //      this.setModal(true);
-        this.setTitle(LangTool.getString("xtfr.title"));
-
-        //QueryPanel when Use Query selected
-        as400QueryP = new JPanel();
-        as400QueryP.setLayout(new BorderLayout());
-
-        queryStatement = new JTextArea(2, 40);
-        final JScrollPane scrollPane = new JScrollPane(queryStatement);
-        queryStatement.setLineWrap(true);
-        as400QueryP.add(scrollPane, BorderLayout.CENTER);
+        queryStatement = new TextArea();
+        queryStatement.setPrefRowCount(2);
+        queryStatement.setWrapText(true);
+        as400QueryP.setCenter(queryStatement);
 
         initXTFRFields(XTFRProps);
 
-        // pack it and center it on the screen
-        pack();
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final Dimension frameSize = getSize();
-        if (frameSize.height > screenSize.height)
-            frameSize.height = screenSize.height;
-        if (frameSize.width > screenSize.width)
-            frameSize.width = screenSize.width;
-        setLocation(
-                (screenSize.width - frameSize.width) / 2,
-                (screenSize.height - frameSize.height) / 2);
-
-        // now show the world what we can do
-        setVisible(true);
-
+        return mp;
     }
 
-    private void txtONKeyPressed(final java.awt.event.KeyEvent evt) {
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            xtfrButton.doClick();
+    private static Node addWideComponentConstraints(final Region node, final int row,
+            final int column, final Insets insets, final int width) {
+        addSimpleConstraints(node, row, column, insets);
+        node.setMaxWidth(Double.POSITIVE_INFINITY);
+        GridPane.setColumnSpan(node, width);
+        GridPane.setFillWidth(node, true);
+        return node;
+    }
+
+    private static Node addSimpleConstraints(final Region node, final int row, final int column, final Insets insets) {
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnIndex(node, column);
+        GridPane.setMargin(node, insets);
+        GridPane.setHalignment(node, HPos.LEFT);
+        return node;
+    }
+
+    private static Insets insets(final double top, final double left, final double bottom, final double right) {
+        return new Insets(top, right, bottom, left);
+    }
+
+    private void txtONKeyPressed(final KeyEvent evt) {
+        if (evt.getCode() == KeyCode.ENTER && evt.getEventType() == KeyEvent.KEY_PRESSED) {
+            xtfrButton.fire();
         }
     }
 
@@ -984,14 +740,13 @@ public class XTFRFile
         }
 
         if (props.containsKey("xtfr.fileFormat"))
-            fileFormat.setSelectedItem(props.getProperty("xtfr.fileFormat"));
+            fileFormat.getSelectionModel().select(props.getProperty("xtfr.fileFormat"));
 
         if (props.containsKey("xtfr.localFile"))
             localFile.setText(props.getProperty("xtfr.localFile"));
 
         if (props.containsKey("xtfr.decimalSeparator"))
-            decimalSeparator.setSelectedItem(
-                    props.get("xtfr.decimalSeparator"));
+            decimalSeparator.getSelectionModel().select(props.getProperty("xtfr.decimalSeparator"));
 
     }
 
@@ -1047,17 +802,14 @@ public class XTFRFile
 
         props.setProperty(
                 "xtfr.fileFormat",
-                (String) fileFormat.getSelectedItem());
+                fileFormat.getValue());
 
         if (localFile.getText().trim().length() > 0)
             props.setProperty("xtfr.localFile", localFile.getText().trim());
         else
             props.remove("xtfr.localFile");
 
-        props.setProperty(
-                "xtfr.decimalSeparator",
-                (String) decimalSeparator.getSelectedItem());
-
+        props.setProperty("xtfr.decimalSeparator", decimalSeparator.getValue());
     }
 
     private void saveXTFRInfo() {
@@ -1129,245 +881,119 @@ public class XTFRFile
     }
 
     /** Listens to the use query check boxe */
-    @Override
-    public void itemStateChanged(final ItemEvent e) {
-        final Object source = e.getItemSelectable();
-        if (source == useQuery) {
-            if (useQuery.isSelected()) {
-                queryWizard.setEnabled(true);
-                as400p.remove(fieldsLabel);
-                as400p.remove(allFields);
-                as400p.remove(selectedFields);
-                as400p.remove(textDescLabel);
-                as400p.remove(txtDesc);
-                as400p.remove(intDesc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 5;
-                gbc.gridheight = 2;
-                gbc.gridwidth = 3;
-                gbc.fill = GridBagConstraints.BOTH;
-                gbc.anchor = GridBagConstraints.WEST;
-                gbc.insets = new Insets(5, 10, 10, 10);
-                as400p.add(as400QueryP, gbc);
-            } else {
-                queryWizard.setEnabled(false);
-                as400p.remove(as400QueryP);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 5;
-                gbc.anchor = GridBagConstraints.WEST;
-                gbc.insets = new Insets(5, 10, 5, 5);
-                as400p.add(fieldsLabel, gbc);
-                allFields.setSelected(true);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 5;
-                gbc.anchor = GridBagConstraints.CENTER;
-                gbc.insets = new Insets(0, 5, 0, 5);
-                as400p.add(allFields, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 2;
-                gbc.gridy = 5;
-                gbc.anchor = GridBagConstraints.CENTER;
-                gbc.insets = new Insets(0, 5, 0, 10);
-                as400p.add(selectedFields, gbc);
-                // Field Text Description panel
-                gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 6;
-                gbc.anchor = GridBagConstraints.WEST;
-                gbc.insets = new Insets(5, 10, 5, 5);
-                as400p.add(textDescLabel, gbc);
-                txtDesc.setSelected(true);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 1;
-                gbc.gridy = 6;
-                gbc.anchor = GridBagConstraints.CENTER;
-                gbc.insets = new Insets(0, 5, 5, 5);
-                as400p.add(txtDesc, gbc);
-                gbc = new GridBagConstraints();
-                gbc.gridx = 2;
-                gbc.gridy = 6;
-                gbc.anchor = GridBagConstraints.CENTER;
-                gbc.insets = new Insets(0, 5, 5, 10);
-                as400p.add(intDesc, gbc);
-            }
-            this.validate();
-            this.repaint();
+    private void useQueryStateChanged() {
+        if (useQuery.isSelected()) {
+            queryWizard.setDisable(false);
+            as400p.getChildren().remove(fieldsLabel);
+            as400p.getChildren().remove(allFields);
+            as400p.getChildren().remove(selectedFields);
+            as400p.getChildren().remove(textDescLabel);
+            as400p.getChildren().remove(txtDesc);
+            as400p.getChildren().remove(intDesc);
+
+            as400p.getChildren().add(as400QueryP);
+        } else {
+            queryWizard.setDisable(true);
+            as400p.getChildren().remove(as400QueryP);
+
+            as400p.getChildren().add(fieldsLabel);
+            allFields.setSelected(true);
+
+            as400p.getChildren().add(allFields);
+            as400p.getChildren().add(selectedFields);
+            as400p.getChildren().add(textDescLabel);
+            txtDesc.setSelected(true);
+
+            as400p.getChildren().add(txtDesc);
+            as400p.getChildren().add(intDesc);
         }
     }
 
     private void selectFields() {
-
-        final FFDTableModel ffdtm = new FFDTableModel();
-
         //Create table to hold field data
-        final JTable fields = new JTable(ffdtm);
-        fields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        fields.setPreferredScrollableViewportSize(new Dimension(500, 200));
+        final XTFRFieldTable table = new XTFRFieldTable(ftpProtocol);
+        final BorderPane content = new BorderPane();
+        content.setCenter(table);
 
-        //Create the scroll pane and add the table to it.
-        final JScrollPane scrollPane = new JScrollPane(fields);
-        scrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(LangTool.getString("xtfr.titleFieldSelection"));
+        final NotClosableDialogPane dialogPane = new NotClosableDialogPane();
+        dialog.setDialogPane(dialogPane);
 
-        final JPanel jpm = new JPanel();
-        jpm.add(scrollPane);
+        final ButtonType selectAll = ButtonType.NEXT;
+        final ButtonType selectNone = ButtonType.PREVIOUS;
+        final ButtonType done = ButtonType.OK;
+        dialogPane.getButtonTypes().addAll(selectAll, selectNone, done);
 
-        final Object[] message = new Object[1];
-        message[0] = jpm;
-        final String[] options =
-                {
-                        LangTool.getString("xtfr.tableSelectAll"),
-                        LangTool.getString("xtfr.tableSelectNone"),
-                        LangTool.getString("xtfr.tableDone")};
+        final Button selectAllButton = (Button) dialogPane.lookupButton(selectAll);
+        selectAllButton.setText(LangTool.getString("xtfr.tableSelectAll"));
+        selectAllButton.setOnAction(e -> table.selectAll());
 
-        int result = 0;
-        while (result != 2) {
-            result =
-                    JOptionPane.showOptionDialog(null,
-                            // the parent that the dialog blocks
-                            message, // the dialog message array
-                            LangTool.getString("xtfr.titleFieldSelection"),
-                            // the title of the dialog window
-                            JOptionPane.DEFAULT_OPTION, // option type
-                            JOptionPane.PLAIN_MESSAGE, // message type
-                            null, // optional icon, use null to use the default icon
-                            options, // options string array, will be made into buttons//
-                            options[1] // option that should be made into a default button
-                    );
+        final Button deselectAllButton = (Button) dialogPane.lookupButton(selectNone);
+        deselectAllButton.setText(LangTool.getString("xtfr.tableSelectNone"));
+        deselectAllButton.setOnAction(e -> table.deselectAll());
 
-            switch (result) {
-                case 0: // Select all
-                    ftpProtocol.selectAll();
-                    break;
-                case 1: // Select none
-                    ftpProtocol.selectNone();
-                    break;
-                default:
-                    fieldsSelected = ftpProtocol.isFieldsSelected();
-                    if (ftpProtocol.isFieldsSelected())
-                        doTransfer();
-                    break;
+        final Button doneButton = (Button) dialogPane.lookupButton(done);
+        doneButton.setText(LangTool.getString("xtfr.tableDone"));
+        doneButton.setDefaultButton(true);
+        doneButton.setOnAction(e -> {
+            try {
+                fieldsSelected = ftpProtocol.isFieldsSelected();
+                if (ftpProtocol.isFieldsSelected())
+                    doTransfer();
+            } finally {
+                dialog.hide();
             }
-        }
-    }
+        });
 
-    /**
-     * Table model for File Field Definitions
-     */
-    class FFDTableModel extends AbstractTableModel {
-
-        private static final long serialVersionUID = 1L;
-        final String[] cols =
-                {
-                        LangTool.getString("xtfr.tableColA"),
-                        LangTool.getString("xtfr.tableColB")};
-
-        public FFDTableModel() {
-            super();
-
-        }
-
-        @Override
-        public int getColumnCount() {
-
-            return cols.length;
-        }
-
-        @Override
-        public String getColumnName(final int col) {
-            return cols[col];
-        }
-
-        @Override
-        public int getRowCount() {
-
-            return ftpProtocol.getNumberOfFields();
-        }
-
-        @Override
-        public Object getValueAt(final int row, final int col) {
-
-            if (col == 0) {
-
-                return new Boolean(ftpProtocol.isFieldSelected(row));
-
-            }
-            if (col == 1)
-                return ftpProtocol.getFieldName(row);
-
-            return null;
-
-        }
-
-        @Override
-        public Class<?> getColumnClass(final int col) {
-            return getValueAt(0, col).getClass();
-
-        }
-
-        @Override
-        public boolean isCellEditable(final int row, final int col) {
-            if (col == 0)
-                return true;
-            else
-                return false;
-
-        }
-
-        @Override
-        public void setValueAt(final Object value, final int row, final int col) {
-
-            fireTableCellUpdated(row, col);
-            ftpProtocol.setFieldSelected(row, ((Boolean) value).booleanValue());
-
-        }
+        dialogPane.setContent(content);
+        dialog.showAndWait();
     }
 
     /**
      * Create a option pane to show status of the transfer
      */
-    private class ProgressOptionPane extends JOptionPane {
+    private class ProgressOptionPane extends ActionDelegateDialogPane<ButtonType> {
 
-        private static final long serialVersionUID = 1L;
-
-        ProgressOptionPane(final Object messageList) {
-
-            super(
-                    messageList,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    JOptionPane.DEFAULT_OPTION,
-                    null,
-                    new Object[]{
-                            UIManager.getString("OptionPane.cancelButtonText")},
-                    null);
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-        }
-
-        public void setDone() {
-            final Object[] option = this.getOptions();
-            option[0] = LangTool.getString("xtfr.tableDone");
-            this.setOptions(option);
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-
-        public void reset() {
-
-            final Object[] option = this.getOptions();
-            option[0] = UIManager.getString("OptionPane.cancelButtonText");
-            this.setOptions(option);
-            monitor.setValue(null);
-
+        ProgressOptionPane(final BorderPane content) {
+            super();
+            setButtonText("Cancel");
+            setCursor(Cursor.WAIT);
+            setContent(content);
         }
 
         @Override
-        public int getMaxCharactersPerLineCount() {
-            return 60;
+        protected void okPressed() {
+            if (ftpProtocol != null) {
+                ftpProtocol.setAborted();
+            }
+            if (dialog != null) {
+                dialog.hide();
+                dialog = null;
+            }
+        }
+
+        private void setButtonText(final String text) {
+            ((Button) lookupButton(ButtonType.OK)).setText(text);
+        }
+
+        void showDialog() {
+            if (dialog != null) {
+                return;
+            }
+
+            setButtonText("Cancel");
+
+            dialog = new Dialog<>();
+            dialog.setTitle(LangTool.getString("xtfr.progressTitle"));
+            dialog.setDialogPane(this);
+            dialog.setResizable(true);
+            dialog.show();
+        }
+
+        public void setDone() {
+            setButtonText(LangTool.getString("xtfr.tableDone"));
+            setCursor(Cursor.DEFAULT);
         }
 
         /**
@@ -1376,63 +1002,7 @@ public class XTFRFile
          * @return whether or not dialog was cancelled
          */
         public boolean isCanceled() {
-            if (this == null)
-                return false;
-            final Object v = this.getValue();
-            return (v != null);
-        }
-
-        // Equivalent to JOptionPane.createDialog,
-        // but create a modeless dialog.
-        // This is necessary because the Solaris implementation doesn't
-        // support Dialog.setModal yet.
-        @Override
-        public JDialog createDialog(final Component parentComponent, final String title) {
-
-            final Frame frame = JOptionPane.getFrameForComponent(parentComponent);
-            final JDialog dialog = new JDialog(frame, title, false);
-            final Container contentPane = dialog.getContentPane();
-
-            contentPane.setLayout(new BorderLayout());
-            contentPane.add(this, BorderLayout.CENTER);
-            dialog.pack();
-            dialog.setLocationRelativeTo(parentComponent);
-            dialog.addWindowListener(new WindowAdapter() {
-                boolean gotFocus = false;
-
-                @Override
-                public void windowClosing(final WindowEvent we) {
-                    setValue(null);
-                }
-
-                @Override
-                public void windowActivated(final WindowEvent we) {
-                    // Once window gets focus, set initial focus
-                    if (!gotFocus) {
-                        selectInitialValue();
-                        gotFocus = true;
-                    }
-                }
-            });
-
-            addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(final PropertyChangeEvent event) {
-                    if (dialog.isVisible()
-                            && event.getSource() == ProgressOptionPane.this
-                            && (event.getPropertyName().equals(VALUE_PROPERTY)
-                            || event.getPropertyName().equals(
-                            INPUT_VALUE_PROPERTY))) {
-                        if (ftpProtocol != null) {
-                            ftpProtocol.setAborted();
-                        }
-                        dialog.setVisible(false);
-                        dialog.dispose();
-                    }
-                }
-            });
-            return dialog;
+            return (dialog.getResult() != null);
         }
     }
-
 }

@@ -33,6 +33,7 @@ import java.util.function.Function;
 import javax.swing.JFrame;
 
 import org.tn5250j.SessionGui;
+import org.tn5250j.ThirdPartySwing;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.TitledBorderedPane;
@@ -416,6 +417,7 @@ public class SpoolExporter extends GenericTn5250Frame {
     private void displayViewer(final SpooledFile splf) {
         //FIXME change to FX
         // Create the spooled file viewer
+        @ThirdPartySwing
         final SpooledFileViewer sfv = new SpooledFileViewer(splf, 1);
         try {
             sfv.load();
