@@ -244,7 +244,7 @@ public class EditSessionDialogController implements Initializable {
 
     private void cancel() {
         result = null;
-        UiUtils.closeMe(view.getScene());
+        view.getScene().getWindow().hide();
     }
 
     public void setSystemName(final String name) {

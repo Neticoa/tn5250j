@@ -40,12 +40,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextArea;
 
 public class SendEMail {
 
@@ -63,7 +64,7 @@ public class SendEMail {
     // SMTP Properties file
     java.util.Properties SMTPProperties;
 
-    public void setTo(String to) {
+    public void setTo(final String to) {
         this.to = to;
     }
 
@@ -71,7 +72,7 @@ public class SendEMail {
         return to;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(final String from) {
         this.from = from;
     }
 
@@ -79,7 +80,7 @@ public class SendEMail {
         return from;
     }
 
-    public void setCC(String cc) {
+    public void setCC(final String cc) {
         this.cc = cc;
     }
 
@@ -87,7 +88,7 @@ public class SendEMail {
         return cc;
     }
 
-    public void setSubject(String subject) {
+    public void setSubject(final String subject) {
         this.subject = subject;
     }
 
@@ -95,7 +96,7 @@ public class SendEMail {
         return subject;
     }
 
-    public void setConfigFile(String file) {
+    public void setConfigFile(final String file) {
         this.configFile = file;
     }
 
@@ -103,7 +104,7 @@ public class SendEMail {
         return configFile;
     }
 
-    public void setAttachment(String text) {
+    public void setAttachment(final String text) {
         this.attachment = text;
     }
 
@@ -111,7 +112,7 @@ public class SendEMail {
         return attachment;
     }
 
-    public void setMessage(String text) {
+    public void setMessage(final String text) {
         this.message = text;
     }
 
@@ -119,7 +120,7 @@ public class SendEMail {
         return message;
     }
 
-    public void setAttachmentName(String desc) {
+    public void setAttachmentName(final String desc) {
 
         attachmentName = desc;
     }
@@ -130,7 +131,7 @@ public class SendEMail {
 
     }
 
-    public void setFileName(String name) {
+    public void setFileName(final String name) {
         this.fileName = name;
     }
 
@@ -145,7 +146,7 @@ public class SendEMail {
      * @param name Configuration file name
      * @return true if the configuration file was loaded
      */
-    private boolean loadConfig(String name) throws Exception {
+    private boolean loadConfig(final String name) throws Exception {
 
         SMTPProperties = ConfigureFactory.getInstance().getProperties("smtp",
                 "SMTPProperties.cfg");
@@ -180,13 +181,13 @@ public class SendEMail {
             if (!loadConfig(configFile))
                 return false;
 
-            Session session = Session.getDefaultInstance(SMTPProperties, null);
+            final Session session = Session.getDefaultInstance(SMTPProperties, null);
             session.setDebug(false);
 
             // create the Multipart and its parts to it
-            Multipart mp = new MimeMultipart();
+            final Multipart mp = new MimeMultipart();
 
-            Message msg = new MimeMessage(session);
+            final Message msg = new MimeMessage(session);
             InternetAddress[] toAddrs = null, ccAddrs = null;
 
             toAddrs = InternetAddress.parse(to, false);
@@ -210,7 +211,7 @@ public class SendEMail {
 
             if (message != null && message.length() > 0) {
                 // create and fill the attachment message part
-                MimeBodyPart mbp = new MimeBodyPart();
+                final MimeBodyPart mbp = new MimeBodyPart();
                 mbp.setText(message, "us-ascii");
                 mp.addBodyPart(mbp);
             }
@@ -219,7 +220,7 @@ public class SendEMail {
 
             if (attachment != null && attachment.length() > 0) {
                 // create and fill the attachment message part
-                MimeBodyPart abp = new MimeBodyPart();
+                final MimeBodyPart abp = new MimeBodyPart();
 
                 abp.setText(attachment, "us-ascii");
 
@@ -233,7 +234,7 @@ public class SendEMail {
 
             if (fileName != null && fileName.length() > 0) {
                 // create and fill the attachment message part
-                MimeBodyPart fbp = new MimeBodyPart();
+                final MimeBodyPart fbp = new MimeBodyPart();
 
                 fbp.setText("File sent using tn5250j", "us-ascii");
 
@@ -243,7 +244,7 @@ public class SendEMail {
                     fbp.setFileName(attachmentName);
 
                 // Get the attachment
-                DataSource source = new FileDataSource(fileName);
+                final DataSource source = new FileDataSource(fileName);
 
                 // Set the data handler to the attachment
                 fbp.setDataHandler(new DataHandler(source));
@@ -258,7 +259,7 @@ public class SendEMail {
             // send the message
             Transport.send(msg);
             return true;
-        } catch (SendFailedException sfe) {
+        } catch (final SendFailedException sfe) {
             showFailedException(sfe);
         }
         return false;
@@ -270,11 +271,11 @@ public class SendEMail {
      * @param parent
      * @param sfe
      */
-    private void showFailedException(SendFailedException sfe) {
+    private static void showFailedException(final SendFailedException sfe) {
 
         String error = sfe.getMessage() + "\n";
 
-        Address[] ia = sfe.getInvalidAddresses();
+        final Address[] ia = sfe.getInvalidAddresses();
 
         if (ia != null) {
             for (int x = 0; x < ia.length; x++) {
@@ -282,18 +283,16 @@ public class SendEMail {
             }
         }
 
-        JTextArea ea = new JTextArea(error, 6, 50);
-        JScrollPane errorScrollPane = new JScrollPane(ea);
-        errorScrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        errorScrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        JOptionPane.showMessageDialog(null,
-                errorScrollPane,
-                LangTool.getString("em.titleConfirmation"),
-                JOptionPane.ERROR_MESSAGE);
+        final Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(LangTool.getString("em.titleConfirmation"));
 
+        final TextArea ea = new TextArea(error);
+        ea.setPrefRowCount(6);
+        ea.setPrefColumnCount(50);
 
+        alert.setHeaderText("");
+        alert.getDialogPane().setContent(ea);
+
+        alert.showAndWait();
     }
-
 }

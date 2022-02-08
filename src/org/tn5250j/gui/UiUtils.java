@@ -9,15 +9,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import javax.swing.SwingUtilities;
-
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.embed.swing.JFXPanel;
+//import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -127,30 +125,6 @@ public final class UiUtils {
         final URL xmlUrl = UiUtils.class.getResource(fxml);
         loader.setLocation(xmlUrl);
         return loader;
-    }
-
-    public static void closeMe(final Scene scene) {
-        final Window window = scene.getWindow();
-        if (window instanceof Stage) { //JavaFX
-            ((Stage) window).close();
-        } else { //Swing
-            final JFXPanel fxPanel = findFxPanel(scene);
-            if (fxPanel != null) {
-                final java.awt.Window dialog = (java.awt.Window) SwingUtilities.getRoot(fxPanel);
-                dialog.setVisible(false);
-            }
-        }
-    }
-
-    private static JFXPanel findFxPanel(final Scene scene) {
-        if (scene.getUserData() instanceof JFXPanel) {
-            return (JFXPanel) scene.getUserData();
-        }
-
-        if (scene.getRoot() != null && scene.getRoot().getScene() != null) {
-            return findFxPanel(scene.getRoot().getScene());
-        }
-        return null;
     }
 
     public static final <T> void showDialog(final Window owner, final String fxml,

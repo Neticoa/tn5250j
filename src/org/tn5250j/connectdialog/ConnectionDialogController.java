@@ -149,6 +149,6 @@ public class ConnectionDialogController implements Initializable {
     }
 
     private void closeDialog() {
-        UiUtils.closeMe(connectionsTab.getTabPane().getScene());
+        connectionsTab.getTabPane().getScene().getWindow().hide();
     }
 }

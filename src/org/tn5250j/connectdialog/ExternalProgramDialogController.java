@@ -85,7 +85,7 @@ public class ExternalProgramDialogController implements Initializable {
     }
 
     private void cancel() {
-        UiUtils.closeMe(view.getScene());
+        view.getScene().getWindow().hide();
     }
 
     private void ok() {
