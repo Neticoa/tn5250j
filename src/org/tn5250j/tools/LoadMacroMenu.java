@@ -32,8 +32,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JPopupMenu;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
@@ -199,10 +197,6 @@ public final class LoadMacroMenu {
      * @param start
      */
     private static void createScriptsMenu(final Menu menu, final List<Object> vector, final int start) {
-
-        final JPopupMenu jpop = new JPopupMenu();
-        jpop.add("Delete");
-
         for (final Object obj : vector) {
             if (obj instanceof ExecuteScriptAction) {
                 final ExecuteScriptAction action = (ExecuteScriptAction) obj;

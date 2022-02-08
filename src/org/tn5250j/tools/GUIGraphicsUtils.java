@@ -34,10 +34,6 @@ import java.awt.geom.AffineTransform;
 import java.util.LinkedList;
 import java.util.List;
 
-//import javax.swing.ImageIcon;
-//import javax.swing.JPopupMenu;
-//import javax.swing.SwingUtilities;
-
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 

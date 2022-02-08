@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.JPanel;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.ThirdPartySwing;
 import org.tn5250j.event.WizardEvent;
@@ -59,8 +57,6 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
     BorderPane spoolPanel = new BorderPane();
     GridPane spoolData = createGridPane();
     BorderPane spoolOptions = new BorderPane();
-
-    JPanel destPanel = new JPanel();
 
     ComboBox<String> cvtType;
     TextField pcPathInfo;
