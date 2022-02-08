@@ -20,12 +20,22 @@
  */
 package org.tn5250j.tools.filters;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
-import org.tn5250j.tools.*;
+import org.tn5250j.gui.TitledBorderedPane;
+import org.tn5250j.tools.LangTool;
 
-import javax.swing.*;
+import javafx.geometry.HPos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 
 public class DelimitedOutputFilter implements OutputFilterInterface {
 
@@ -35,7 +45,8 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
     StringBuffer sb = new StringBuffer();
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
         fout = new PrintStream(new FileOutputStream(fileName));
     }
@@ -43,7 +54,8 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final ArrayList ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
@@ -75,11 +87,12 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+                            final ArrayList ffd, final char decChar) {
 
         FileFieldDef f;
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         //  loop through each of the fields and write out the field name for
         //    each selected field
         for (int x = 0; x < ffd.size(); x++) {
@@ -96,117 +109,113 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the html output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final ArrayList ffd) {
 
         fout.flush();
         fout.close();
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return true;
     }
 
+    @Override
     public void setCustomProperties() {
 
-        new DelimitedDialog(new JFrame());
+        new DelimitedDialog();
     }
 
     class DelimitedDialog {
 
-        public DelimitedDialog(JFrame parent) {
+        public DelimitedDialog() {
 
-            JPanel opts = new JPanel();
-            opts.setBorder(BorderFactory.createTitledBorder(
-                    LangTool.getString("delm.labelOptions")));
+            final TitledBorderedPane content = new TitledBorderedPane();
+            content.setTitle(LangTool.getString("delm.labelOptions"));
 
-            opts.setLayout(new AlignLayout(2, 5, 5));
-            JLabel fdl = new JLabel(LangTool.getString("delm.labelField"));
+            final GridPane opts = new GridPane();
+            opts.setHgap(5);
+            opts.setVgap(5);
+
+            content.setContent(opts);
+
+            final Label fdl = new Label(LangTool.getString("delm.labelField"));
 
             // setup the field delimiter list
-            JComboBox fd = new JComboBox();
-            fd.addItem(",");
-            fd.addItem(";");
-            fd.addItem(":");
-            fd.addItem("|");
-            fd.addItem(LangTool.getString("delm.labelTab"));
-            fd.addItem(LangTool.getString("delm.labelSpace"));
-            fd.addItem(LangTool.getString("delm.labelNone"));
+            final ComboBox<String> fd = new ComboBox<>();
+            fd.getItems().add(",");
+            fd.getItems().add(";");
+            fd.getItems().add(":");
+            fd.getItems().add("|");
+            fd.getItems().add(LangTool.getString("delm.labelTab"));
+            fd.getItems().add(LangTool.getString("delm.labelSpace"));
+            fd.getItems().add(LangTool.getString("delm.labelNone"));
 
             if (delimiter.length() > 0)
                 if (delimiter.equals("\t"))
-                    fd.setSelectedItem(LangTool.getString("delm.labelTab"));
+                    fd.getSelectionModel().select(4);
                 else if (delimiter.equals(" "))
-                    fd.setSelectedItem(LangTool.getString("delm.labelSpace"));
+                    fd.getSelectionModel().select(5);
                 else {
                     if (!delimiter.equals(",") && !delimiter.equals(";") &&
                             !delimiter.equals(":") && !delimiter.equals("|"))
-                        fd.addItem(delimiter);
+                        fd.getItems().add(delimiter);
 
-                    fd.setSelectedItem(delimiter);
+                    fd.getSelectionModel().select(delimiter);
                 }
             else
-                fd.setSelectedItem(LangTool.getString("delm.labelNone"));
+                fd.getSelectionModel().select(6);
 
             fd.setEditable(true);
 
             // setup the string qualifier list
-            JLabel tdl = new JLabel(LangTool.getString("delm.labelText"));
-            JComboBox td = new JComboBox();
-            td.addItem("\"");
-            td.addItem("'");
-            td.addItem(LangTool.getString("delm.labelNone"));
+            final Label tdl = new Label(LangTool.getString("delm.labelText"));
+            final ComboBox<String> td = new ComboBox<>();
+            td.getItems().add("\"");
+            td.getItems().add("'");
+            td.getItems().add(LangTool.getString("delm.labelNone"));
 
             if (stringQualifier.length() > 0) {
                 if (!stringQualifier.equals("'") && !stringQualifier.equals("\""))
-                    td.addItem(stringQualifier);
-                td.setSelectedItem(stringQualifier);
+                    td.getItems().add(stringQualifier);
+                td.getSelectionModel().select(stringQualifier);
             } else
-                td.setSelectedItem(LangTool.getString("delm.labelNone"));
+                td.getSelectionModel().select(2);
 
             td.setEditable(true);
 
-            opts.add(fdl);
-            opts.add(fd);
-            opts.add(tdl);
-            opts.add(td);
+            opts.getChildren().add(setConstraints(fdl, 0, 0));
+            opts.getChildren().add(setConstraints(fd, 0, 1));
+            opts.getChildren().add(setConstraints(tdl, 1, 0));
+            opts.getChildren().add(setConstraints(td, 1, 1));
 
-            Object[] message = new Object[1];
-            message[0] = opts;
+            final Alert alert = new Alert(AlertType.CONFIRMATION, "", ButtonType.OK, ButtonType.CANCEL);
+            alert.setTitle(LangTool.getString("delm.title"));
+            alert.getDialogPane().setHeaderText("");
+            alert.getDialogPane().setContent(content);
 
-            String[] options = {UIManager.getString("OptionPane.okButtonText"),
-                    UIManager.getString("OptionPane.cancelButtonText")};
-
-            int result = JOptionPane.showOptionDialog(
-                    parent,                            // the parent that the dialog blocks
-                    message,                           // the dialog message array
-                    LangTool.getString("delm.title"),    // the title of the dialog window
-                    JOptionPane.DEFAULT_OPTION,        // option type
-                    JOptionPane.PLAIN_MESSAGE,      // message type
-                    null,                              // optional icon, use null to use the default icon
-                    options,                           // options string array, will be made into buttons//
-                    options[0]                         // option that should be made into a default button
-            );
-
-            switch (result) {
-                case 0: // change options
-                    delimiter = (String) fd.getSelectedItem();
-                    if (delimiter.equals(LangTool.getString("delm.labelSpace")))
-                        delimiter = " ";
-                    if (delimiter.equals(LangTool.getString("delm.labelTab")))
-                        delimiter = "\t";
-                    if (delimiter.equals(LangTool.getString("delm.labelNone")))
-                        delimiter = "";
-                    stringQualifier = (String) td.getSelectedItem();
-                    if (stringQualifier.equals(LangTool.getString("delm.labelNone")))
-                        stringQualifier = "";
-                    break;
-                case 1: // Cancel
-                    //		      System.out.println("Cancel");
-                    break;
-                default:
-                    break;
+            final ButtonType result = alert.showAndWait().orElse(null);
+            if (result == ButtonType.OK) {
+                delimiter = fd.getValue();
+                if (delimiter.equals(LangTool.getString("delm.labelSpace")))
+                    delimiter = " ";
+                if (delimiter.equals(LangTool.getString("delm.labelTab")))
+                    delimiter = "\t";
+                if (delimiter.equals(LangTool.getString("delm.labelNone")))
+                    delimiter = "";
+                stringQualifier = td.getValue();
+                if (stringQualifier.equals(LangTool.getString("delm.labelNone")))
+                    stringQualifier = "";
             }
         }
+    }
+
+    static Region setConstraints(final Region component, final int row, final int column) {
+        GridPane.setRowIndex(component, row);
+        GridPane.setColumnIndex(component, column);
+        GridPane.setHalignment(component, HPos.LEFT);
+        return component;
     }
 }
