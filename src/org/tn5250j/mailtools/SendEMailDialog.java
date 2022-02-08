@@ -34,25 +34,22 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.gui.GenericTn5250Frame;
+import org.tn5250j.gui.ActionDelegateDialogPane;
 import org.tn5250j.gui.UiUtils;
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -61,12 +58,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog extends GenericTn5250Frame {
+public class SendEMailDialog {
 
     ComboBox<String> toAddress;
     TextField subject;
@@ -120,7 +118,7 @@ public class SendEMailDialog extends GenericTn5250Frame {
         }
     }
 
-    private void sendEmail1(final Dialog<ButtonType> dialog) {
+    private void sendEmail1(final ActionDelegateDialogPane<ButtonType> dialog) {
         final Screen5250 screen = session.getScreen();
 
         sendEMail = new SendEMail();
@@ -168,7 +166,7 @@ public class SendEMailDialog extends GenericTn5250Frame {
         // send the information
         launchSendService(dialog);
     }
-    private void sendEmail2(final Dialog<ButtonType> dialog) {
+    private void sendEmail2(final ActionDelegateDialogPane<ButtonType> dialog) {
         sendEMail = new SendEMail();
 
         sendEMail.setConfigFile("SMTPProperties.cfg");
@@ -190,7 +188,7 @@ public class SendEMailDialog extends GenericTn5250Frame {
     /**
      * @param dialog
      */
-    private void launchSendService(final Dialog<ButtonType> dialog) {
+    private void launchSendService(final ActionDelegateDialogPane<ButtonType> dialog) {
         final Service<Void> service = new Service<Void>() {
             @Override
             protected Task<Void> createTask() {
@@ -202,28 +200,23 @@ public class SendEMailDialog extends GenericTn5250Frame {
                     }
                     @Override
                     protected void done() {
-                        try {
-                            afterSendEmail();
-                        } finally {
-                            closeDialogWithOk(dialog);
-                        }
+                        Platform.runLater(() -> {
+                            try {
+                                afterSendEmail();
+                            } finally {
+                                dialog.finish(ButtonType.OK);
+                            }
+                        });
                     }
                     @Override
                     protected void failed() {
-                        closeDialogWithOk(dialog);
+                        Platform.runLater(() -> dialog.finish(ButtonType.CANCEL));
                     }
                 };
             }
         };
 
         service.start();
-    }
-
-    private static void closeDialogWithOk(final Dialog<ButtonType> dialog) {
-        Platform.runLater(() -> {
-            dialog.setResult(ButtonType.OK);
-            dialog.close();
-        });
     }
 
     private static String getScreenTextContent(final Screen5250 screen) {
@@ -280,39 +273,15 @@ public class SendEMailDialog extends GenericTn5250Frame {
     }
 
     private static ButtonType showDialog(final GridPane content, final String title,
-            final Consumer<Dialog<ButtonType>> okButtonHandler) {
+            final Consumer<ActionDelegateDialogPane<ButtonType>> okButtonHandler) {
         final Dialog<ButtonType> dialog = new Dialog<>();
-        //replace ok button
-        final DialogPane dialogPane = new DialogPane() {
-            @Override
-            protected Node createButton(final ButtonType buttonType) {
-                if (buttonType == ButtonType.OK) {
-                    final Button button = new Button(buttonType.getText());
-                    final ButtonData buttonData = buttonType.getButtonData();
-                    ButtonBar.setButtonData(button, buttonData);
-                    button.setDefaultButton(buttonType != null && buttonData.isDefaultButton());
-                    button.addEventHandler(ActionEvent.ACTION, e -> {
-                        if (okButtonHandler != null) {
-                            try {
-                                okButtonHandler.accept(dialog);
-                            } catch (final Throwable exc) {
-                                exc.printStackTrace();
-                                dialog.close();
-                            }
-                        }
-                    });
 
-                    return button;
-                } else {
-                    return super.createButton(buttonType);
-                }
-            }
-        };
-
+        final ActionDelegateDialogPane<ButtonType> dialogPane = new ActionDelegateDialogPane<>(dialog, okButtonHandler);
         dialog.setDialogPane(dialogPane);
+        ((Stage) dialogPane.getScene().getWindow()).getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
 
         // setup the dialog options
-        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL, ButtonType.NEXT);
+        dialogPane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.NEXT);
 
         UiUtils.changeButtonText(dialogPane, ButtonType.OK, LangTool.getString("em.optSendLabel"));
         UiUtils.changeButtonText(dialogPane, ButtonType.CANCEL, LangTool.getString("em.optCancelLabel"));

@@ -26,24 +26,35 @@
 
 package org.tn5250j.sql;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.sql.Driver;
+import java.sql.DriverManager;
 
-import com.ibm.as400.vaccess.*;
-import com.ibm.as400.access.*;
-
-import java.sql.*;
-
-import org.tn5250j.tools.LangTool;
+import org.tn5250j.ThirdPartySwing;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
-import org.tn5250j.tools.system.OperatingSystem;
+import org.tn5250j.tools.LangTool;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.vaccess.SQLConnection;
+import com.ibm.as400.vaccess.SQLQueryBuilderPane;
+import com.ibm.as400.vaccess.SQLResultSetTablePane;
+
+import javafx.embed.swing.SwingNode;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 /**
  *
  */
-
-public class SqlWizard extends JFrame {
+@ThirdPartySwing
+public class SqlWizard extends Stage {
 
     private static final long serialVersionUID = 1L;
     private SQLConnection connection;
@@ -53,35 +64,36 @@ public class SqlWizard extends JFrame {
     private String name;
     private String password;
     private String host;
-    private String queryText;
-    private JTextArea queryTextArea;
+    private TextArea queryTextArea;
+    private final BorderPane contentPane = new BorderPane();
 
-    public SqlWizard(String host, String name, String password) {
+    public SqlWizard(final String host, final String name, final String password) {
 
         this.host = host;
         this.name = name;
         this.password = password;
 
-        enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+        getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
+        // set title
+        setTitle(LangTool.getString("xtfr.wizardTitle"));
+        setScene(new Scene(contentPane));
 
-        try {
-            jbInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        jbInit();
+
+        final Rectangle2D bounds = Screen.getPrimary().getBounds();
+        final double w = bounds.getWidth() / 2;
+        final double h = bounds.getHeight() / 2;
+        setWidth(w);
+        setHeight(h);
+
+        setX((bounds.getWidth() - w) / 2);
+        setY((bounds.getHeight() - h) / 2);
     }
 
-    private void jbInit() throws Exception {
-
+    private void jbInit() {
         try {
-
-            setIconImages(GUIGraphicsUtils.getApplicationIcons());
-
-            // set title
-            setTitle(LangTool.getString("xtfr.wizardTitle"));
-
             // Load the JDBC driver.
-            Driver driver2 = (Driver) Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
+            final Driver driver2 = (Driver) Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
             DriverManager.registerDriver(driver2);
 
             // Get a connection to the database.  Since we do not
@@ -99,58 +111,29 @@ public class SqlWizard extends JFrame {
             // builder.
             queryBuilder.load();
 
-            JButton done = new JButton(LangTool.getString("xtfr.tableDone"));
-            done.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fillQueryTextArea();
+            final Button done = new Button(LangTool.getString("xtfr.tableDone"));
+            done.setOnAction(e -> fillQueryTextArea());
 
-                }
-            });
-            JPanel panel = new JPanel();
-            panel.add(done);
-            getContentPane().add(queryBuilder, BorderLayout.CENTER);
-            getContentPane().add(panel, BorderLayout.SOUTH);
+            final HBox panel = new HBox();
+            panel.setAlignment(Pos.CENTER);
+            panel.getChildren().add(done);
 
-            Dimension max = new Dimension(OperatingSystem.getScreenBounds().width,
-                    OperatingSystem.getScreenBounds().height);
+            final SwingNode queryBuilderNode = new SwingNode();
+            queryBuilderNode.setContent(queryBuilder);
 
-            pack();
-
-            if (getSize().width > max.width)
-                setSize(max.width, getSize().height);
-
-            if (getSize().height > max.height)
-                setSize(getSize().width, max.height);
-
-            //Center the window
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            Dimension frameSize = getSize();
-            if (frameSize.height > screenSize.height)
-                frameSize.height = screenSize.height;
-            if (frameSize.width > screenSize.width)
-                frameSize.width = screenSize.width;
-
-            setLocation((screenSize.width - frameSize.width) / 2,
-                    (screenSize.height - frameSize.height) / 2);
-
-            setVisible(true);
-        } catch (ClassNotFoundException cnfe) {
-
-            JOptionPane.showMessageDialog(null, "Error loading AS400 JDBC Driver",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-
+            contentPane.setCenter(queryBuilderNode);
+            contentPane.setBottom(panel);
+        } catch (final Exception cnfe) {
+            UiUtils.showError("Error loading AS400 JDBC Driver", "Error");
         }
     }
 
     private void fillQueryTextArea() {
-        queryTextArea.append(queryBuilder.getQuery());
-
-        this.setVisible(false);
-        this.dispose();
+        queryTextArea.appendText(queryBuilder.getQuery());
+        hide();
     }
 
-    public void setQueryTextArea(JTextArea qta) {
+    public void setQueryTextArea(final TextArea qta) {
         queryTextArea = qta;
     }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import org.tn5250j.SessionGui;
+import org.tn5250j.ThirdPartySwing;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.gui.GenericTn5250Frame;
@@ -503,6 +504,7 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
      */
     private void getIFSFile() {
 
+        @ThirdPartySwing
         final IFSFileDialog fd = new IFSFileDialog(SwingToFxUtils.SHARED_FRAME, "Save As", splfile.getSystem());
         final com.ibm.as400.vaccess.FileFilter[] filterList =
                 new com.ibm.as400.vaccess.FileFilter[2];

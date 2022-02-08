@@ -433,8 +433,8 @@ public class SessionPopup {
     }
 
     private void doMeTransfer() {
-        new XTFRFile(vt, sessiongui);
-        sessiongui.getFocusForMe();
+        final XTFRFile dialog = new XTFRFile(vt, sessiongui);
+        dialog.setVisible(true);
     }
 
     private void doMeSpool() {

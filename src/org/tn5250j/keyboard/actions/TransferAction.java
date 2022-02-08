@@ -48,6 +48,7 @@ public class TransferAction extends EmulatorAction {
 
     @Override
     public void handle() {
-        new XTFRFile(session.getVT(), session);
+        final XTFRFile dialog = new XTFRFile(session.getVT(), session);
+        dialog.setVisible(true);
     }
 }
