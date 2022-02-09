@@ -189,7 +189,7 @@ public class Session5250 implements SessionInterface {
      */
     @Override
     public String showSystemRequest() {
-        final SystemRequestDialog sysreqdlg = new SystemRequestDialog(this.guiComponent);
+        final SystemRequestDialog sysreqdlg = new SystemRequestDialog();
         return sysreqdlg.show();
     }
 

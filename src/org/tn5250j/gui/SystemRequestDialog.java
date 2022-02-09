@@ -26,18 +26,12 @@
  */
 package org.tn5250j.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import org.tn5250j.SessionGui;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 
 /**
  * Small dialog asking the user to enter a value for doing a system request.
@@ -45,52 +39,34 @@ import org.tn5250j.SessionGui;
  * @author master_jaf
  */
 public class SystemRequestDialog {
+    private static final String CANCEL = "Cancel";
+    private static final String SYS_REQ = "SysReq";
 
-    private final static String[] OPTIONS = new String[]{"SysReq", "Cancel"};
+    private Alert dialog;
+    private TextField text;
 
-    private final Component parent;
-
-    private JDialog dialog;
-    private JOptionPane pane;
-    private JTextField text;
-
-
-    /**
-     * @param parent
-     */
-    public SystemRequestDialog(final SessionGui parent) {
+    public SystemRequestDialog() {
         super();
-        this.parent = (Component) parent;
-        initLayout();
-    }
 
-    private void initLayout() {
-        final JPanel srp = new JPanel();
-        srp.setLayout(new BorderLayout());
-        final JLabel jl = new JLabel("Enter alternate job");
-        text = new JTextField();
-        srp.add(jl, BorderLayout.NORTH);
-        srp.add(text, BorderLayout.CENTER);
-        final Object[] message = new Object[1];
-        message[0] = srp;
+        final BorderPane srp = new BorderPane();
 
-        pane = new JOptionPane(message, // the dialog message array
-                JOptionPane.QUESTION_MESSAGE, // message type
-                JOptionPane.DEFAULT_OPTION, // option type
-                null, // optional icon, use null to use the default icon
-                OPTIONS, // options string array, will be made into buttons
-                OPTIONS[0]);
+        final Label jl = new Label("Enter alternate job");
+        jl.setStyle("-fx-padding: 0 0 0.5em 0;");
+        text = new TextField();
+        srp.setTop(jl);
+        srp.setCenter(text);
 
-        dialog = pane.createDialog(parent, "System Request");
+        dialog = new Alert(AlertType.CONFIRMATION, "", ButtonType.OK, ButtonType.CANCEL);
+        dialog.setTitle("System Request");
+        dialog.setHeaderText("");
+
+        UiUtils.changeButtonText(dialog.getDialogPane(), ButtonType.OK, SYS_REQ);
+        UiUtils.changeButtonText(dialog.getDialogPane(), ButtonType.CANCEL, CANCEL);
+
+        dialog.getDialogPane().setContent(srp);
 
         // add the listener that will set the focus to the desired option
-        dialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(final WindowEvent e) {
-                text.requestFocus();
-            }
-        });
-
+        dialog.setOnShown(e -> text.requestFocus());
     }
 
     /**
@@ -100,12 +76,10 @@ public class SystemRequestDialog {
      * @return
      */
     public String show() {
-        String result = null;
-        dialog.setVisible(true);
-        if (OPTIONS[0].equals(pane.getValue())) {
-            result = text.getText();
+        final ButtonType result = dialog.showAndWait().orElse(null);
+        if (result == ButtonType.OK) {
+            return text.getText();
         }
-        return result;
+        return null;
     }
-
 }
