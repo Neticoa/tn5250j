@@ -1,32 +1,5 @@
 package org.tn5250j.tools;
 
-/**
- * Title: tn5250J
- * Copyright:   Copyright (c) 2001
- * Company:
- *
- * @author Kenneth J. Pouncey
- * @version 0.5
- * <p>
- * Description:
- * <p>
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
- */
-
-import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileNotFoundException;
@@ -41,20 +14,22 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.tools.filters.FileFieldDef;
 import org.tn5250j.tools.filters.OutputFilterInterface;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 
 public class FTP5250Prot {
 
@@ -82,28 +57,28 @@ public class FTP5250Prot {
     private Vector members;
     private Thread getThread;
 
-    public FTP5250Prot(tnvt v) {
+    public FTP5250Prot(final tnvt v) {
         vt = v;
         status = new FTPStatusEvent(this);
         // obtain the decimal separator for the machine locale
-        DecimalFormat formatter =
+        final DecimalFormat formatter =
                 (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
         decChar = formatter.getDecimalFormatSymbols().getDecimalSeparator();
     }
 
-    public void setOutputFilter(OutputFilterInterface o) {
+    public void setOutputFilter(final OutputFilterInterface o) {
         ofi = o;
     }
 
-    public void setDecimalChar(char dec) {
+    public void setDecimalChar(final char dec) {
         decChar = dec;
     }
 
     /**
      * Set up ftp sockets and connect to an as400
      */
-    public boolean connect(String host, int port) {
+    public boolean connect(final String host, final int port) {
 
         try {
 
@@ -123,7 +98,7 @@ public class FTP5250Prot {
                 connected = false;
                 return false;
             }
-        } catch (Exception _ex) {
+        } catch (final Exception _ex) {
             return false;
         }
 
@@ -141,7 +116,7 @@ public class FTP5250Prot {
                 ftpConnectionSocket.close();
                 connected = false;
             }
-        } catch (Exception _ex) {
+        } catch (final Exception _ex) {
         }
     }
 
@@ -158,7 +133,7 @@ public class FTP5250Prot {
      *
      * @param listener  The FTPStatusListener to be added
      */
-    public synchronized void addFTPStatusListener(FTPStatusListener listener) {
+    public synchronized void addFTPStatusListener(final FTPStatusListener listener) {
 
         if (listeners == null) {
             listeners = new java.util.Vector<FTPStatusListener>(3);
@@ -174,9 +149,9 @@ public class FTP5250Prot {
     private void fireStatusEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.statusReceived(status);
             }
@@ -190,9 +165,9 @@ public class FTP5250Prot {
     private void fireCommandEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.commandStatusReceived(status);
             }
@@ -206,9 +181,9 @@ public class FTP5250Prot {
     private void fireInfoEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.fileInfoReceived(status);
             }
@@ -220,7 +195,7 @@ public class FTP5250Prot {
      *
      * @param listener  The FTPStatusListener to be removed
      */
-    public synchronized void removeFTPStatusListener(FTPStatusListener listener) {
+    public synchronized void removeFTPStatusListener(final FTPStatusListener listener) {
         if (listeners == null) {
             return;
         }
@@ -234,7 +209,7 @@ public class FTP5250Prot {
      * @param user  The user name
      * @param password  The password of the user
      */
-    public boolean login(String user, String passWord) {
+    public boolean login(final String user, final String passWord) {
 
         if (ftpOutputStream == null) {
             printFTPInfo("Not connected to any server!");
@@ -247,7 +222,7 @@ public class FTP5250Prot {
         executeCommand("USER", user);
 
         // send password to server
-        int resp = executeCommand("PASS", passWord);
+        final int resp = executeCommand("PASS", passWord);
 
         if (resp == 230) {
             loggedIn = true;
@@ -281,14 +256,14 @@ public class FTP5250Prot {
             // This will create a passive socket and execute the NLST command
             passSocket = createPassiveSocket("NLST");
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(passSocket.getInputStream()));
+            final BufferedReader br = new BufferedReader(new InputStreamReader(passSocket.getInputStream()));
             String file;
             while ((file = br.readLine()) != null) {
                 System.out.println(file);
             }
             passSocket.close();
             parseResponse();
-        } catch (Exception _ex) {
+        } catch (final Exception _ex) {
 
         }
 
@@ -311,9 +286,9 @@ public class FTP5250Prot {
      * Returns whether a field is selected for output or not
      *
      */
-    public boolean isFieldSelected(int which) {
+    public boolean isFieldSelected(final int which) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
         return ffD.isWriteField();
 
     }
@@ -361,9 +336,9 @@ public class FTP5250Prot {
     /**
      * Convenience method to select or unselect a field for output
      */
-    public void setFieldSelected(int which, boolean value) {
+    public void setFieldSelected(final int which, final boolean value) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
         ffD.setWriteField(value);
 
     }
@@ -371,9 +346,9 @@ public class FTP5250Prot {
     /**
      * Convenience method to return the name of a field
      */
-    public String getFieldName(int which) {
+    public String getFieldName(final int which) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
         return ffD.getFieldName();
 
     }
@@ -394,8 +369,8 @@ public class FTP5250Prot {
 
         executeCommand("PWD");
 
-        int i = lastResponse.indexOf("\"");
-        int j = lastResponse.lastIndexOf("\"");
+        final int i = lastResponse.indexOf("\"");
+        final int j = lastResponse.lastIndexOf("\"");
         if (i != -1 && j != -1)
             remoteDir = lastResponse.substring(i + 1, j);
         else
@@ -406,7 +381,7 @@ public class FTP5250Prot {
      * Creates a passive socket to the remote host to allow the transfer of data
      *
      */
-    private Socket createPassiveSocket(String cmd) {
+    private Socket createPassiveSocket(final String cmd) {
 
         ServerSocket ss = null;
 
@@ -420,10 +395,10 @@ public class FTP5250Prot {
                 //    from the ftpConnection socket.
 
 //            byte abyte0[] = InetAddress.getLocalHost().getAddress();
-                byte abyte0[] = localHost.getAddress();
+                final byte abyte0[] = localHost.getAddress();
                 ss = new ServerSocket(0);
                 ss.setSoTimeout(timeout);
-                StringBuffer pb = new StringBuffer("PORT ");
+                final StringBuffer pb = new StringBuffer("PORT ");
                 for (int i = 0; i < abyte0.length; i++) {
                     pb.append(abyte0[i] & 0xff);
                     pb.append(",");
@@ -439,10 +414,10 @@ public class FTP5250Prot {
                     return null;
                 }
 
-                Socket socket = ss.accept();
+                final Socket socket = ss.accept();
                 socket.setSoTimeout(timeout);
                 return socket;
-            } catch (IOException ioexception) {
+            } catch (final IOException ioexception) {
                 printFTPInfo("I/O error while setting up a ServerSocket on the client machine!" + ioexception);
             }
             return null;
@@ -451,7 +426,7 @@ public class FTP5250Prot {
                 if (ss != null) {
                     ss.close();
                 }
-            } catch (IOException ioexception1) {
+            } catch (final IOException ioexception1) {
                 printFTPInfo("createPassiveSocket.close() exception!" + ioexception1);
             }
         }
@@ -461,9 +436,9 @@ public class FTP5250Prot {
      * Retrieves the File Field Definitions and Member information for the remote
      *    file to be transferred
      */
-    protected boolean getFileInfo(String tFile, boolean useInternal) {
+    protected boolean getFileInfo(final String tFile, final boolean useInternal) {
 
-        int memberOffset = tFile.indexOf(".");
+        final int memberOffset = tFile.indexOf(".");
         String file2 = null;
         String member2 = null;
 
@@ -480,9 +455,10 @@ public class FTP5250Prot {
         final String member = member2;
         final boolean internal = useInternal;
 
-        Runnable getInfo = new Runnable() {
+        final Runnable getInfo = new Runnable() {
 
             // set the thread to run.
+            @Override
             public void run() {
 
                 executeCommand("RCMD", "dspffd FILE(" + file + ") OUTPUT(*OUTFILE) " +
@@ -500,7 +476,7 @@ public class FTP5250Prot {
             }
         };
 
-        Thread infoThread = new Thread(getInfo);
+        final Thread infoThread = new Thread(getInfo);
         infoThread.start();
         return true;
 
@@ -510,13 +486,13 @@ public class FTP5250Prot {
      * Loads the File Field Definition array with the field information of the
      * remote file
      */
-    private boolean loadFFD(boolean useInternal) {
+    private boolean loadFFD(final boolean useInternal) {
 
         Socket socket = null;
         BufferedReader dis = null;
-        String remoteFile = "QTEMP/FFD";
+        final String remoteFile = "QTEMP/FFD";
         String recLength = "";
-        Vector allowsNullFields = null;
+        List<String> allowsNullFields = null;
 
         try {
             socket = createPassiveSocket("RETR " + remoteFile);
@@ -535,7 +511,7 @@ public class FTP5250Prot {
 
             ffd = new ArrayList();
             while ((data = dis.readLine()) != null) {
-                FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
+                final FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
 
                 if (useInternal)
                     // WHFLDI  Field name internal
@@ -580,7 +556,7 @@ public class FTP5250Prot {
                 // WHNULL Allow NULL Data
                 if (data.substring(503, 503 + 1).equals("Y")) {
                     if (allowsNullFields == null)
-                        allowsNullFields = new Vector(3);
+                        allowsNullFields = new ArrayList(3);
                     allowsNullFields.add(ffDesc.getFieldName());
                     printFTPInfo("Warning -- File allows null fields!!!");
                 }
@@ -596,41 +572,26 @@ public class FTP5250Prot {
             printFTPInfo("Field Information Transfer complete!");
 
             if (allowsNullFields != null) {
-                JPanel jp = new JPanel();
-                jp.setLayout(new BorderLayout());
-                JLabel message = new JLabel(LangTool.getString("messages.nullFieldWarning"));
-                JTextArea jta = new JTextArea(6, 30);
-                jta.setEditable(false);
-                JScrollPane sp = new JScrollPane(jta);
-                String text = new String();
-
-                for (int x = 0; x < allowsNullFields.size(); x++)
-                    text += allowsNullFields.get(x) + "\n";
-
-                jta.setText(text);
-
-                jp.add(message, BorderLayout.NORTH);
-                jp.add(sp, BorderLayout.CENTER);
-                JOptionPane.showMessageDialog(null, jp, "Warning", JOptionPane.WARNING_MESSAGE);
+                showNullFieldsWarning(allowsNullFields);
             }
 
-        } catch (Exception _ex) {
+        } catch (final Exception _ex) {
             printFTPInfo("I/O error!");
             return false;
         } finally {
             try {
                 socket.close();
-            } catch (Exception _ex) {
+            } catch (final Exception _ex) {
             }
             try {
                 dis.close();
-            } catch (Exception _ex) {
+            } catch (final Exception _ex) {
             }
         }
 
         int l = 0;
         int o = 0;
-        int r = Integer.parseInt(recLength);
+        final int r = Integer.parseInt(recLength);
         FileFieldDef f;
         printFTPInfo("<----------------- File Field Information ---------------->");
 
@@ -650,9 +611,38 @@ public class FTP5250Prot {
     }
 
     /**
+     * @param allowsNullFields
+     */
+    protected static void showNullFieldsWarning(final List<String> allowsNullFields) {
+        final Alert alert = new Alert(AlertType.WARNING, "", ButtonType.OK);
+        alert.setTitle("Warning");
+        alert.setHeaderText("");
+
+        final BorderPane jp = new BorderPane();
+        alert.getDialogPane().setContent(jp);
+
+        final TextArea jta = new TextArea();
+        jta.setPrefRowCount(6);
+        jta.setPrefColumnCount(30);
+        jta.setEditable(false);
+
+        final StringBuilder text = new StringBuilder();
+
+        for (int x = 0; x < allowsNullFields.size(); x++)
+            text.append(allowsNullFields.get(x)).append('\n');
+
+        jta.setText(text.toString());
+
+        jp.setTop(new Label(LangTool.getString("messages.nullFieldWarning")));
+        jp.setCenter(jta);
+
+        alert.showAndWait();
+    }
+
+    /**
      * Executes the command to obtain the member information of the remote file
      */
-    protected boolean getMbrInfo(String file, String member) {
+    protected boolean getMbrInfo(final String file, final String member) {
 
         executeCommand("RCMD", "dspfd FILE(" + file + ")" +
                 " TYPE(*MBR)" +
@@ -674,7 +664,7 @@ public class FTP5250Prot {
      * Parses the information obtained by the DSPFD command to obtain the size of
      * the remote file and member.
      */
-    private boolean getMbrSize(String member) {
+    private boolean getMbrSize(final String member) {
 
         boolean flag = true;
 
@@ -690,7 +680,7 @@ public class FTP5250Prot {
         Socket socket = null;
         DataInputStream datainputstream = null;
         executeCommand("TYPE", "I");
-        String remoteFile = "QTEMP/FML";
+        final String remoteFile = "QTEMP/FML";
         members = new Vector(10);
 
         try {
@@ -698,11 +688,11 @@ public class FTP5250Prot {
             if (socket != null) {
                 datainputstream = new DataInputStream(socket.getInputStream());
 
-                byte abyte0[] = new byte[858];
+                final byte abyte0[] = new byte[858];
 
                 int c = 0;
                 int len = 0;
-                StringBuffer sb = new StringBuffer(10);
+                final StringBuffer sb = new StringBuffer(10);
 
                 printFTPInfo("<----------------- Member Information ---------------->");
 
@@ -737,17 +727,17 @@ public class FTP5250Prot {
             } else
                 flag = false;
 
-        } catch (Exception _ex) {
+        } catch (final Exception _ex) {
             printFTPInfo("Error! " + _ex);
             return false;
         } finally {
             try {
                 socket.close();
-            } catch (Exception _ex) {
+            } catch (final Exception _ex) {
             }
             try {
                 datainputstream.close();
-            } catch (Exception _ex) {
+            } catch (final Exception _ex) {
             }
         }
 
@@ -760,9 +750,9 @@ public class FTP5250Prot {
      * Convenience method to return the file name and member that is being
      *    transferred
      */
-    public String getFullFileName(String tFile) {
+    public String getFullFileName(final String tFile) {
 
-        int memberOffset = tFile.indexOf(".");
+        final int memberOffset = tFile.indexOf(".");
         String file2 = null;
         String member2 = null;
 
@@ -776,13 +766,13 @@ public class FTP5250Prot {
         if (members != null) {
 
             if (member2 == null) {
-                MemberInfo mi = (MemberInfo) members.get(0);
+                final MemberInfo mi = (MemberInfo) members.get(0);
                 fileSize = mi.getSize();
                 status.setFileLength(mi.getSize());
                 member2 = mi.getName();
             } else {
 
-                Iterator<?> i = members.iterator();
+                final Iterator<?> i = members.iterator();
                 MemberInfo mi = null;
 
                 while (i.hasNext()) {
@@ -825,9 +815,9 @@ public class FTP5250Prot {
     /**
      * Transfer the file information to an output file
      */
-    protected boolean getFile(String remoteFile, String localFile) {
+    protected boolean getFile(final String remoteFile, final String localFile) {
 
-        boolean flag = true;
+        final boolean flag = true;
 
         if (ftpOutputStream == null) {
             printFTPInfo("Not connected to any server!");
@@ -841,14 +831,15 @@ public class FTP5250Prot {
         final String localFileF = localFile;
         final String remoteFileF = remoteFile;
 
-        Runnable getRun = new Runnable() {
+        final Runnable getRun = new Runnable() {
 
             // set the thread to run.
+            @Override
             public void run() {
 
                 Socket socket = null;
                 DataInputStream datainputstream = null;
-                String localFileFull = localFileF;
+                final String localFileFull = localFileF;
                 executeCommand("TYPE", "I");
 
                 try {
@@ -858,8 +849,8 @@ public class FTP5250Prot {
 
                         writeHeader(localFileFull);
 
-                        byte abyte0[] = new byte[recordLength];
-                        StringBuffer rb = new StringBuffer(recordOutLength);
+                        final byte abyte0[] = new byte[recordLength];
+                        final StringBuffer rb = new StringBuffer(recordOutLength);
 
                         int c = 0;
                         int len = 0;
@@ -896,22 +887,22 @@ public class FTP5250Prot {
                         printFTPInfo("Transfer complete!");
 
                     }
-                } catch (InterruptedIOException iioe) {
+                } catch (final InterruptedIOException iioe) {
                     printFTPInfo("Interrupted! " + iioe.getMessage());
-                } catch (Exception _ex) {
+                } catch (final Exception _ex) {
                     printFTPInfo("Error! " + _ex);
                 } finally {
                     try {
                         socket.close();
-                    } catch (Exception _ex) {
+                    } catch (final Exception _ex) {
                     }
                     try {
                         datainputstream.close();
-                    } catch (Exception _ex) {
+                    } catch (final Exception _ex) {
                     }
                     try {
                         writeFooter();
-                    } catch (Exception _ex) {
+                    } catch (final Exception _ex) {
                     }
 
                     disconnect();
@@ -931,7 +922,7 @@ public class FTP5250Prot {
      * Parse the field field definition of the data and return a string buffer of
      * the output to be written
      */
-    private void parseFFD(byte[] cByte, StringBuffer rb) {
+    private void parseFFD(final byte[] cByte, final StringBuffer rb) {
 
         ofi.parseFields(cByte, ffd, rb);
     }
@@ -947,7 +938,7 @@ public class FTP5250Prot {
     /**
      * Print ftp command events and responses
      */
-    private void printFTPInfo(String msgText) {
+    private void printFTPInfo(final String msgText) {
 
         status.setMessage(msgText);
         fireCommandEvent();
@@ -958,14 +949,14 @@ public class FTP5250Prot {
      * Execute the command without parameters on the remote ftp host
      */
 
-    private int executeCommand(String cmd) {
+    private int executeCommand(final String cmd) {
         return executeCommand(cmd, null);
     }
 
     /**
      * Execute a command with parameters on the remote ftp host
      */
-    private int executeCommand(String cmd, String params) {
+    private int executeCommand(final String cmd, final String params) {
 
         if (ftpOutputStream == null) {
             printFTPInfo("Not connected to any server!");
@@ -1040,7 +1031,7 @@ public class FTP5250Prot {
 //         return "0000 Response Invalid";
 //
 //      }
-        catch (Exception exception) {
+        catch (final Exception exception) {
             System.out.println(exception);
             exception.printStackTrace();
             return "0000 Response Invalid";
@@ -1050,7 +1041,7 @@ public class FTP5250Prot {
     /**
      * Write the html header of the output file
      */
-    private void writeHeader(String fileName) throws
+    private void writeHeader(final String fileName) throws
             FileNotFoundException {
 
         ofi.createFileInstance(fileName);
@@ -1073,7 +1064,7 @@ public class FTP5250Prot {
         private String name;
         private int size;
 
-        MemberInfo(String name, int size) {
+        MemberInfo(final String name, final int size) {
 
             this.name = name;
             this.size = size;
