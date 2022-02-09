@@ -26,15 +26,11 @@
  */
 package org.tn5250j.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import org.tn5250j.tools.LangTool;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 
 /**
  * Small dialog asking the user to confirm the close tab request
@@ -43,42 +39,21 @@ import org.tn5250j.tools.LangTool;
  */
 public class ConfirmTabCloseDialog {
 
-    private final static String[] OPTIONS = new String[]{LangTool.getString("key.labelClose"), LangTool.getString("ss.optCancel")};
+    private static final String CANCEL = LangTool.getString("ss.optCancel");
+    private static final String CLOSE = LangTool.getString("key.labelClose");
 
-    private final Component parent;
+    private Alert dialog;
 
-    private JDialog dialog;
-    private JOptionPane pane;
-
-
-    /**
-     * @param parent
-     */
-    public ConfirmTabCloseDialog(Component parent) {
+    public ConfirmTabCloseDialog() {
         super();
-        this.parent = parent;
-        initLayout();
-    }
 
-    private void initLayout() {
-        Object[] messages = new Object[1];
-        {
-            JPanel srp = new JPanel();
-            srp.setLayout(new BorderLayout());
-            JLabel jl = new JLabel("Are you sure you want to close this tab?");
-            srp.add(jl, BorderLayout.NORTH);
-            messages[0] = srp;
-        }
+        dialog = new Alert(AlertType.CONFIRMATION, "Are you sure you want to close this tab?",
+                ButtonType.OK, ButtonType.CANCEL);
+        dialog.setHeaderText("");
+        dialog.setTitle(LangTool.getString("sa.confirmTabClose"));
 
-        pane = new JOptionPane(messages, // the dialog message array
-                JOptionPane.QUESTION_MESSAGE, // message type
-                JOptionPane.DEFAULT_OPTION, // option type
-                null, // optional icon, use null to use the default icon
-                OPTIONS, // options string array, will be made into buttons
-                OPTIONS[0]);
-
-        dialog = pane.createDialog(parent, LangTool.getString("sa.confirmTabClose"));
-
+        UiUtils.changeButtonText(dialog.getDialogPane(), ButtonType.OK, CLOSE);
+        UiUtils.changeButtonText(dialog.getDialogPane(), ButtonType.CANCEL, CANCEL);
     }
 
     /**
@@ -88,11 +63,6 @@ public class ConfirmTabCloseDialog {
      * @return
      */
     public boolean show() {
-        dialog.setVisible(true);
-        if (OPTIONS[0].equals(pane.getValue())) {
-            return true;
-        }
-        return false;
+        return dialog.showAndWait().orElse(null) == ButtonType.OK;
     }
-
 }
