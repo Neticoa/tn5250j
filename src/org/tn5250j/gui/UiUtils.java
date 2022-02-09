@@ -15,7 +15,6 @@ import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
-//import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;

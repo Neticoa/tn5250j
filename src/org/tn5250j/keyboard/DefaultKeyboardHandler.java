@@ -145,7 +145,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
     }
 
     /**
-     * This is here for keybindings using the swing input map - the preferred
+     * This is here for keybindings using the FX input map - the preferred
      * way to use the keyboard.
      */
     @Override
