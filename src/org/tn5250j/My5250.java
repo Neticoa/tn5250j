@@ -72,17 +72,14 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     private static BootStrapper strapper = null;
     private SessionManager manager;
     private static List<Gui5250Frame> frames;
-    private TN5250jSplashScreen splash;
+    private final TN5250jSplashScreen splash;
     private int step;
     private StringBuilder viewNamesForNextStartBuilder = null;
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    My5250() {
-
-        splash = new TN5250jSplashScreen("tn5250jSplash.jpg");
-        splash.setSteps(5);
-        splash.setVisible(true);
+    My5250(final TN5250jSplashScreen splash) {
+        this.splash = splash;
 
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
@@ -185,6 +182,13 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     static public void main(String[] args) {
         SwingToFxUtils.initFx();
 
+        final TN5250jSplashScreen splash = UiUtils.runInFxAndWait(() -> {
+            final TN5250jSplashScreen s = new TN5250jSplashScreen("tn5250jSplash.jpg");
+            s.setSteps(5);
+            s.setVisible(true);
+            return s;
+        });
+
         if (!isSpecified("-nc", args)) {
 
             if (!checkBootStrapper(args)) {
@@ -203,7 +207,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
             }
         }
 
-        final My5250 m = new My5250();
+        final My5250 m = new My5250(splash);
 
         if (strapper != null)
             strapper.addBootListener(m);
@@ -247,13 +251,9 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                 if (isSpecified("-L", args)) {
                     Locale.setDefault(parseLocal(getParm("-L", args)));
                 }
-                LangTool.init();
-            } else {
-                LangTool.init();
             }
-        } else {
-            LangTool.init();
         }
+        LangTool.init();
 
         List<String> lastViewNames = new ArrayList<String>();
         lastViewNames.addAll(loadLastSessionViewNames());

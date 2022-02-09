@@ -25,10 +25,10 @@
  */
 package org.tn5250j.tools.encoder;
 
-import java.awt.image.ColorModel;
-import java.awt.image.PixelGrabber;
 import java.io.IOException;
 import java.util.zip.Deflater;
+
+import javafx.scene.image.PixelFormat;
 
 /**
  * This class encodes a Png file from an Image to an OutputStream.  No color
@@ -37,31 +37,16 @@ import java.util.zip.Deflater;
  */
 public class PNGEncoder extends AbstractImageEncoder {
 
+    @Override
     public void saveImage() throws IOException, EncoderException {
         if (img == null)
             error("PNG encoding error: Image is NULL.");
 
-        PixelGrabber pg = new PixelGrabber(img, 0, 0, img.getWidth(null), img.getHeight(null), false);
-        try {
-            pg.grabPixels();
-        } catch (InterruptedException e) {
-            error("PNG encoding error: Unable to retrieve pixels from image.");
-        }
+        final int width = (int) Math.round(img.getWidth());
+        final int height = (int) Math.round(img.getHeight());
 
-        ColorModel cmodel = pg.getColorModel();
-        int pixels = cmodel.getPixelSize();
-        int numcolors = (int) Math.pow(2, pixels);
-        if ((pixels != 8) && (pixels != 16) && (pixels != 24) && (pixels != 32)) {
-            error("PNG encoding error: PNG method must have 8 or 16 bit colors.");
-        }
-
-        int[] pixelarray = null;
-        byte[] pixelarray8 = null;
-        if (pixels >= 16) {
-            pixelarray = (int[]) pg.getPixels();
-        } else {
-            pixelarray8 = (byte[]) pg.getPixels();
-        }
+        final int[] pixelarray = new int[width * height];
+        img.getPixelReader().getPixels(0, 0, width, height, PixelFormat.getIntArgbPreInstance(), pixelarray, 0, width);
 
         ofile.write(byteFromInt(137));
         ofile.write(byteFromInt(80));
@@ -88,18 +73,10 @@ public class PNGEncoder extends AbstractImageEncoder {
         crc = update_crc(crc, byteFromChar('H'));
         crc = update_crc(crc, byteFromChar('D'));
         crc = update_crc(crc, byteFromChar('R'));
-
-        int width = img.getWidth(null);
-        int height = img.getHeight(null);
         crc = update_crc(crc, bytesFromLong(width));
         crc = update_crc(crc, bytesFromLong(height));
         crc = update_crc(crc, byteFromInt(8));
-
-        if (pixels >= 16)
-            crc = update_crc(crc, byteFromInt(2));
-        else
-            crc = update_crc(crc, byteFromInt(3));
-
+        crc = update_crc(crc, byteFromInt(2));
         crc = update_crc(crc, byteFromInt(0));
         crc = update_crc(crc, byteFromInt(0));
         crc = update_crc(crc, byteFromInt(0));
@@ -107,65 +84,15 @@ public class PNGEncoder extends AbstractImageEncoder {
         ofile.write(bytesFromLong(width));
         ofile.write(bytesFromLong(height));
         ofile.write(byteFromInt(8));
-
-        if (pixels >= 16) {
-            ofile.write(byteFromInt(2)); // Color type
-        } else {
-            ofile.write(byteFromInt(3)); // Color type
-        }
-
+        ofile.write(byteFromInt(2)); // Color type
         ofile.write(byteFromInt(0)); // Compression type
         ofile.write(byteFromInt(0)); // Filter method
         ofile.write(byteFromInt(0)); // Interlace method
         ofile.write(bytesFromLong(end_crc(crc)));
 
-        // PLTE
-
-        if (pixels == 8) {
-            crc = start_crc();
-
-            ofile.write(bytesFromLong(numcolors * 3));
-            ofile.write(byteFromChar('P'));
-            ofile.write(byteFromChar('L'));
-            ofile.write(byteFromChar('T'));
-            ofile.write(byteFromChar('E'));
-
-            crc = update_crc(crc, byteFromChar('P'));
-            crc = update_crc(crc, byteFromChar('L'));
-            crc = update_crc(crc, byteFromChar('T'));
-            crc = update_crc(crc, byteFromChar('E'));
-
-            for (int i = 0; i < numcolors; i++) {
-                byte red = byteFromInt(cmodel.getRed(i));
-                byte green = byteFromInt(cmodel.getGreen(i));
-                byte blue = byteFromInt(cmodel.getBlue(i));
-                crc = update_crc(crc, red);
-                crc = update_crc(crc, green);
-                crc = update_crc(crc, blue);
-
-                ofile.write(red);
-                ofile.write(green);
-                ofile.write(blue);
-            }
-            ofile.write(bytesFromLong(end_crc(crc)));
-        }
-
         // IDAT
-        byte[] outarray = null;
-        if (pixels == 8)
-            outarray = new byte[(pixelarray8.length) + height];
-        else
-            outarray = new byte[(pixelarray.length * 3) + height];
-
-        for (int i = 0; i < outarray.length; i++) {
-            outarray[i] = 0;
-        }
-
-        int size = 0;
-        if (pixels >= 16)
-            size = compress(outarray, pixelarray, cmodel, width, height);
-        else
-            size = compress(outarray, pixelarray8, width, height);
+        final byte[] outarray = new byte[(pixelarray.length * 3) + height];
+        final int size = compress(outarray, pixelarray, width, height);
 
         crc = start_crc();
 
@@ -209,20 +136,24 @@ public class PNGEncoder extends AbstractImageEncoder {
     /**
      * @param outarray
      * @param pixelarray
-     * @param cmodel
      * @param width
      * @param height
      * @return
      * @throws EncoderException
      */
-    public int compress(byte[] outarray, int[] pixelarray, ColorModel cmodel, int width, int height) throws EncoderException {
-        byte[] inarray = new byte[(pixelarray.length * 3) + height];
+    public int compress(final byte[] outarray, final int[] pixelarray, final int width, final int height) throws EncoderException {
+        final byte[] inarray = new byte[(pixelarray.length * 3) + height];
         for (int i = 0; i < height; i++) {
             inarray[i * ((width * 3) + 1)] = byteFromInt(0);
             for (int j = 0; j < (width * 3); j += 3) {
-                inarray[(i * ((width * 3) + 1)) + j + 1] = (byte) cmodel.getRed(pixelarray[(i * width) + (int) Math.floor(j / 3)]);
-                inarray[(i * ((width * 3) + 1)) + j + 2] = (byte) cmodel.getGreen(pixelarray[(i * width) + (int) Math.floor(j / 3)]);
-                inarray[(i * ((width * 3) + 1)) + j + 3] = (byte) cmodel.getBlue(pixelarray[(i * width) + (int) Math.floor(j / 3)]);
+                final int pixel = pixelarray[i * width + (int) Math.floor(j / 3)];
+                final int red   = ((pixel >> 16) & 0xff);
+                final int green = ((pixel >>  8) & 0xff);
+                final int blue  = ((pixel      ) & 0xff);
+
+                inarray[(i * ((width * 3) + 1)) + j + 1] = (byte) red;
+                inarray[(i * ((width * 3) + 1)) + j + 2] = (byte) green;
+                inarray[(i * ((width * 3) + 1)) + j + 3] = (byte) blue;
             }
         }
         return compressInternal(outarray, inarray);
@@ -236,8 +167,8 @@ public class PNGEncoder extends AbstractImageEncoder {
      * @return
      * @throws EncoderException
      */
-    public int compress(byte[] outarray, byte[] pixelarray, int width, int height) throws EncoderException {
-        byte[] inarray = new byte[pixelarray.length + height];
+    public int compress(final byte[] outarray, final byte[] pixelarray, final int width, final int height) throws EncoderException {
+        final byte[] inarray = new byte[pixelarray.length + height];
         for (int i = 0; i < height; i++) {
             inarray[i * (width + 1)] = byteFromInt(0);
             for (int j = 0; j < width; j++) {
@@ -253,8 +184,8 @@ public class PNGEncoder extends AbstractImageEncoder {
      * @return
      * @throws EncoderException
      */
-    private int compressInternal(byte[] outarray, byte[] inarray) throws EncoderException {
-        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
+    private int compressInternal(final byte[] outarray, final byte[] inarray) throws EncoderException {
+        final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
         try {
             deflater.setInput(inarray, 0, inarray.length);
             deflater.finish();
@@ -297,7 +228,7 @@ public class PNGEncoder extends AbstractImageEncoder {
         return crc ^ 0xffffffffL;
     }
 
-    private long update_crc(long crc, byte[] buf) {
+    private long update_crc(final long crc, final byte[] buf) {
 
         long c = crc;
         for (int i = 0; i < buf.length; i++) {
@@ -307,7 +238,7 @@ public class PNGEncoder extends AbstractImageEncoder {
         return c;
     }
 
-    private long update_crc(long crc, byte buf) {
+    private long update_crc(final long crc, final byte buf) {
         if (crc_table == null) {
             make_crc_table();
         }

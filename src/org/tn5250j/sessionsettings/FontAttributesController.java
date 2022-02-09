@@ -57,14 +57,6 @@ class FontAttributesController extends AbstractAttributesController {
     TitledBorderedPane scalePanel;
 
     @FXML
-    Label verticalScaleLabel;
-    @FXML
-    TextField verticalScale;
-    @FXML
-    Label horizontalScaleLabel;
-    @FXML
-    TextField horizontalScale;
-    @FXML
     Label pointSizeLabel;
     @FXML
     TextField pointSize;
@@ -95,13 +87,7 @@ class FontAttributesController extends AbstractAttributesController {
         scalePanel.setTitle(LangTool.getString("sa.scaleLabel"));
 
         pointSizeLabel.setText(LangTool.getString("sa.fixedPointSize"));
-        horizontalScaleLabel.setText(LangTool.getString("sa.horScaleLabel"));
-        verticalScaleLabel.setText(LangTool.getString("sa.vertScaleLabel"));
 
-        if (hasProperty("fontScaleWidth"))
-            horizontalScale.setText(getStringProperty("fontScaleWidth"));
-        if (hasProperty("fontScaleHeight"))
-            verticalScale.setText(getStringProperty("fontScaleHeight"));
         if (hasProperty("fontPointSize"))
             pointSize.setText(getStringProperty("fontPointSize"));
     }
@@ -118,8 +104,6 @@ class FontAttributesController extends AbstractAttributesController {
             fireStringPropertyChanged("useAntialias", "No");
         }
 
-        fireStringPropertyChanged("fontScaleHeight", verticalScale.getText());
-        fireStringPropertyChanged("fontScaleWidth", horizontalScale.getText());
         fireStringPropertyChanged("fontPointSize", pointSize.getText());
     }
 

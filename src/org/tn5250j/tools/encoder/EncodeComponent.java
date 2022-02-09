@@ -69,8 +69,11 @@ public class EncodeComponent {
      */
     public static void encode(final Encoding encoding, final Object component, final File file) throws IOException, EncoderException {
         final OutputStream os = new java.io.FileOutputStream(file);
-        encode(encoding, component, os);
-        os.close();
+        try {
+            encode(encoding, component, os);
+        } finally {
+            os.close();
+        }
     }
 
     /**

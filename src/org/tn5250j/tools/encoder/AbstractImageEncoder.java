@@ -25,17 +25,14 @@
  */
 package org.tn5250j.tools.encoder;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.tn5250j.gui.UiUtils;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 /**
@@ -54,34 +51,16 @@ public abstract class AbstractImageEncoder implements Encoder {
 
     @Override
     public void encode(final Object component, final OutputStream os) throws IOException, EncoderException {
-        if (component instanceof  Component) {
-            encodeComponent((Component) component, os);
-        } else if (component instanceof Node) {
+        if (component instanceof Node) {
             encodeNode((Node) component, os);
         } else {
             throw new EncoderException("Usupported component type: " + component.getClass().getName());
         }
     }
-    public void encodeComponent(final Component component, final OutputStream os) throws IOException, EncoderException {
-        encode(snapshot(component), os);
-    }
     public void encodeNode(final Node node, final OutputStream os) throws IOException, EncoderException {
         final WritableImage image = UiUtils.runInFxAndWait(
                 () -> node.snapshot(new SnapshotParameters(), null));
-        encode(SwingFXUtils.fromFXImage(image, null), os);
-    }
-
-    public static Image snapshot(final Component component) {
-        final Image img = component.createImage(component.getSize().width,
-                component.getSize().height);
-        if (img != null) {
-            final Graphics igc = img.getGraphics();
-            //Gotta set the clip, or else paint throws an exception
-            igc.setClip(0, 0, component.getSize().width,
-                    component.getSize().height);
-            component.paint(igc);
-        }
-        return img;
+        encode(image, os);
     }
 
     public abstract void saveImage() throws IOException, EncoderException;
@@ -116,7 +95,6 @@ public abstract class AbstractImageEncoder implements Encoder {
         final int temp = ochar;
         byte bits = 0;
 
-        final int curpos = 0;
         for (int i = 0; i <= 7; i++) {
             if ((temp & ((byte) Math.pow(2, i))) != 0) {
                 bits = (byte) (bits | ((byte) Math.pow(2, i)));

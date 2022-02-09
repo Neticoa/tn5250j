@@ -85,8 +85,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Color colorSep;
     protected Color colorHexAttr;
     protected boolean hotSpots = false;
-    protected float sfh = 1.2f; // font scale height
-    protected float sfw = 1.0f; // font scale height
     protected float ps132 = 0; // Font point size
     protected boolean cfg_guiInterface = false;
     protected boolean cfg_guiShowUnderline = true;
@@ -297,14 +295,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             setRullerFixed(getStringProperty("rulerFixed"));
         }
 
-        if (config.isPropertyExists("fontScaleHeight")) {
-            sfh = getFloatProperty("fontScaleHeight");
-        }
-
-        if (config.isPropertyExists("fontScaleWidth")) {
-            sfw = getFloatProperty("fontScaleWidth");
-        }
-
         if (config.isPropertyExists("fontPointSize")) {
             ps132 = getFloatProperty("fontPointSize");
         }
@@ -485,12 +475,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             updateFont = true;
         } else if (pn.equals("useAntialias")) {
             this.antialiased = "Yes".equals(pce.getNewValue());
-            updateFont = true;
-        } else if (pn.equals("fontScaleHeight")) {
-            sfh = Float.parseFloat((String) pce.getNewValue());
-            updateFont = true;
-        } else if (pn.equals("fontScaleWidth")) {
-            sfw = Float.parseFloat((String) pce.getNewValue());
             updateFont = true;
         } else if (pn.equals("fontPointSize")) {
             ps132 = Float.parseFloat((String) pce.getNewValue());
@@ -681,7 +665,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
      */
     protected void resizeScreenArea(final double width, final double height, final boolean updateFont) {
         final Font k = GUIGraphicsUtils.getDerivedFont(font, width, height,
-                screen.getRows(), screen.getColumns(), sfh, sfw, ps132);
+                screen.getRows(), screen.getColumns(), ps132);
 
         if (font.getSize() != k.getSize() || updateFont) {
 

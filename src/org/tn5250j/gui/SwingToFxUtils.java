@@ -3,16 +3,10 @@
  */
 package org.tn5250j.gui;
 
-import static org.tn5250j.gui.UiUtils.toRgb;
-
-import javax.swing.JFrame;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 /**
@@ -20,8 +14,7 @@ import javafx.scene.text.Font;
  *
  */
 public class SwingToFxUtils {
-    public static final JFrame SHARED_FRAME = new JFrame();
-    private static JFXPanel PANEL;
+    public static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
     static {
         //init JavaFX
@@ -29,24 +22,15 @@ public class SwingToFxUtils {
     }
 
     public static synchronized void initFx() {
-        if (PANEL != null) {
+        if (INITIALIZED.get()) {
             return;
         }
+        //this line initializes JavaFX
+        new javafx.embed.swing.JFXPanel();
 
-        PANEL = new JFXPanel();
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
         Platform.setImplicitExit(false);
-    }
-
-    public static JFXPanel createSwingPanel(final Parent node) {
-        final JFXPanel fxPane = new JFXPanel();
-        final Scene scene = new Scene(node);
-        fxPane.setScene(scene);
-        return fxPane;
-    }
-
-    public static java.awt.Color toAwtColor(final Color colorBg) {
-        return new java.awt.Color(toRgb(colorBg));
+        INITIALIZED.set(true);
     }
 
     public static java.awt.Font toAwtFont(final Font font) {

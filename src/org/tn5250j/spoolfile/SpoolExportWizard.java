@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.swing.JFrame;
+
 import org.tn5250j.SessionGui;
 import org.tn5250j.ThirdPartySwing;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.gui.GenericTn5250Frame;
-import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
@@ -501,7 +502,7 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
     private void getIFSFile() {
 
         @ThirdPartySwing
-        final IFSFileDialog fd = new IFSFileDialog(SwingToFxUtils.SHARED_FRAME, "Save As", splfile.getSystem());
+        final IFSFileDialog fd = new IFSFileDialog(new JFrame(), "Save As", splfile.getSystem());
         final com.ibm.as400.vaccess.FileFilter[] filterList =
                 new com.ibm.as400.vaccess.FileFilter[2];
         filterList[0] = new com.ibm.as400.vaccess.FileFilter("All files (*.*)",

@@ -25,26 +25,22 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.AffineTransform;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.FontMetrics;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 public class GUIGraphicsUtils {
 
-    private static final Insets GROOVE_INSETS = new Insets(2, 2, 2, 2);
-    private static final Insets ETCHED_INSETS = new Insets(2, 2, 2, 2);
+//    private static final Insets GROOVE_INSETS = new Insets(2, 2, 2, 2);
+//    private static final Insets ETCHED_INSETS = new Insets(2, 2, 2, 2);
     public static final int RAISED = 1;
     public static final int INSET = 2;
     public static final int WINDOW_NORMAL = 3;
@@ -1035,62 +1031,20 @@ public class GUIGraphicsUtils {
             g.setFill(oldColor);
         }
     }
-
-    /**
-     * Returns the amount of space taken up by a border drawn by
-     * <code>drawEtchedRect()</code>
-     *
-     * @return the inset of an etched rect
-     */
-    public static Insets getEtchedInsets() {
-        return ETCHED_INSETS;
-    }
-
-    /**
-     * Returns the amount of space taken up by a border drawn by
-     * <code>drawGroove()</code>
-     *
-     * @return the inset of a groove border
-     */
-    public static Insets getGrooveInsets() {
-        return GROOVE_INSETS;
-    }
-
-    public static javafx.scene.text.Font getDerivedFont(final javafx.scene.text.Font font,
+    public static Font getDerivedFont(final Font font,
             final double width, final double height,
             final int numRows, final int numCols,
-            final float scaleHeight,
-            final float scaleWidth,
-            final float pointSize) {
-        return SwingToFxUtils.fromAwtFont(getDerivedFont(SwingToFxUtils.toAwtFont(font),
-                round(width), round(height), numRows, numCols, scaleHeight, scaleWidth, pointSize));
-    }
-
-    public static Font getDerivedFont(final Font font, final int width, final int height,
-                                      final int numRows, final int numCols,
-                                      final float scaleHeight,
-                                      final float scaleWidth,
-                                      float pointSize) {
-
+            float pointSize) {
         // get the new proposed width and height of the screen that we
         // are suppose to fit within
-        final int w = width / numCols;     // proposed width
-        final int h = height / (numRows + 2);     // proposed height
+        final double w = width / numCols;     // proposed width
+        final double h = height / (numRows + 2);     // proposed height
 
-        int sw = 0;
-        int sh = 0;
+        double sw = 0;
+        double sh = 0;
 
         Font k = null;
-        LineMetrics l;
-        FontRenderContext f = null;
-        final AffineTransform at = new AffineTransform();
-        if (numCols == 132) {
-
-            // width, height
-            at.scale(scaleWidth, scaleHeight);
-
-        } else {
-            at.setToScale(1.0f, 1.0f);
+        if (numCols != 132) {
             pointSize = 0;
         }
         //         at.setToScale( 1.0f, 1.0f );
@@ -1104,39 +1058,24 @@ public class GUIGraphicsUtils {
             // fit within the width or the height of the new proposed size
             for (; j < 36; j++) {
 
-                k = font.deriveFont(j);
+                k = UiUtils.deriveFont(font, j);
+                final FontMetrics l = FontMetrics.deriveFrom(k);
 
-                // now apply the scale to the font
-                k = k.deriveFont(at);
-                f = new FontRenderContext(k.getTransform(), true, true);
-
-                l = k.getLineMetrics("Wy", f);
-                //         float ats = (float)((k.getStringBounds("W",f).getWidth() + 1) /
-                //            (k.getStringBounds("y",f).getHeight()  +
-                //                     l.getDescent() + l.getLeading()));
-                //         System.out.println(ats);
-
-
-                sw = (int) k.getStringBounds("W", f).getWidth() + 2;
-                sh = (int) (k.getStringBounds("y", f).getHeight() +
-                        l.getDescent() + l.getLeading());
+                sw = FontMetrics.getStringBounds("W", k).getWidth() + 2;
+                sh = FontMetrics.getStringBounds("y", k).getHeight() + l.getDescent() + l.getLeading();
                 if (w < sw || h < sh) {
                     break;
                 }
             }
         } else {
-            k = font.deriveFont(pointSize);
+            k = UiUtils.deriveFont(font, pointSize);
         }
 
 
         // since we obtained one that will not fit within the proposed size
         // we need to decrement it so that we obtain the last one that did fit
         if (j > 1)
-            k = font.deriveFont(--j);
-
-        // now apply the scale to the font
-        k = k.deriveFont(at);
-        //      System.out.println(k.getSize() + " ");
+            k = UiUtils.deriveFont(font, --j);
 
         return k;
     }
@@ -1203,12 +1142,9 @@ public class GUIGraphicsUtils {
     public static boolean isFontNameExists(final String fontString) {
 
         // fonts from the environment
-        final Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-
-        for (int x = 0; x < fonts.length; x++) {
-            if (fonts[x].getFontName().indexOf('.') < 0)
-                if (fonts[x].getFontName().equals(fontString))
-                    return true;
+        for (final String fontName : Font.getFontNames()) {
+            if (fontName.indexOf('.') < 0 && fontName.equals(fontString))
+                return true;
         }
 
         return false;
@@ -1222,9 +1158,5 @@ public class GUIGraphicsUtils {
             tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png").toString()));
         }
         return tnicon;
-    }
-
-    private static int round(final double width) {
-        return (int) Math.ceil(width);
     }
 }
