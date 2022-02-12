@@ -758,7 +758,7 @@ public class SessionPanel extends BorderPane implements
     @Override
     public final void printMe() {
         Platform.runLater(() -> {
-            final PrinterThread printerThread = new PrinterThread(screen, guiGraBuf.font,
+            final PrinterTask printerThread = new PrinterTask(screen, guiGraBuf.font,
                     screen.getColumns(), screen.getRows(), this);
             printerThread.run();
             getFocusForMe();

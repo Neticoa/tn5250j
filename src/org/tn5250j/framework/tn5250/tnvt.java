@@ -334,12 +334,8 @@ public final class tnvt implements Runnable {
 
             byte abyte0[];
             while (negotiate(abyte0 = readNegotiations())) ;
-            try {
-                Platform.runLater(() -> screen52.setCursorActive(false));
-            } catch (final Exception excc) {
-                log.warn("setCursorOff " + excc.getMessage());
 
-            }
+            Platform.runLater(() -> screen52.setCursorActive(false));
 
             producer = new DataStreamProducer(this, bin, dsq, abyte0);
             pthread = new Thread(producer);
