@@ -30,7 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -47,7 +47,7 @@ public class SendScreenToFile {
      * @param parent
      * @param screen
      */
-    public static final void showDialog(final Window parent, final Screen5250 screen) {
+    public static final void showDialog(final Window parent, final Screen5250Facade screen) {
         final String workingDir = System.getProperty("user.dir");
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(workingDir));

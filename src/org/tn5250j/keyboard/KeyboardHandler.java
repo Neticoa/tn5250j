@@ -29,7 +29,7 @@ package org.tn5250j.keyboard;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.KeyChangeListener;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.input.KeyCodeCombination;
@@ -42,7 +42,7 @@ public abstract class KeyboardHandler implements KeyChangeListener {
 
     protected Session5250 session;
     protected SessionGui sessionGui;
-    protected Screen5250 screen;
+    protected Screen5250Facade screen;
     protected boolean isLinux;
     protected boolean isAltGr;
     protected boolean keyProcessed = false;

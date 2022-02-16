@@ -27,21 +27,21 @@ package org.tn5250j.framework.tn5250;
 
 public class ScreenField {
 
-    protected ScreenField(Screen5250 s) {
+    protected ScreenField(final Screen5250Facade s) {
 
         this.s = s;
 
     }
 
-    protected ScreenField setField(int attr, int len, int ffw1, int ffw2,
-                                   int fcw1, int fcw2) {
+    protected ScreenField setField(final int attr, final int len, final int ffw1, final int ffw2,
+                                   final int fcw1, final int fcw2) {
 
         return setField(attr, s.getCurrentRow() - 1, s.getCurrentCol() - 1,
                 len, ffw1, ffw2, fcw1, fcw2);
     }
 
-    protected ScreenField setField(int attr, int row, int col, int len,
-                                   int ffw1, int ffw2, int fcw1, int fcw2) {
+    protected ScreenField setField(final int attr, final int row, final int col, final int len,
+                                   final int ffw1, final int ffw2, final int fcw1, final int fcw2) {
 
         // startRow = row;
         // startCol = col;
@@ -74,12 +74,12 @@ public class ScreenField {
         return length;
     }
 
-    protected boolean setFFWs(int ffw1, int ffw2) {
+    protected boolean setFFWs(final int ffw1, final int ffw2) {
 
         this.ffw1 = ffw1;
         this.ffw2 = ffw2;
 
-        int adj = getAdjustment();
+        final int adj = getAdjustment();
 
         if (adj > 0) {
             checkCanSend = true;
@@ -110,7 +110,7 @@ public class ScreenField {
         return ffw2;
     }
 
-    protected void setFCWs(int fcw1, int fcw2) {
+    protected void setFCWs(final int fcw1, final int fcw2) {
 
         this.fcw1 = fcw1;
         this.fcw2 = fcw2;
@@ -142,7 +142,7 @@ public class ScreenField {
         return fieldId;
     }
 
-    protected void setFieldId(int fi) {
+    protected void setFieldId(final int fi) {
         fieldId = fi;
     }
 
@@ -156,7 +156,7 @@ public class ScreenField {
         return cursorPos % s.getColumns();
     }
 
-    protected void changePos(int i) {
+    protected void changePos(final int i) {
 
         cursorPos += i;
 
@@ -164,7 +164,7 @@ public class ScreenField {
 
     protected String getText() {
 
-        StringBuffer text = new StringBuffer();
+        final StringBuffer text = new StringBuffer();
         getKeyPos(endPos);
         int x = length;
         text.setLength(x);
@@ -178,11 +178,11 @@ public class ScreenField {
             // if we read an attribute byte of 32 for normal display the unicode
             // character for this is and the unicode character for
             // a space is also thus the offset.
-            if (s.planes.isAttributePlace(cursorPos)) {
+            if (s.isPlanesAttributePlace(cursorPos)) {
                 text.setCharAt(x,
-                        (char) ('\uff00' + s.planes.getCharAttr(cursorPos)));
+                        (char) ('\uff00' + s.getPlanesCharAttr(cursorPos)));
             } else {
-                text.setCharAt(x, s.planes.getChar(cursorPos));
+                text.setCharAt(x, s.getPlanesChar(cursorPos));
             }
             changePos(-1);
 
@@ -208,7 +208,7 @@ public class ScreenField {
 
     public String getString() {
 
-        StringBuffer text = new StringBuffer();
+        final StringBuffer text = new StringBuffer();
         getKeyPos(endPos);
         int x = length;
         text.setLength(x);
@@ -222,14 +222,14 @@ public class ScreenField {
             // if we read an attribute byte of 32 for normal display the unicode
             // character for this is and the unicode character for
             // a space is also thus the offset.
-            if (s.planes.isAttributePlace(cursorPos)) {
+            if (s.isPlanesAttributePlace(cursorPos)) {
                 text.setCharAt(x,
-                        (char) ('\uff00' + s.planes.getCharAttr(cursorPos)));
+                        (char) ('\uff00' + s.getPlanesCharAttr(cursorPos)));
             } else {
-                if (s.planes.getChar(cursorPos) < ' ') {
+                if (s.getPlanesChar(cursorPos) < ' ') {
                     text.setCharAt(x, ' ');
                 } else {
-                    text.setCharAt(x, s.planes.getChar(cursorPos));
+                    text.setCharAt(x, s.getPlanesChar(cursorPos));
                 }
             }
             changePos(-1);
@@ -254,23 +254,23 @@ public class ScreenField {
 
     }
 
-    public void setFieldChar(char c) {
+    public void setFieldChar(final char c) {
 
         int x = length;
         cursorPos = startPos;
         while (x-- > 0) {
-            s.planes.setChar(cursorPos, c);
+            s.setPlanesChar(cursorPos, c);
             changePos(1);
         }
 
     }
 
-    public void setFieldChar(int lastPos, char c) {
+    public void setFieldChar(final int lastPos, final char c) {
 
         int x = endPos - lastPos + 1;
         cursorPos = lastPos;
         while (x-- > 0) {
-            s.planes.setChar(cursorPos, c);
+            s.setPlanesChar(cursorPos, c);
             s.setDirty(cursorPos);
             changePos(1);
         }
@@ -405,7 +405,7 @@ public class ScreenField {
 
     protected boolean isCanSend() {
 
-        int adj = getAdjustment();
+        final int adj = getAdjustment();
 
         // here we need to check the Field Exit Required value first before
         // checking
@@ -444,7 +444,7 @@ public class ScreenField {
 
     }
 
-    public void setSelectionFieldInfo(int type, int index, int position) {
+    public void setSelectionFieldInfo(final int type, final int index, final int position) {
 
         selectionFieldType = type;
         selectionIndex = index;
@@ -453,18 +453,18 @@ public class ScreenField {
 
     }
 
-    protected int getKeyPos(int row1, int col1) {
+    protected int getKeyPos(final int row1, final int col1) {
 
-        int x = ((row1 * s.getColumns()) + col1);
-        int y = x - startPos();
+        final int x = ((row1 * s.getColumns()) + col1);
+        final int y = x - startPos();
         cursorPos = x;
 
         return y;
     }
 
-    protected int getKeyPos(int pos) {
+    protected int getKeyPos(final int pos) {
 
-        int y = pos - startPos();
+        final int y = pos - startPos();
         cursorPos = pos;
 
         return y;
@@ -475,7 +475,7 @@ public class ScreenField {
         return cursorPos;
     }
 
-    public boolean withinField(int pos) {
+    public boolean withinField(final int pos) {
 
         if (pos >= startPos && pos <= endPos) {
             return true;
@@ -539,17 +539,17 @@ public class ScreenField {
         }
 
         for (int x = 0, textLen = text.length(); x < length; x++) {
-            char tc = x < textLen ? text.charAt(x) : ' ';
-            s.getPlanes().setChar(cursorPos, tc);
+            final char tc = x < textLen ? text.charAt(x) : ' ';
+            s.setPlanesChar(cursorPos, tc);
             changePos(1);
         }
         setMDT();
-        s.getScreenFields().setMasterMDT();
+        s.setScreenFieldsMasterMDT();
     }
 
     @Override
     public String toString() {
-        int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
+        final int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
         return "startRow = " + startRow() + " startCol = " + startCol()
                 + " length = " + length + " ffw1 = (0x"
                 + Integer.toHexString(ffw1) + ") ffw2 = (0x"
@@ -585,7 +585,7 @@ public class ScreenField {
     int fcw1 = 0;
     int fcw2 = 0;
     int cursorPos = 0;
-    Screen5250 s;
+    Screen5250Facade s;
     int cursorProg = 0;
     int fieldId = 0;
     ScreenField next = null;

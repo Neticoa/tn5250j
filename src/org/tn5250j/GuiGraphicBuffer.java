@@ -26,7 +26,7 @@
 package org.tn5250j;
 
 import org.tn5250j.framework.tn5250.Rect;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
@@ -49,7 +49,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
     private FontMetrics fontMetrics;
 
-    public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
+    public GuiGraphicBuffer(final Screen5250Facade screen, final SessionGui gui,
             final SessionConfig config, final Canvas canvas, final CompoundCursor cursor) {
         super(screen, gui, cursor, config);
         this.bi = canvas;

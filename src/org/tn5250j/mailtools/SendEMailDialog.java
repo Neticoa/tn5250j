@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.ActionDelegateDialogPane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.AsyncServices;
@@ -120,7 +120,7 @@ public class SendEMailDialog {
     }
 
     private void sendEmail1(final ActionDelegateDialogPane<ButtonType> dialog) {
-        final Screen5250 screen = session.getScreen();
+        final Screen5250Facade screen = session.getScreen();
 
         sendEMail = new SendEMail();
         sendEMail.setConfigFile("SMTPProperties.cfg");
@@ -215,7 +215,7 @@ public class SendEMailDialog {
         });
     }
 
-    private static String getScreenTextContent(final Screen5250 screen) {
+    private static String getScreenTextContent(final Screen5250Facade screen) {
 
         char[] screenTxt;
         char[] screenExtendedAttr;

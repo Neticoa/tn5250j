@@ -18,39 +18,32 @@
  */
 package org.tn5250j.framework;
 
-import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.framework.tn5250.ScreenFields;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 
 public class Tn5250jEvent {
 
-    private Screen5250 screen;
+    private Screen5250Facade screen;
     private char[] data;
-    private ScreenFields fields;
 
     public Tn5250jEvent() {
         screen = null;
     }
 
-    public Tn5250jEvent(Screen5250 newscreen) {
+    public Tn5250jEvent(final Screen5250Facade newscreen) {
         screen = newscreen;
         // changed by Kenneth - This should be replaced with a call to
         //   getPlane method of screen object when they are implemented.  These
         //   new methods will also do the array copy.
-        char[] original = screen.getCharacters();
+        final char[] original = screen.getCharacters();
         data = new char[original.length];
         System.arraycopy(original, 0, data, 0, original.length);
-        this.fields = newscreen.getScreenFields();
     }
 
     public char[] getData() {
         return data;
     }
 
-    public Screen5250 getScreen() {
+    public Screen5250Facade getScreen() {
         return screen;
-    }
-
-    public ScreenFields getFields() {
-        return this.fields;
     }
 }

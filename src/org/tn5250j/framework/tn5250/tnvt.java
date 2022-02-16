@@ -144,7 +144,7 @@ public final class tnvt implements Runnable {
     private final BlockingQueue<Object> dsq = new ArrayBlockingQueue<Object>(25);
     private Stream5250 bk;
     private DataStreamProducer producer;
-    protected Screen5250 screen52;
+    protected Screen5250Facade screen52;
     private boolean waitingForInput;
     private Thread me;
     private Thread pthread;
@@ -186,7 +186,7 @@ public final class tnvt implements Runnable {
      * @param type
      * @param support132
      */
-    public tnvt(final Session5250 session, final Screen5250 screen52, final boolean type, final boolean support132) {
+    public tnvt(final Session5250 session, final Screen5250Facade screen52, final boolean type, final boolean support132) {
 
         controller = session;
         if (log.isInfoEnabled()) {
@@ -303,7 +303,7 @@ public final class tnvt implements Runnable {
             this.port = port;
 
             UiUtils.runInFxAndWait(() -> {
-                screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+                screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Connecting");
                 return null;
             });
@@ -344,7 +344,7 @@ public final class tnvt implements Runnable {
 
             try {
                 UiUtils.runInFxAndWait(() -> {
-                    screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+                    screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
                             ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
                     return null;
                 });
@@ -376,7 +376,7 @@ public final class tnvt implements Runnable {
 
         // Added by LUC - LDC to fix a null pointer exception.
         if (!connected) {
-            screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+            screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                     ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Disconnected");
             return false;
         }
@@ -387,9 +387,9 @@ public final class tnvt implements Runnable {
             pthread.interrupt();
         }
 
-        screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+        screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                 ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Disconnected");
-        screen52.getOIA().setKeyBoardLocked(false);
+        screen52.setOiaKeyBoardLocked(false);
         pendingUnlock = false;
 
         try {
@@ -466,8 +466,8 @@ public final class tnvt implements Runnable {
 
         if (screen52.isStatusErrorCode()) {
             screen52.restoreErrorLine();
-            screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
-                    Screen5250.STATUS_VALUE_OFF, null);
+            screen52.setStatus(Screen5250Facade.STATUS_ERROR_CODE,
+                    Screen5250Facade.STATUS_VALUE_OFF, null);
         }
 
         if (!enhanced) {
@@ -475,13 +475,13 @@ public final class tnvt implements Runnable {
         }
         //		screen52.setStatus(Screen5250.STATUS_SYSTEM,
         //				Screen5250.STATUS_VALUE_ON, null);
-        screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+        screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                 ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
-        screen52.getOIA().setKeyBoardLocked(true);
+        screen52.setOiaKeyBoardLocked(true);
         pendingUnlock = false;
 
-        screen52.getScreenFields().readFormatTable(baosp, readType, codePage);
+        screen52.readFormatTable(baosp, readType, codePage);
 
         try {
 
@@ -499,8 +499,8 @@ public final class tnvt implements Runnable {
 
         if (screen52.isStatusErrorCode()) {
             screen52.restoreErrorLine();
-            screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
-                    Screen5250.STATUS_VALUE_OFF, null);
+            screen52.setStatus(Screen5250Facade.STATUS_ERROR_CODE,
+                    Screen5250Facade.STATUS_VALUE_OFF, null);
         }
 
         if (!enhanced) {
@@ -508,10 +508,10 @@ public final class tnvt implements Runnable {
         }
         //		screen52.setStatus(Screen5250.STATUS_SYSTEM,
         //				Screen5250.STATUS_VALUE_ON, null);
-        screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+        screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                 ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
-        screen52.getOIA().setKeyBoardLocked(true);
+        screen52.setOiaKeyBoardLocked(true);
         pendingUnlock = false;
         baosp.write(screen52.getCurrentRow());
         baosp.write(screen52.getCurrentCol());
@@ -519,7 +519,7 @@ public final class tnvt implements Runnable {
 
         if (dataIncluded(aid))
 
-            screen52.getScreenFields().readFormatTable(baosp, readType,
+            screen52.readFormatTable(baosp, readType,
                     codePage);
 
         try {
@@ -704,7 +704,7 @@ public final class tnvt implements Runnable {
 
         //		screen52.setStatus(Screen5250.STATUS_SYSTEM,
         //				Screen5250.STATUS_VALUE_ON, null);
-        screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+        screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                 ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
         // from rfc1205 section 4.3
@@ -728,14 +728,14 @@ public final class tnvt implements Runnable {
 
         if (screen52.isStatusErrorCode()) {
             screen52.restoreErrorLine();
-            screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
-                    Screen5250.STATUS_VALUE_OFF, null);
+            screen52.setStatus(Screen5250Facade.STATUS_ERROR_CODE,
+                    Screen5250Facade.STATUS_VALUE_OFF, null);
         }
 
         screen52.setCursorActive(false);
         //		screen52.setStatus(Screen5250.STATUS_SYSTEM,
         //				Screen5250.STATUS_VALUE_ON, null);
-        screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+        screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                 ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
         // From client access ip capture
@@ -855,7 +855,7 @@ public final class tnvt implements Runnable {
 
         log.debug("invited");
         if (!screen52.isStatusErrorCode())
-            screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+            screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
                     ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
     }
@@ -864,13 +864,12 @@ public final class tnvt implements Runnable {
         try {
             final int str = 11;
             final int offset = str + 1;
-            final ScreenPlanes planes = screen52.getPlanes();
-            char c = planes.getChar(str);
+            char c = screen52.getPlanesChar(str);
             final boolean waitFor = !(c == 'a');
 
             final StringBuilder command = new StringBuilder();
             for (int i = offset; i < offset + PCCMD_MAX_LENGTH; i++) {
-                c = planes.getChar(i);
+                c = screen52.getPlanesChar(i);
                 if (Character.isISOControl(c)) {
                     c = ' ';
                 }
@@ -938,11 +937,9 @@ public final class tnvt implements Runnable {
         // screen52.screen[1].getChar() + screen52.screen[2].getChar());
 
         //		ScreenChar[] screen = screen52.screen;
-        final ScreenPlanes planes = screen52.getPlanes();
-
-        if ((planes.getChar(STRSCAN) == '#')
-                && (planes.getChar(STRSCAN + 1) == '!')
-                && (planes.getChar(STRSCAN + 2) != ' ')) {
+        if ((screen52.getPlanesChar(STRSCAN) == '#')
+                && (screen52.getPlanesChar(STRSCAN + 1) == '!')
+                && (screen52.getPlanesChar(STRSCAN + 2) != ' ')) {
             try {
                 parseCommand();
             } catch (final Throwable t) {
@@ -1089,13 +1086,13 @@ public final class tnvt implements Runnable {
 
                 case 11:
                     log.debug("Turn on message light");
-                    screen52.getOIA().setMessageLightOn();
+                    screen52.setOiaMessageLightOn();
                     screen52.setCursorActive(true);
 
                     break;
                 case 12:
                     log.debug("Turn off Message light");
-                    screen52.getOIA().setMessageLightOff();
+                    screen52.setOiaMessageLightOff();
                     screen52.setCursorActive(true);
 
                     break;
@@ -1135,11 +1132,11 @@ public final class tnvt implements Runnable {
             }
 
             if (pendingUnlock && !screen52.isStatusErrorCode()) {
-                screen52.getOIA().setKeyBoardLocked(false);
+                screen52.setOiaKeyBoardLocked(false);
                 pendingUnlock = false;
             }
 
-            if (cursorOn && !screen52.getOIA().isKeyBoardLocked()) {
+            if (cursorOn && !screen52.isOiaKeyBoardLocked()) {
                 screen52.setCursorActive(true);
                 cursorOn = false;
             }
@@ -1165,16 +1162,14 @@ public final class tnvt implements Runnable {
         int lastAttr = 32;
         int sac = 0;
 
-        final ScreenPlanes planes = screen52.planes;
-
         for (int i = 0; i < sa.length; i++) { // save the screen data
 
-            if (planes.isAttributePlace(i)) {
-                lastAttr = planes.getCharAttr(i);
+            if (screen52.isPlanesAttributePlace(i)) {
+                lastAttr = screen52.getPlanesCharAttr(i);
                 sa[sac++] = (byte) lastAttr;
             } else {
-                if (planes.getCharAttr(i) != lastAttr) {
-                    lastAttr = planes.getCharAttr(i);
+                if (screen52.getPlanesCharAttr(i) != lastAttr) {
+                    lastAttr = screen52.getPlanesCharAttr(i);
                     sac = max(--sac, 0);
                     sa[sac++] = (byte) lastAttr;
                 }
@@ -1183,7 +1178,7 @@ public final class tnvt implements Runnable {
                 //  The characters on screen are in unicode
                 //sa[sac++] =
                 // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
-                final char ch = planes.getChar(i);
+                final char ch = screen52.getPlanesChar(i);
                 byte byteCh = (byte) ch;
                 if (isDataUnicode(ch))
                     byteCh = codePage.uni2ebcdic(ch);
@@ -1197,7 +1192,6 @@ public final class tnvt implements Runnable {
         int la = 32;
         int sac = 0;
 
-        final ScreenPlanes planes = screen52.planes;
         byte[] sa = new byte[len];
 
         try {
@@ -1217,12 +1211,12 @@ public final class tnvt implements Runnable {
                         sac += guiSeg.length;
                     }
                 }
-                if (planes.isAttributePlace(i)) {
-                    la = planes.getCharAttr(i);
+                if (screen52.isPlanesAttributePlace(i)) {
+                    la = screen52.getPlanesCharAttr(i);
                     sa[sac++] = (byte) la;
                 } else {
-                    if (planes.getCharAttr(i) != la) {
-                        la = planes.getCharAttr(i);
+                    if (screen52.getPlanesCharAttr(i) != la) {
+                        la = screen52.getPlanesCharAttr(i);
                         sac = max(--sac, 0);
                         sa[sac++] = (byte) la;
                     }
@@ -1231,7 +1225,7 @@ public final class tnvt implements Runnable {
                     //  The characters on screen are in unicode
                     //sa[sac++] =
                     // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
-                    final char ch = planes.getChar(i);
+                    final char ch = screen52.getPlanesChar(i);
                     byte byteCh = (byte) ch;
                     if (isDataUnicode(ch))
                         byteCh = codePage.uni2ebcdic(ch);
@@ -1259,8 +1253,8 @@ public final class tnvt implements Runnable {
         sc.write((byte) (cp >> 8 & 0xff));
         sc.write((byte) (cp & 0xff));
 
-        sc.write((byte) (screen52.homePos >> 8 & 0xff)); // save home pos
-        sc.write((byte) (screen52.homePos & 0xff));
+        sc.write((byte) (screen52.getHomePos() >> 8 & 0xff)); // save home pos
+        sc.write((byte) (screen52.getHomePos() & 0xff));
 
         //		byte[] sa = new byte[rows * cols];
         sc.write(createRegenerationBuffer(screen52.getRows() * screen52.getColumns()));
@@ -1268,15 +1262,15 @@ public final class tnvt implements Runnable {
         //
         //		sc.write(sa);
         //		sa = null;
-        final int sizeFields = screen52.getScreenFields().getSize();
+        final int sizeFields = screen52.getScreenFieldsSize();
         sc.write((byte) (sizeFields >> 8 & 0xff));
         sc.write((byte) (sizeFields & 0xff));
 
         if (sizeFields > 0) {
             int x = 0;
-            final int s = screen52.getScreenFields().getSize();
+            final int s = screen52.getScreenFieldsSize();
             while (x < s) {
-                final ScreenField sf = screen52.getScreenFields().getField(x);
+                final ScreenField sf = screen52.getScreenField(x);
                 sc.write((byte) sf.getAttr()); // attribute
                 final int sp = sf.startPos();
                 sc.write((byte) (sp >> 8 & 0xff));
@@ -1317,8 +1311,6 @@ public final class tnvt implements Runnable {
     public final void restoreScreen() throws IOException {
         final int which = 0;
 
-        final ScreenPlanes planes = screen52.planes;
-
         try {
             log.debug("Restore ");
 
@@ -1358,10 +1350,10 @@ public final class tnvt implements Runnable {
                     //				      screen52.goto_XY(y);
                 } else {
                     //				b = bk.getNextByte();
-                    if (planes.isUseGui(y))
+                    if (screen52.isPlanesUseGui(y))
                         continue;
                     if (isAttribute(b)) {
-                        planes.setScreenCharAndAttr(y, planes.getChar(y), b, true);
+                        screen52.setPlanesScreenCharAndAttr(y, screen52.getPlanesChar(y), b, true);
                         la = b;
 
                     } else {
@@ -1373,7 +1365,7 @@ public final class tnvt implements Runnable {
                         if (isDataEBCDIC(b))
                             ch = codePage.ebcdic2uni(b);
 
-                        planes.setScreenCharAndAttr(y, ch, la, false);
+                        screen52.setPlanesScreenCharAndAttr(y, ch, la, false);
                     }
                 }
             }
@@ -1410,20 +1402,20 @@ public final class tnvt implements Runnable {
                     fcw1 = bk.getNextByte();
                     fcw2 = bk.getNextByte();
 
-                    sf = screen52.getScreenFields().setField(attr,
+                    sf = screen52.setScreenFieldsField(attr,
                             screen52.getRow(fPos), screen52.getCol(fPos), fLen,
                             ffw1, ffw2, fcw1, fcw2);
 
                     while (fLen-- > 0) {
 
                         // now we set the field plane attributes
-                        planes.setScreenFieldAttr(fPos++, ffw1);
+                        screen52.setPlanesScreenFieldAttr(fPos++, ffw1);
 
                     }
 
                     if (mdt) {
                         sf.setMDT();
-                        screen52.getScreenFields().setMasterMDT();
+                        screen52.setScreenFieldsMasterMDT();
                     }
                     if (log.isDebugEnabled()) {
                         log.debug("/nRestored ");
@@ -2092,16 +2084,16 @@ public final class tnvt implements Runnable {
         }
 
         if (lockKeyboard) {
-            screen52.getOIA().setKeyBoardLocked(true);
+            screen52.setOiaKeyBoardLocked(true);
             pendingUnlock = false;
         } else
             pendingUnlock = false;
 
         if (resetMDT || resetMDTAll || nullMDT || nullAll) {
 
-            final int f = screen52.getScreenFields().getSize();
+            final int f = screen52.getScreenFieldsSize();
             for (int x = 0; x < f; x++) {
-                final ScreenField sf = screen52.getScreenFields().getField(x);
+                final ScreenField sf = screen52.getScreenField(x);
                 if (!sf.isBypassField()) {
                     if ((nullMDT && sf.mdt) || nullAll) {
                         sf.setFieldChar((char) 0x0);
@@ -2123,14 +2115,14 @@ public final class tnvt implements Runnable {
             controller.signalBell();
         }
         if ((byte1 & 0x02) == 0x02) {
-            screen52.getOIA().setMessageLightOff();
+            screen52.setOiaMessageLightOff();
         }
         if ((byte1 & 0x01) == 0x01) {
-            screen52.getOIA().setMessageLightOn();
+            screen52.setOiaMessageLightOn();
         }
 
         if ((byte1 & 0x01) == 0x01 && (byte1 & 0x02) == 0x02) {
-            screen52.getOIA().setMessageLightOn();
+            screen52.setOiaMessageLightOn();
         }
 
         // reset blinking cursor seems to control whether to set or not set the
@@ -2148,9 +2140,9 @@ public final class tnvt implements Runnable {
         } else {
 
             screen52.setPendingInsert(true);
-            log.debug(" WTD position move to home" + screen52.homePos + " row "
-                    + screen52.getRow(screen52.homePos) + " col "
-                    + screen52.getCol(screen52.homePos));
+            log.debug(" WTD position move to home" + screen52.getHomePos() + " row "
+                    + screen52.getRow(screen52.getHomePos()) + " col "
+                    + screen52.getCol(screen52.getHomePos()));
 
         }
         // in enhanced mode we sometimes only receive bit 6 turned on which
@@ -2206,8 +2198,8 @@ public final class tnvt implements Runnable {
 
     private final void writeErrorCode() throws Exception {
         screen52.setCursor(screen52.getErrorLine(), 1); // Skip the control byte
-        screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
-                Screen5250.STATUS_VALUE_ON, null);
+        screen52.setStatus(Screen5250Facade.STATUS_ERROR_CODE,
+                Screen5250Facade.STATUS_VALUE_ON, null);
         screen52.saveErrorLine();
         cursorOn = true;
 
@@ -2218,8 +2210,8 @@ public final class tnvt implements Runnable {
         final int toCol = bk.getNextByte() & 0xff; // to column
         screen52.setCursor(screen52.getErrorLine(), fromCol); // Skip the control
         // byte
-        screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
-                Screen5250.STATUS_VALUE_ON, null);
+        screen52.setStatus(Screen5250Facade.STATUS_ERROR_CODE,
+                Screen5250Facade.STATUS_VALUE_ON, null);
         screen52.saveErrorLine();
         cursorOn = true;
 

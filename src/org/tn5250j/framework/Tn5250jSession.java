@@ -20,15 +20,15 @@
 package org.tn5250j.framework;
 
 import org.tn5250j.SessionGui;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 
 public class Tn5250jSession {
-    private Screen5250 sessionScreen;
+    private Screen5250Facade sessionScreen;
     private tnvt SessionTNVT;
     private SessionGui session;
 
-    protected Tn5250jSession(final Screen5250 screen, final tnvt vt, final SessionGui ses) {
+    protected Tn5250jSession(final Screen5250Facade screen, final tnvt vt, final SessionGui ses) {
         sessionScreen = screen;
         SessionTNVT = vt;
         session = ses;
@@ -44,7 +44,7 @@ public class Tn5250jSession {
     /**
      * @return
      */
-    public Screen5250 getSessionScreen() {
+    public Screen5250Facade getSessionScreen() {
         return sessionScreen;
     }
 

@@ -53,7 +53,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class WTDSFParser {
 
-    private Screen5250 screen52;
+    private Screen5250Facade screen52;
     private tnvt vt;
     private ICodePage codePage;
     int pos;
@@ -68,7 +68,7 @@ public class WTDSFParser {
     private final List<ChoiceField> choices = new ArrayList<ChoiceField>(3);
 
 
-    WTDSFParser(tnvt vt) {
+    WTDSFParser(final tnvt vt) {
 
         this.vt = vt;
         screen52 = vt.screen52;
@@ -88,7 +88,7 @@ public class WTDSFParser {
         int fieldId;
         int selectIndex;
 
-        ChoiceField(int row, int col, int fldRow, int fldCol) {
+        ChoiceField(final int row, final int col, final int fldRow, final int fldCol) {
             this.x = row;
             this.y = col;
             this.row = fldRow;
@@ -101,7 +101,7 @@ public class WTDSFParser {
         byte[] window;
         int pos;
 
-        Window(byte[] seg, int pos) {
+        Window(final byte[] seg, final int pos) {
 
             //log.info("window created at " + pos);
             window = seg;
@@ -111,10 +111,10 @@ public class WTDSFParser {
 
     }
 
-    protected void addChoiceField(int row, int col, int fldRow, int fldCol, String text) {
+    protected void addChoiceField(final int row, final int col, final int fldRow, final int fldCol, final String text) {
 
-        ChoiceField cf = new ChoiceField(row, col, fldRow, fldCol);
-        cf.fieldId = screen52.getScreenFields().getCurrentField().getFieldId();
+        final ChoiceField cf = new ChoiceField(row, col, fldRow, fldCol);
+        cf.fieldId = screen52.getCurrentScreenField().getFieldId();
         choices.add(cf);
 
     }
@@ -125,10 +125,10 @@ public class WTDSFParser {
 
     }
 
-    protected byte[] getSegmentAtPos(int pos) {
-        int len = guiStructs.size();
+    protected byte[] getSegmentAtPos(final int pos) {
+        final int len = guiStructs.size();
         for (int x = 0; x < len; x++) {
-            Window w = guiStructs.get(x);
+            final Window w = guiStructs.get(x);
             if (w.pos == pos)
                 return w.window;
         }
@@ -142,7 +142,7 @@ public class WTDSFParser {
         guiStructs.clear();
     }
 
-    protected boolean parseWriteToDisplayStructuredField(byte[] seg) {
+    protected boolean parseWriteToDisplayStructuredField(final byte[] seg) {
 
 //      bk = vt.bk;
 
@@ -157,7 +157,7 @@ public class WTDSFParser {
         length = ((segment[pos++] & 0xff) << 8 | (segment[pos++] & 0xff));
 
         while (!done) {
-            int s = segment[pos++] & 0xff;
+            final int s = segment[pos++] & 0xff;
             switch (s) {
 
                 case 0xD9:     // Class Type 0xD9 - Create Window
@@ -205,7 +205,7 @@ public class WTDSFParser {
                             // pos 10 is Minor Structure
                             int ml = 0;
                             int type = 0;
-                            int lastPos = screen52.getLastPos();
+                            final int lastPos = screen52.getLastPos();
 //                        if (cr)
 //                           screen52.setPendingInsert(true,
 //                                          screen52.getCurrentRow(),
@@ -345,7 +345,7 @@ public class WTDSFParser {
                                             windowDefined = true;
                                         }
 
-                                        byte orientation = segment[pos++];
+                                        final byte orientation = segment[pos++];
                                         mAttr = segment[pos++];
                                         cAttr = segment[pos++];
 
@@ -353,7 +353,7 @@ public class WTDSFParser {
                                         pos++;
                                         ml -= 6;
 
-                                        StringBuffer hfBuffer = new StringBuffer(ml);
+                                        final StringBuffer hfBuffer = new StringBuffer(ml);
                                         while (ml-- > 0) {
                                             //LDC - 13/02/2003 - Convert it to unicode
                                             hfBuffer.append(codePage.ebcdic2uni(segment[pos++]));
@@ -387,29 +387,29 @@ public class WTDSFParser {
                             break;
 
                         case 0x53:      // Scroll Bar
-                            int sblen = 15;
-                            byte sbflag = segment[pos++];  // flag position 5
+                            final int sblen = 15;
+                            final byte sbflag = segment[pos++];  // flag position 5
 
                             pos++;  // reserved position 6
 
                             // position 7,8
-                            int totalRowScrollable = ((segment[pos++] & 0xff) << 8
+                            final int totalRowScrollable = ((segment[pos++] & 0xff) << 8
                                     | (segment[pos++] & 0xff));
 
                             // position 9,10
-                            int totalColScrollable = ((segment[pos++] & 0xff) << 8
+                            final int totalColScrollable = ((segment[pos++] & 0xff) << 8
                                     | (segment[pos++] & 0xff));
 
                             // position 11,12
-                            int sliderRowPos = ((segment[pos++] & 0xff) << 8
+                            final int sliderRowPos = ((segment[pos++] & 0xff) << 8
                                     | (segment[pos++] & 0xff));
 
                             // position 13,14
-                            int sliderColPos = ((segment[pos++] & 0xff) << 8
+                            final int sliderColPos = ((segment[pos++] & 0xff) << 8
                                     | (segment[pos++] & 0xff));
 
                             // position 15
-                            int sliderRC = segment[pos++];
+                            final int sliderRC = segment[pos++];
 
                             screen52.createScrollBar(sbflag, totalRowScrollable,
                                     totalColScrollable,
@@ -524,20 +524,20 @@ public class WTDSFParser {
      * @param bottom
      * @param lr
      */
-    protected void createWindow(int depth, int width, int type, boolean gui,
-                                int monoAttr, int colorAttr, int ul, int upper, int ur, int left,
-                                int right, int ll, int bottom, int lr) {
+    protected void createWindow(int depth, int width, final int type, final boolean gui,
+                                final int monoAttr, final int colorAttr, final int ul, final int upper, final int ur, final int left,
+                                final int right, final int ll, final int bottom, final int lr) {
 
         int lastPos = screen52.getLastPos();
-        int numCols = screen52.getColumns();
+        final int numCols = screen52.getColumns();
 
-        int c = screen52.getCol(lastPos);
+        final int c = screen52.getCol(lastPos);
         int w = 0;
         width++;
 
         w = width;
-        char initChar = Screen5250.initChar;
-        int initAttr = Screen5250.initAttr;
+        final char initChar = Screen5250Facade.initChar;
+        final int initAttr = Screen5250Facade.initAttr;
 
         // set leading attribute byte
         screen52.setScreenCharAndAttr(initChar, initAttr, true);
@@ -723,29 +723,29 @@ public class WTDSFParser {
         //   0090:  0B 10 08 00 E0 00 E3 88 99 85 85 04 52 00 00 FF ............R...
         //   00A0:  EF                                              .
         try {
-            int flag1 = segment[pos++];    // Flag byte 1 - byte 5
-            int flag2 = segment[pos++];    // Flag byte 2 - byte 6
-            int flag3 = segment[pos++];    // Flag byte 3 - byte 7
-            int typeSelection = segment[pos++];    // Type of selection Field - byte 8
+            final int flag1 = segment[pos++];    // Flag byte 1 - byte 5
+            final int flag2 = segment[pos++];    // Flag byte 2 - byte 6
+            final int flag3 = segment[pos++];    // Flag byte 3 - byte 7
+            final int typeSelection = segment[pos++];    // Type of selection Field - byte 8
 
             // GUI Device Characteristics:
             //    This byte is used if the target device is a GUI PWS or a GUI-like
             //    NWS.  If neigher of these WS are the targets, this byte is ignored
-            int guiDevice = segment[pos++];    // byte 9
-            int withMnemonic = segment[pos++];    //  byte 10
-            int noMnemonic = segment[pos++];    // byte 11
+            final int guiDevice = segment[pos++];    // byte 9
+            final int withMnemonic = segment[pos++];    //  byte 10
+            final int noMnemonic = segment[pos++];    // byte 11
 
             pos++;    // Reserved - byte 12
             pos++;    // Reserved - byte 13
 
-            int cols = segment[pos++];    // Text Size - byte 14
-            int rows = segment[pos++];    // Rows - byte 15
+            final int cols = segment[pos++];    // Text Size - byte 14
+            final int rows = segment[pos++];    // Rows - byte 15
 
-            int maxColChoice = segment[pos++];    // byte 16 num of column choices
-            int padding = segment[pos++];    // byte 17
-            int numSepChar = segment[pos++];    // byte 18
-            int ctySepChar = segment[pos++];    // byte 19
-            int cancelAID = segment[pos++];    // byte 20
+            final int maxColChoice = segment[pos++];    // byte 16 num of column choices
+            final int padding = segment[pos++];    // byte 17
+            final int numSepChar = segment[pos++];    // byte 18
+            final int ctySepChar = segment[pos++];    // byte 19
+            final int cancelAID = segment[pos++];    // byte 20
 
             int cnt = 0;
             int minLen = 0;
@@ -766,9 +766,9 @@ public class WTDSFParser {
             int colCtr = 0;
             int chcRowStart = screen52.getCurrentRow();
             int chcColStart = screen52.getCurrentCol();
-            int chcRow = chcRowStart;
-            int chcCol = chcColStart;
-            int chcPos = screen52.getPos(chcRow - 1, chcCol);
+            final int chcRow = chcRowStart;
+            final int chcCol = chcColStart;
+            final int chcPos = screen52.getPos(chcRow - 1, chcCol);
 
 // client access
 //0000   00 04 ac 9e b9 35 00 01 02 32 bb 4e 08 00 45 00  .....5...2.N..E.
@@ -784,47 +784,47 @@ public class WTDSFParser {
             do {
                 minLen = segment[pos++];    // Minor Length byte 21
 
-                int minType = segment[pos++];    // Minor Type
+                final int minType = segment[pos++];    // Minor Type
 
                 switch (minType) {
 
                     case 0x01:  // Choice Presentation Display
 
                         // flag
-                        int flagCP1 = segment[pos++];
+                        final int flagCP1 = segment[pos++];
 
                         pos++; // mon select cursor avail emphasis - byte4
                         colSelAvail = segment[pos++];  // -byte 5
 
                         pos++; // mon select cursor - byte 6
-                        int colSelCur = segment[pos++];  // -byte 7
+                        final int colSelCur = segment[pos++];  // -byte 7
 
                         pos++; // mon select cursor not avail emphasis - byte 8
-                        int colSelNotAvail = segment[pos++];  // -byte 9
+                        final int colSelNotAvail = segment[pos++];  // -byte 9
 
                         pos++; // mon avail emphasis - byte 10
                         colAvail = segment[pos++];  // -byte 11
 
                         pos++; // mon select emphasis - byte 12
-                        int colSel = segment[pos++];  // -byte 13
+                        final int colSel = segment[pos++];  // -byte 13
 
                         pos++; // mon not avail emphasis - byte 14
-                        int colNotAvail = segment[pos++];  // -byte 15
+                        final int colNotAvail = segment[pos++];  // -byte 15
 
                         pos++; // mon indicator emphasis - byte 16
-                        int colInd = segment[pos++];  // -byte 17
+                        final int colInd = segment[pos++];  // -byte 17
 
                         pos++; // mon indicator not avail emphasis - byte 18
-                        int colNotAvailInd = segment[pos++];  // -byte 19
+                        final int colNotAvailInd = segment[pos++];  // -byte 19
 
                         break;
 
                     case 0x10:  // Choice Text minor structure
 
                         cnt = 5;
-                        int flagCT1 = segment[pos++];
-                        int flagCT2 = segment[pos++];
-                        int flagCT3 = segment[pos++];
+                        final int flagCT1 = segment[pos++];
+                        final int flagCT2 = segment[pos++];
+                        final int flagCT3 = segment[pos++];
                         int mnemOffset = 0;
                         boolean aid = false;
                         boolean selected = false;
@@ -875,8 +875,8 @@ public class WTDSFParser {
                         // we do not add a selection if it is marked as unavailable
                         if ((flagCT1 & 0x80) != 0x80) {
                             screen52.addField(0x26, 1, 0, 0, 0, 0);
-                            screen52.getScreenFields().getCurrentField().setFieldChar('.');
-                            screen52.getScreenFields().getCurrentField().setSelectionFieldInfo(17,
+                            screen52.setScreenFieldsFieldChar('.');
+                            screen52.setScreenFieldsSelectionFieldInfo(17,
                                     fld,
                                     chcPos);
                             screen52.setCursor(chcRowStart, chcColStart + 3);
@@ -927,7 +927,7 @@ public class WTDSFParser {
                 majLen -= minLen;
 
             } while (majLen > 0);
-        } catch (Exception exc) {
+        } catch (final Exception exc) {
             log.warn(" defineSelectionField :", exc);
             exc.printStackTrace();
         }

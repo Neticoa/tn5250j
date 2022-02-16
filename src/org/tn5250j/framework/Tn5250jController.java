@@ -43,7 +43,7 @@ import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
@@ -212,7 +212,7 @@ public class Tn5250jController extends Thread {
         return current;
     }
 
-    public void createSession(final Screen5250 screen, final tnvt vt, final SessionGui ses) {
+    public void createSession(final Screen5250Facade screen, final tnvt vt, final SessionGui ses) {
         final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
         final Iterator<Tn5250jListener> listenerIt = listeners.iterator();
         log.info("New session created and received");
@@ -255,7 +255,7 @@ public class Tn5250jController extends Thread {
         return null;
     }
 
-    public Screen5250 startSession(final String name) {
+    public Screen5250Facade startSession(final String name) {
         final String args[] = new String[15];
         parseArgs((String) sesprops.get(name), args);
         final Properties fin = convertToProps(args);
