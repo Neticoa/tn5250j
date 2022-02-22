@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.keyboard.actions.EmulatorAction;
@@ -130,7 +130,7 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
     }
 
     @Override
-    public Screen5250 getScreen() {
+    public Screen5250Facade getScreen() {
         return session.getScreen();
     }
 

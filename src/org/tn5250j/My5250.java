@@ -182,7 +182,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     static public void main(String[] args) {
         SwingToFxUtils.initFx();
 
-        final TN5250jSplashScreen splash = UiUtils.runInFxAndWait(() -> {
+        final TN5250jSplashScreen splash = UiUtils.callInFxAndWait(() -> {
             final TN5250jSplashScreen s = new TN5250jSplashScreen("tn5250jSplash.jpg");
             s.setSteps(5);
             s.setVisible(true);
@@ -417,7 +417,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
 
     private void openConnectSessionDialogAndStartSelectedSession() {
-        final String sel = UiUtils.runInFxAndWait(this:: openConnectSessionDialog);
+        final String sel = UiUtils.callInFxAndWait(this:: openConnectSessionDialog);
         final Sessions sess = manager.getSessions();
         if (sel != null) {
             final String selArgs = sessions.getProperty(sel);
@@ -544,7 +544,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
         final Session5250 s2 = manager.openSession(sesProps, propFileName, sel);
 
-        final SessionGui gui = UiUtils.runInFxAndWait(() -> {
+        final SessionGui gui = UiUtils.callInFxAndWait(() -> {
             final SessionGui s = new SessionPanel(s2);
 
             if (!frame1.isVisible()) {

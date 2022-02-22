@@ -42,7 +42,7 @@ import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.UiUtils;
@@ -97,7 +97,7 @@ public class SessionPanel extends BorderPane implements
     private boolean firstScreen;
     private char[] signonSave;
 
-    private Screen5250 screen;
+    private Screen5250Facade screen;
     protected Session5250 session;
     private GuiGraphicBuffer guiGraBuf;
     private final RubberBand rubberband = new RubberBand(this);
@@ -254,10 +254,10 @@ public class SessionPanel extends BorderPane implements
 
     public void setRunningHeadless(final boolean headless) {
         if (headless) {
-            screen.getOIA().removeOIAListener(guiGraBuf);
+            screen.removeOIAListener(guiGraBuf);
             screen.removeScreenListener(guiGraBuf);
         } else {
-            screen.getOIA().addOIAListener(guiGraBuf);
+            screen.addOIAListener(guiGraBuf);
             screen.addScreenListener(guiGraBuf);
         }
     }
@@ -600,9 +600,9 @@ public class SessionPanel extends BorderPane implements
     public void setMacroRunning(final boolean mr) {
         macroRunning = mr;
         if (macroRunning)
-            screen.getOIA().setScriptActive(true);
+            screen.setOiaScriptActive(true);
         else
-            screen.getOIA().setScriptActive(false);
+            screen.setOiaScriptActive(false);
 
         stopMacro = !macroRunning;
     }
@@ -758,7 +758,7 @@ public class SessionPanel extends BorderPane implements
     @Override
     public final void printMe() {
         Platform.runLater(() -> {
-            final PrinterThread printerThread = new PrinterThread(screen, guiGraBuf.font,
+            final PrinterTask printerThread = new PrinterTask(screen, guiGraBuf.font,
                     screen.getColumns(), screen.getRows(), this);
             printerThread.run();
             getFocusForMe();
@@ -906,7 +906,7 @@ public class SessionPanel extends BorderPane implements
     }
 
     @Override
-    public Screen5250 getScreen() {
+    public Screen5250Facade getScreen() {
 
         return screen;
 

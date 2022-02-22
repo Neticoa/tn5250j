@@ -42,11 +42,11 @@ public class ScreenFields {
     private boolean cpfExists;
     private int nextField;
     private int fieldIds;
-    private Screen5250 screen;
+    private Screen5250Facade screen;
     private boolean masterMDT;
     protected boolean currentModified;
 
-    public ScreenFields(Screen5250 s) {
+    public ScreenFields(Screen5250Facade s) {
 
         screen = s;
         screenFields = new ScreenField[256];

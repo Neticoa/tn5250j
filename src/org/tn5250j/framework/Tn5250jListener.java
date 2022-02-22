@@ -22,6 +22,9 @@ package org.tn5250j.framework;
 import java.io.File;
 import java.util.Properties;
 
+/**
+ * Please not remove. This is based class for plugins. May be better to change it to interface
+ */
 public abstract class Tn5250jListener {
     public abstract void actionPerformed(Tn5250jEvent event);
 

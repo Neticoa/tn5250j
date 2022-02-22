@@ -34,7 +34,7 @@ import org.tn5250j.connectdialog.ExternalProgram;
 
 public class ScreenPlanes {
 
-    private final Screen5250 scr;
+    private final Screen5250Facade scr;
     private int screenSize;
     private int numRows;
     private int numCols;
@@ -60,7 +60,7 @@ public class ScreenPlanes {
     private char[] errorLineIsAttr;
     private char[] errorLineGui;
 
-    public ScreenPlanes(Screen5250 s5250, int size) {
+    public ScreenPlanes(Screen5250Facade s5250, int size) {
 
         scr = s5250;
         setSize(size);
@@ -747,7 +747,7 @@ public class ScreenPlanes {
 
     protected boolean checkHotSpots() {
 
-        Screen5250 s = scr;
+        Screen5250Facade s = scr;
         int lenScreen = scr.getScreenLength();
         boolean hs = false;
         boolean retHS = false;

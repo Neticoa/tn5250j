@@ -30,7 +30,9 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.FxProxyBuilder;
 import org.tn5250j.gui.SystemRequestDialog;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ScanListener;
@@ -48,7 +50,7 @@ public class Session5250 implements SessionInterface {
     private boolean heartBeat;
     private final SessionConfig sesConfig;
     private tnvt vt;
-    private final Screen5250 screen;
+    private final Screen5250Facade screen;
     private SessionGui guiComponent;
 
     private List<SessionListener> sessionListeners = null;
@@ -70,7 +72,7 @@ public class Session5250 implements SessionInterface {
         if (sesProps.containsKey(TN5250jConstants.SESSION_HEART_BEAT))
             heartBeat = true;
 
-        screen = new Screen5250();
+        screen = FxProxyBuilder.buildProxy(new Screen5250(), Screen5250Facade.class);
 
         //screen.setVT(vt);
 
@@ -173,7 +175,7 @@ public class Session5250 implements SessionInterface {
         return vt.getHostName();
     }
 
-    public Screen5250 getScreen() {
+    public Screen5250Facade getScreen() {
 
         return screen;
 

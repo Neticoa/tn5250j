@@ -33,7 +33,7 @@ import org.tn5250j.event.ScreenListener;
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.Line2D;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.sessionsettings.ColumnSeparator;
@@ -65,7 +65,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected final static String xSystem = "X - System";
     protected final static String xError = "X - II";
     protected boolean antialiased = true;
-    protected Screen5250 screen;
+    protected Screen5250Facade screen;
     protected Data updateRect;
     protected double columnWidth;
     protected double rowHeight;
@@ -102,7 +102,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected final SessionConfig config;
     protected final CompoundCursor cursor;
 
-    public AbstractGuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
+    public AbstractGuiGraphicBuffer(final Screen5250Facade screen, final SessionGui gui,
             final CompoundCursor cursor, final SessionConfig config) {
 
         this.screen = screen;
@@ -118,7 +118,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         columnWidth = (int) Math.ceil(cellBounds.getWidth());
         rowHeight = (int) Math.ceil(cellBounds.getHeight());
 
-        screen.getOIA().addOIAListener(this);
+        screen.addOIAListener(this);
         screen.addScreenListener(this);
     }
 
@@ -732,7 +732,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected abstract void drawFutter(final int row, final int col, final int botOffset);
 
     protected int recalculateCursorSizes(final int row, final int col) {
-        cursor.setInsertMode(screen.getOIA().isInsertMode());
+        cursor.setInsertMode(screen.isOiaInsertMode());
         cursor.setScreenSize(getWidth(), getHeight());
         cursor.setColumnBounds(columnWidth, rowHeight);
         cursor.recalculateSizes(row, col);

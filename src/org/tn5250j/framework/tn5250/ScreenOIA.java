@@ -59,7 +59,7 @@ public class ScreenOIA {
     public static final int INPUTINHIBITED_MACHINECHECK = 4;
     public static final int INPUTINHIBITED_OTHER = 5;
 
-    public ScreenOIA(Screen5250 screen) {
+    public ScreenOIA(Screen5250Facade screen) {
 
         source = screen;
 
@@ -200,13 +200,13 @@ public class ScreenOIA {
     }
 
     // object methods
-    public Screen5250 getSource() {
+    public Screen5250Facade getSource() {
 
         return source;
     }
 
 
-    public void setSource(Screen5250 screen) {
+    public void setSource(Screen5250Facade screen) {
 
         source = screen;
 
@@ -283,7 +283,7 @@ public class ScreenOIA {
     private boolean keysBuffered;
     private int owner = 0;
     private int level = 0;
-    private Screen5250 source = null;
+    private Screen5250Facade source = null;
     private int commCheck = 0;
     private int machineCheck = 0;
     private boolean messageWait;

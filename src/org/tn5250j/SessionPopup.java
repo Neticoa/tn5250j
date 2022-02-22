@@ -55,7 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
 import org.tn5250j.gui.UiUtils;
@@ -94,7 +94,7 @@ import javafx.scene.input.KeyCodeCombination;
  */
 public class SessionPopup {
 
-    private final Screen5250 screen;
+    private final Screen5250Facade screen;
     private final SessionGui sessiongui;
     private final tnvt vt;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -155,7 +155,7 @@ public class SessionPopup {
             createKeyboardItem(kbMenu, RESET);
             createKeyboardItem(kbMenu, SYSREQ);
 
-            if (screen.getOIA().isMessageWait() &&
+            if (screen.isOiaMessageWait() &&
                     OptionAccessFactory.getInstance().isValidOption(DISP_MESSAGES.mnemonic)) {
 
                 kbMenu.getItems().add(createMenuItem(LangTool.getString("popup.displayMessages"), () -> vt.systemRequest('4'), DISP_MESSAGES));
@@ -180,7 +180,7 @@ public class SessionPopup {
 
             createShortCutItems(kbMenu);
 
-            if (screen.getOIA().isMessageWait() &&
+            if (screen.isOiaMessageWait() &&
                     OptionAccessFactory.getInstance().isValidOption(DISP_MESSAGES.mnemonic)) {
 
                 popup.getItems().add(createMenuItem(LangTool.getString("popup.displayMessages"),

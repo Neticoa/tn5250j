@@ -27,21 +27,22 @@
 package org.tn5250j.mailtools;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.ActionDelegateDialogPane;
 import org.tn5250j.gui.UiUtils;
+import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
-import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -119,7 +120,7 @@ public class SendEMailDialog {
     }
 
     private void sendEmail1(final ActionDelegateDialogPane<ButtonType> dialog) {
-        final Screen5250 screen = session.getScreen();
+        final Screen5250Facade screen = session.getScreen();
 
         sendEMail = new SendEMail();
         sendEMail.setConfigFile("SMTPProperties.cfg");
@@ -189,37 +190,32 @@ public class SendEMailDialog {
      * @param dialog
      */
     private void launchSendService(final ActionDelegateDialogPane<ButtonType> dialog) {
-        final Service<Void> service = new Service<Void>() {
+        AsyncServices.startTask(new Task<Void>() {
             @Override
-            protected Task<Void> createTask() {
-                return new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        runSendEmail();
-                        return null;
-                    }
-                    @Override
-                    protected void done() {
-                        Platform.runLater(() -> {
-                            try {
-                                afterSendEmail();
-                            } finally {
-                                dialog.finish(ButtonType.OK);
-                            }
-                        });
-                    }
-                    @Override
-                    protected void failed() {
-                        Platform.runLater(() -> dialog.finish(ButtonType.CANCEL));
-                    }
-                };
+            protected final Void call() throws Exception {
+                runSendEmail();
+                return null;
             }
-        };
-
-        service.start();
+            @Override
+            protected void scheduled() {
+                dialog.lookupButton(ButtonType.OK).setDisable(true);
+            }
+            @Override
+            protected void succeeded() {
+                try {
+                    afterSendEmail();
+                } finally {
+                    dialog.finish(ButtonType.OK);
+                }
+            }
+            @Override
+            protected void failed() {
+                dialog.finish(ButtonType.CANCEL);
+            }
+        });
     }
 
-    private static String getScreenTextContent(final Screen5250 screen) {
+    private static String getScreenTextContent(final Screen5250Facade screen) {
 
         char[] screenTxt;
         char[] screenExtendedAttr;
@@ -572,18 +568,15 @@ public class SendEMailDialog {
      */
     private String getToTokens(final String to, final ComboBox<String> boxen) {
 
-        final StringBuilder sb = new StringBuilder();
+        final List<String> allSelected = new LinkedList<>(boxen.getItems());
         final String selected = boxen.getValue();
-
-        sb.append(selected + '|');
-
-        for (final String item : boxen.getItems()) {
-            if (!selected.equals(item)) {
-                sb.append(item + '|');
-            }
+        //move selected to front
+        if (selected != null) {
+            allSelected.remove(selected);
+            allSelected.add(0, selected);
         }
 
-        return sb.toString();
+        return String.join("|", allSelected);
     }
 
     /**

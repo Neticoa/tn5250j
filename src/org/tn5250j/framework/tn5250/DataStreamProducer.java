@@ -1,8 +1,6 @@
 package org.tn5250j.framework.tn5250;
 
-import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import static org.tn5250j.framework.tn5250.Stream5250.OPCODE_OFFSET;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,7 +8,9 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
-import static org.tn5250j.framework.tn5250.Stream5250.OPCODE_OFFSET;
+import org.tn5250j.encoding.ICodePage;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class DataStreamProducer implements Runnable {
 
@@ -27,7 +27,7 @@ public class DataStreamProducer implements Runnable {
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public DataStreamProducer(tnvt vt, BufferedInputStream in, BlockingQueue<Object> queue, byte[] init) {
+    public DataStreamProducer(final tnvt vt, final BufferedInputStream in, final BlockingQueue<Object> queue, final byte[] init) {
         bin = in;
         this.vt = vt;
         baosin = new ByteArrayOutputStream();
@@ -35,11 +35,12 @@ public class DataStreamProducer implements Runnable {
         dataStream = init;
     }
 
+    @Override
     public final void run() {
 
         boolean done = false;
 
-        Thread me = Thread.currentThread();
+        final Thread me = Thread.currentThread();
 
         // load the first response screen
         loadStream(dataStream, 0);
@@ -47,7 +48,7 @@ public class DataStreamProducer implements Runnable {
         while (!done) {
             try {
 
-                byte[] abyte0 = readIncoming();
+                final byte[] abyte0 = readIncoming();
 
                 // WVL - LDC : 17/05/2004 : Device name negotiations send TIMING MARK
                 // Restructured to the readIncoming() method to return null
@@ -69,16 +70,11 @@ public class DataStreamProducer implements Runnable {
                     }
                 }
 
-            } catch (SocketException se) {
+            } catch (final SocketException se) {
                 log.warn("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
                 done = true;
-            } catch (IOException ioe) {
 
-                log.warn(ioe.getMessage());
-                if (me.isInterrupted())
-                    done = true;
-
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
 
                 log.warn(ex.getMessage());
                 if (me.isInterrupted())
@@ -88,9 +84,9 @@ public class DataStreamProducer implements Runnable {
         }
     }
 
-    private void loadStream(byte streamBuffer[], int offset) {
+    private void loadStream(byte streamBuffer[], final int offset) {
 
-        int partialLen = (streamBuffer[offset] & 0xff) << 8 | streamBuffer[offset + 1] & 0xff;
+        final int partialLen = (streamBuffer[offset] & 0xff) << 8 | streamBuffer[offset + 1] & 0xff;
         int bufferLen = streamBuffer.length;
 
         if (log.isDebugEnabled()) {
@@ -100,7 +96,7 @@ public class DataStreamProducer implements Runnable {
         if (saveStream != null) {
             log.debug("partial stream found");
             bufferLen = saveStream.length + streamBuffer.length;
-            byte[] inter = new byte[bufferLen];
+            final byte[] inter = new byte[bufferLen];
             System.arraycopy(saveStream, 0, inter, 0, saveStream.length);
             System.arraycopy(streamBuffer, 0, inter, saveStream.length, streamBuffer.length);
             streamBuffer = new byte[bufferLen];
@@ -113,8 +109,8 @@ public class DataStreamProducer implements Runnable {
             log.debug("partial stream saved");
             System.arraycopy(streamBuffer, 0, saveStream, 0, streamBuffer.length);
         } else {
-            int buf_len = partialLen + 2;
-            byte[] buf = new byte[buf_len];
+            final int buf_len = partialLen + 2;
+            final byte[] buf = new byte[buf_len];
             if (isBufferShifted(partialLen, bufferLen) && isOpcodeShifted(streamBuffer, offset)) {
                 log.debug("Invalid stream buffer detected. Ignoring the inserted byte.");
                 System.arraycopy(streamBuffer, offset, buf, 0, MINIMAL_PARTIAL_STREAM_LEN);
@@ -126,18 +122,18 @@ public class DataStreamProducer implements Runnable {
                 dsq.put(buf);
                 if (streamBuffer.length > buf.length + offset + MINIMAL_PARTIAL_STREAM_LEN)
                     loadStream(streamBuffer, offset + buf_len);
-            } catch (InterruptedException ex) {
+            } catch (final InterruptedException ex) {
                 log.warn("load stream error.", ex);
             }
         }
     }
 
-    private boolean isOpcodeShifted(byte[] streamBuffer, int offset) {
-        byte code = streamBuffer[offset + 1 + OPCODE_OFFSET];
+    private boolean isOpcodeShifted(final byte[] streamBuffer, final int offset) {
+        final byte code = streamBuffer[offset + 1 + OPCODE_OFFSET];
         return (0 <= code && code <= 12);
     }
 
-    private boolean isBufferShifted(int partialLen, int bufferLen) {
+    private boolean isBufferShifted(final int partialLen, final int bufferLen) {
         return partialLen + MINIMAL_PARTIAL_STREAM_LEN + 1 == bufferLen;
     }
 
@@ -151,7 +147,7 @@ public class DataStreamProducer implements Runnable {
 
         while (!done) {
 
-            int i = bin.read();
+            final int i = bin.read();
 
             // WVL - LDC : 16/07/2003 : TR.000345
             // The inStream return -1 when end-of-stream is reached. This
@@ -214,7 +210,7 @@ public class DataStreamProducer implements Runnable {
         // We should not return the bytes;
         // ==> restructured to return null after negotiation!
         //     Impacts the run method! Added the null check.
-        byte[] rBytes = baosin.toByteArray();
+        final byte[] rBytes = baosin.toByteArray();
 
         dataStreamDumper.dump(rBytes);
 
@@ -228,7 +224,7 @@ public class DataStreamProducer implements Runnable {
         return rBytes;
     }
 
-    protected void toggleDebug(ICodePage codePage) {
+    protected void toggleDebug(final ICodePage codePage) {
         dataStreamDumper.toggleDebug(codePage);
     }
 }

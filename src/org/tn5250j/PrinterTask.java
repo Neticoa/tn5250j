@@ -25,7 +25,7 @@
  */
 package org.tn5250j;
 
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.sessionsettings.PrinterAttributesHelper;
@@ -40,7 +40,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-class PrinterThread {
+class PrinterTask {
 
     private char[] screen;
     private char[] screenExtendedAttr;
@@ -51,7 +51,7 @@ class PrinterThread {
     private SessionGui session;
     private SessionConfig config;
 
-    PrinterThread(final Screen5250 scr, final Font font, final int cols, final int rows, final SessionGui ses) {
+    PrinterTask(final Screen5250Facade scr, final Font font, final int cols, final int rows, final SessionGui ses) {
         session = ses;
         session.setWaitCursor();
         config = ses.getSession().getConfiguration();
