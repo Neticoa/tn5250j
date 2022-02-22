@@ -302,7 +302,7 @@ public class Gui5250Frame extends GenericTn5250Frame implements
      * @see org.tn5250j.interfaces.GUIViewInterface#removeSessionView(org.tn5250j.SessionGUI)
      */
     public void removeSessionView(final SessionGui targetSession) {
-        UiUtils.runInFxAndWait(() -> {
+        UiUtils.callInFxAndWait(() -> {
             if (hideTabBar && sessTabbedPane.getTabs().isEmpty()) {
                 contentPane.setCenter(null);
             } else {

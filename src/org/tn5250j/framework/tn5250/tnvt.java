@@ -92,7 +92,6 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
-import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -302,11 +301,8 @@ public final class tnvt implements Runnable {
             session = s;
             this.port = port;
 
-            UiUtils.runInFxAndWait(() -> {
-                screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
-                        ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Connecting");
-                return null;
-            });
+            screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+                    ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Connecting");
 
             //         sock = new Socket(s, port);
             //smk - For SSL compability
@@ -343,12 +339,8 @@ public final class tnvt implements Runnable {
             pthread.start();
 
             try {
-                UiUtils.runInFxAndWait(() -> {
-                    screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
-                            ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
-                    return null;
-                });
-
+                screen52.setOiaInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+                        ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
             } catch (final Exception exc) {
                 log.warn("setStatus(OFF) " + exc.getMessage());
             }

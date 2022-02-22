@@ -18,8 +18,9 @@ import org.python.util.PythonInterpreter;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.SessionGui;
 import org.tn5250j.gui.UiUtils;
+import org.tn5250j.tools.AsyncServices;
 
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -81,41 +82,28 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
     }
 
     @Override
-    public void executeScriptFile(final SessionGui session, final String scriptFile)
-            throws InterpreterDriver.InterpreterException {
+    public void executeScriptFile(final SessionGui session, final String scriptFile) {
+        final String s2 = scriptFile;
 
-        try {
-            final String s2 = scriptFile;
-
-            session.setMacroRunning(true);
-            final Runnable interpretIt = new Runnable() {
-                @Override
-                public void run() {
-//               PySystemState.initialize(System.getProperties(),null, new String[] {""},this.getClass().getClassLoader());
-
-                    _interpreter = new PythonInterpreter();
-                    _interpreter.set("_session", session);
-                    try {
-                        _interpreter.execfile(s2);
-                    } catch (final PyException pse) {
-                        Platform.runLater(() -> UiUtils.showError(pse, "Error in script " + s2));
-                    } finally {
-                        session.setMacroRunning(false);
-                    }
-                }
-
-            };
-
-            // lets start interpreting it.
-            final Thread interpThread = new Thread(interpretIt);
-            interpThread.setDaemon(true);
-            interpThread.start();
-
-        } catch (final PyException ex) {
-            throw new InterpreterDriver.InterpreterException(ex);
-        } catch (final Exception ex2) {
-            throw new InterpreterDriver.InterpreterException(ex2);
-        }
+        session.setMacroRunning(true);
+        AsyncServices.startTask(new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                _interpreter = new PythonInterpreter();
+                _interpreter.set("_session", session);
+                _interpreter.execfile(s2);
+                return null;
+            }
+            @Override
+            protected void succeeded() {
+                session.setMacroRunning(false);
+            }
+            @Override
+            protected void failed() {
+                session.setMacroRunning(false);
+                UiUtils.showError(getException(), "Error in script " + s2);
+            }
+        });
     }
 
     @Override

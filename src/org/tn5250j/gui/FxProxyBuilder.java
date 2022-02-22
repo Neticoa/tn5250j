@@ -17,7 +17,7 @@ public class FxProxyBuilder {
         final InvocationHandler handler = new InvocationHandler() {
             @Override
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-                return UiUtils.runInFxAndWait(() -> method.invoke(delegate, args));
+                return UiUtils.callInFxAndWait(() -> method.invoke(delegate, args));
             }
         };
 

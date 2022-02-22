@@ -58,7 +58,7 @@ public abstract class AbstractImageEncoder implements Encoder {
         }
     }
     public void encodeNode(final Node node, final OutputStream os) throws IOException, EncoderException {
-        final WritableImage image = UiUtils.runInFxAndWait(
+        final WritableImage image = UiUtils.callInFxAndWait(
                 () -> node.snapshot(new SnapshotParameters(), null));
         encode(image, os);
     }

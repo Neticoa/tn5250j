@@ -262,7 +262,7 @@ public class Tn5250jController extends Thread {
 
         final Session5250 newses = manager.openSession(fin, null, name);
 
-        UiUtils.runInFxAndWait(() -> {
+        UiUtils.callInFxAndWait(() -> {
             final SessionPanel gui = new SessionPanel(newses);
 
             final Stage stage = new Stage();

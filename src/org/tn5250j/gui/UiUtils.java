@@ -210,7 +210,7 @@ public final class UiUtils {
                 bg, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
-    public static <T> T runInFxAndWait(final Callable<T> call) {
+    public static <T> T callInFxAndWait(final Callable<T> call) {
         try {
             if (Platform.isFxApplicationThread()) {
                 return call.call();
@@ -228,6 +228,13 @@ public final class UiUtils {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void runInFxAndWait(final Runnable run) {
+        callInFxAndWait(() -> {
+            run.run();
+            return null;
+        });
     }
 
     /**
