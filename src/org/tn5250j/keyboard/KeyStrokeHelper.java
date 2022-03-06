@@ -9,10 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.tn5250j.Temporary;
-
-import javafx.event.EventTarget;
-import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
@@ -400,31 +396,6 @@ public class KeyStrokeHelper {
             return true;
       }
       return false;
-    }
-
-    @Temporary
-    public static KeyEvent toFxKeyEvent(final java.awt.event.KeyEvent e, final EventTarget target) {
-        final int mod = e.getModifiersEx();
-
-        return new KeyEvent(e.getSource(), target, getKeyType(e.getID()),
-                new String(new char[] {keyCharToEmbedKeyChar(e.getKeyChar())}),
-                java.awt.event.KeyEvent.getKeyText(e.getKeyCode()),
-                getCode(e.getKeyCode()),
-                mod * SHIFT_MASK != 0,
-                mod * CTRL_MASK != 0,
-                mod * ALT_MASK != 0,
-                mod * META_MASK != 0);
-    }
-    static EventType<KeyEvent> getKeyType(final int id) {
-        switch (id) {
-            case java.awt.event.KeyEvent.KEY_PRESSED:
-                return KeyEvent.KEY_PRESSED;
-            case java.awt.event.KeyEvent.KEY_RELEASED:
-                return KeyEvent.KEY_RELEASED;
-            case java.awt.event.KeyEvent.KEY_TYPED:
-                return KeyEvent.KEY_TYPED;
-        }
-        return KeyEvent.ANY;
     }
 
     static char keyCharToEmbedKeyChar(final char ch) {

@@ -5,7 +5,6 @@ package org.tn5250j.sessionsettings;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGuiAdapter;
-import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Application;
@@ -18,8 +17,6 @@ import javafx.stage.Stage;
 public class SessionSettingsDemo extends Application {
     public static void main(final String[] args) {
         LangTool.init();
-        SwingToFxUtils.initFx();
-
         launch();
     }
 

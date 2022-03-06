@@ -25,7 +25,6 @@
  */
 package org.tn5250j;
 
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -501,13 +500,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             recalculateOIASizes();
             drawOIA();
         }
-
-        refreshView();
-    }
-
-    protected void refreshView() {
-        ((Component) gui).validate();
-        ((Component) gui).repaint();
     }
 
     private void setCursorBlinking(final boolean blinking) {

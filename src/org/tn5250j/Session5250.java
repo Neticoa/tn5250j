@@ -37,6 +37,7 @@ import org.tn5250j.gui.SystemRequestDialog;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.interfaces.SessionInterface;
+import org.tn5250j.tools.AsyncServices;
 
 /**
  * A host session
@@ -249,11 +250,8 @@ public class Session5250 implements SessionInterface {
         // lets set this puppy up to connect within its own thread
         // now lets set it to connect within its own daemon thread
         //    this seems to work better and is more responsive than using
-        //    swingutilities's invokelater
-        final Thread ct = new Thread(() -> vt.connect(ses, portp));
-        ct.setDaemon(true);
-        ct.start();
-
+        //    invokelater
+        AsyncServices.runTask(() -> vt.connect(ses, portp));
     }
 
     @Override

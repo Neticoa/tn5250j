@@ -26,12 +26,6 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.awt.Rectangle;
-
-/**
- * Simplified rectangle class. Very much similar like java.awt.Rectangle,
- * but we want to decouple the packages ...
- */
 public class Rect {
 
     /* default */ public int x;
@@ -50,10 +44,6 @@ public class Rect {
      * @param rect
      */
     public void setBounds(final Rect rect) {
-        setBounds(rect.x, rect.y, rect.width, rect.height);
-    }
-
-    public void setBounds(final Rectangle rect) {
         setBounds(rect.x, rect.y, rect.width, rect.height);
     }
 

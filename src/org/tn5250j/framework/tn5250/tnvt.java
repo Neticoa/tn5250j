@@ -1106,13 +1106,6 @@ public final class tnvt implements Runnable {
 
             try {
                 if (!strpccmd) {
-                    //               SwingUtilities.invokeAndWait(
-                    //                  new Runnable () {
-                    //                     public void run() {
-                    //                        screen52.updateDirty();
-                    //                     }
-                    //                  }
-                    //               );
                     screen52.updateDirty();
                     //				controller.validate();
                     //				log.debug("update dirty");

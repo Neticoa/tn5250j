@@ -212,7 +212,7 @@ public class Gui5250Frame extends GenericTn5250Frame implements
     }
 
     /**
-     * Determines the name, which is configured for one tab ({@link SessionPanelSwing})
+     * Determines the name, which is configured for one tab ({@link SessionPanel})
      *
      * @param sessiongui
      * @return
@@ -235,7 +235,7 @@ public class Gui5250Frame extends GenericTn5250Frame implements
 
     /**
      * Sets the main frame title to the same as the current selected tab's title.
-     * @see {@link #setSessionTitle(SessionPanelSwing)}
+     * @see {@link #setSessionTitle(SessionPanel)}
      */
     private void updateSessionTitle() {
         final SessionGui selectedComponent = (SessionGui) this.sessTabbedPane.getSelectionModel()

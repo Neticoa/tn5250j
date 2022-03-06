@@ -19,8 +19,6 @@
 
 package org.tn5250j.tools.system;
 
-import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,31 +41,6 @@ public class OperatingSystem {
 
     private static final TN5250jLogger LOG =
             TN5250jLogFactory.getLogger("org.tn5250j.tools.system.OperatingSystem");
-
-    public static final Rectangle getScreenBounds() {
-        int screenX = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        int screenY = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-        int x, y, w, h;
-
-        if (isMacOS()) {
-            x = 0;
-            y = 22;
-            w = screenX;
-            h = screenY - y - 4;//shadow size
-        } else if (isWindows()) {
-            x = -4;
-            y = -4;
-            w = screenX - 2 * x;
-            h = screenY - 2 * y;
-        } else {
-            x = 0;
-            y = 0;
-            w = screenX;
-            h = screenY;
-        }
-
-        return new Rectangle(x, y, w, h);
-    }
 
     //{{{ isWindows() method
 
@@ -114,7 +87,7 @@ public class OperatingSystem {
      * @param url the file's url (the url must start with either "http://",
      *            "https://","mailto:" or "file://").
      */
-    public static void displayURL(String url) {
+    public static void displayURL(final String url) {
         // Check Customized External Program first
         if (launchExternalProgram(url)) return;
 
@@ -128,25 +101,25 @@ public class OperatingSystem {
             protocol = urlUrl.getProtocol();
             if (protocol.startsWith("http"))
                 protocol = "http";
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             LOG.warn(e.getMessage());
         }
 
-        Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
+        final Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
 
         // We now check if we have a property defined for the external program to
         //   handle this protocol.
         if (props.getProperty("emul.protocol." + protocol, "").trim().length() > 0) {
             String commandTemplate = props.getProperty("emul.protocol." + protocol).trim();
 
-            Object[] urlParm = new Object[1];
+            final Object[] urlParm = new Object[1];
             urlParm[0] = url;
             if (commandTemplate.lastIndexOf("{0}") == -1)
                 commandTemplate += " {0}";
-            java.text.MessageFormat format = new java.text.MessageFormat(commandTemplate);
+            final java.text.MessageFormat format = new java.text.MessageFormat(commandTemplate);
             try {
                 command = format.format(urlParm);
-            } catch (Exception exx) {
+            } catch (final Exception exx) {
                 LOG.warn("Unable to parse the url " + url + " using command " +
                         commandTemplate);
             }
@@ -159,13 +132,13 @@ public class OperatingSystem {
             execute(command);
 
         } else {
-            boolean windows = isWindows();
+            final boolean windows = isWindows();
             String cmd = null;
             try {
                 if (windows) {
                     // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
                     cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
-                    Process p = Runtime.getRuntime().exec(cmd);
+                    final Process p = Runtime.getRuntime().exec(cmd);
                 } else {
                     // Under Unix, Netscape has to be running for the "-remote"
                     // command to work. So, we try sending the command and
@@ -177,19 +150,19 @@ public class OperatingSystem {
                     try {
                         // wait for exit code -- if it's 0, command worked,
                         // otherwise we need to start the browser up.
-                        int exitCode = p.waitFor();
+                        final int exitCode = p.waitFor();
                         if (exitCode != 0) {
                             // Command failed, start up the browser
                             // cmd = 'netscape http://www.javaworld.com'
                             cmd = UNIX_PATH + " " + url;
                             p = Runtime.getRuntime().exec(cmd);
                         }
-                    } catch (InterruptedException x) {
+                    } catch (final InterruptedException x) {
                         LOG.warn("Error bringing up browser, cmd='" + cmd + "'");
                         LOG.warn("Caught: " + x);
                     }
                 }
-            } catch (java.io.IOException x) {
+            } catch (final java.io.IOException x) {
                 // couldn't exec browser
                 LOG.warn("Could not invoke browser, command=" + cmd);
                 LOG.warn("Caught: " + x);
@@ -201,11 +174,11 @@ public class OperatingSystem {
      * @param url
      * @return true when found external program and has been launched; false when not found external program.
      */
-    private static boolean launchExternalProgram(String url) {
+    private static boolean launchExternalProgram(final String url) {
         // first let's check if we have an external protocol program defined
         try {
-            for (ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
-                String program = p.getName();
+            for (final ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
+                final String program = p.getName();
                 if (url.toLowerCase().startsWith(program.toLowerCase())) {
                     String params = url.substring(program.length() + 1);
                     params = params.replace(',', ' ');
@@ -220,20 +193,20 @@ public class OperatingSystem {
                     return true;
                 }
             }
-        } catch (Exception exx) {
+        } catch (final Exception exx) {
             LOG.warn("Unable to run External Program: " + exx.getMessage());
         }
         return false;
     }
 
-    public static int execute(String command) {
+    public static int execute(final String command) {
 
         int exitCode = -1;
 
         try {
             LOG.info("Executing command='" + command + "'");
 
-            Process p = Runtime.getRuntime().exec(command);
+            final Process p = Runtime.getRuntime().exec(command);
             exitCode = 0;
             // wait for exit code -- if it's 0, command worked,
 //         exitCode = p.waitFor();
@@ -245,7 +218,7 @@ public class OperatingSystem {
 //         log.warn("Error processing command, command='" + command + "'");
 //         log.warn("Caught: " + exc.getMessage());
 //      }
-        catch (IOException ioe) {
+        catch (final IOException ioe) {
             LOG.warn("Error processing command, command='" + command + "'");
             LOG.warn("Caught: " + ioe.getMessage());
         }
@@ -278,7 +251,7 @@ public class OperatingSystem {
         if (System.getProperty("mrj.version") != null) {
             os = MAC_OS_X;
         } else {
-            String osName = System.getProperty("os.name");
+            final String osName = System.getProperty("os.name");
             if (osName.indexOf("Windows 9") != -1
                     || osName.indexOf("Windows M") != -1) {
                 os = WINDOWS_9x;

@@ -52,6 +52,7 @@ import org.tn5250j.keyboard.actions.EmulatorAction;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.spoolfile.SpoolExporter;
+import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -520,11 +521,8 @@ public class SessionPanel extends BorderPane implements
             // lets set this puppy up to connect within its own thread
             // now lets set it to connect within its own daemon thread
             //    this seems to work better and is more responsive than using
-            //    swingutilities's invokelater
-            final Thread ct = new Thread(() -> session.getVT().connect());
-            ct.setDaemon(true);
-            ct.start();
-
+            //    invokelater
+            AsyncServices.runTask(() -> session.getVT().connect());
         }
 
     }
