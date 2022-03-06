@@ -1,5 +1,5 @@
 /*
- * Title: PrinterThread
+ * Title: PrinterTask
  * Copyright:   Copyright (c) 2001
  * Company:
  *

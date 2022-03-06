@@ -247,18 +247,10 @@ public class Session5250 implements SessionInterface {
         final int portp = port;
 
         // lets set this puppy up to connect within its own thread
-        final Runnable connectIt = new Runnable() {
-            @Override
-            public void run() {
-                vt.connect(ses, portp);
-            }
-
-        };
-
         // now lets set it to connect within its own daemon thread
         //    this seems to work better and is more responsive than using
         //    swingutilities's invokelater
-        final Thread ct = new Thread(connectIt);
+        final Thread ct = new Thread(() -> vt.connect(ses, portp));
         ct.setDaemon(true);
         ct.start();
 

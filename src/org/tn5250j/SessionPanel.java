@@ -518,18 +518,10 @@ public class SessionPanel extends BorderPane implements
             }
         } else {
             // lets set this puppy up to connect within its own thread
-            final Runnable connectIt = new Runnable() {
-                @Override
-                public void run() {
-                    session.getVT().connect();
-                }
-
-            };
-
             // now lets set it to connect within its own daemon thread
             //    this seems to work better and is more responsive than using
             //    swingutilities's invokelater
-            final Thread ct = new Thread(connectIt);
+            final Thread ct = new Thread(() -> session.getVT().connect());
             ct.setDaemon(true);
             ct.start();
 
@@ -758,9 +750,9 @@ public class SessionPanel extends BorderPane implements
     @Override
     public final void printMe() {
         Platform.runLater(() -> {
-            final PrinterTask printerThread = new PrinterTask(screen, guiGraBuf.font,
+            final PrinterTask printerTask = new PrinterTask(screen, guiGraBuf.font,
                     screen.getColumns(), screen.getRows(), this);
-            printerThread.run();
+            printerTask.run();
             getFocusForMe();
         });
     }

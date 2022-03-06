@@ -45,7 +45,7 @@ public class SpoolExportWizardDemo extends Application {
         return createSpoolFile(attributes);
     }
     public static SpooledFile createSpoolFile(final Map<Integer, Object> attributes) {
-        final AS400 system = new AS400("LocalhostSys");
+        final AS400 system = new AS400("213.41.75.182");
         final int number = 7;
         final String jobName = "job-7";
         final String jobUser = "dev";

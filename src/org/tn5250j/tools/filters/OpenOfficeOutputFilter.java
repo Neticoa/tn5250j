@@ -20,21 +20,22 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.ArrayList;
 
 public class OpenOfficeOutputFilter implements OutputFilterInterface {
 
-    private int row;
     StringBuffer sb;
 
     ZipOutputStream fout = null;
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
 
 
@@ -43,7 +44,6 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
         writeManifestEntry();
 
         // initialize work variables
-        row = 0;
         sb = new StringBuffer();
 
     }
@@ -60,13 +60,13 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
                         " <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"content.xml\"/>\n" +
                         "</manifest:manifest>\n";
 
-        ZipEntry zipentry = new ZipEntry("meta-inf\\manifest.xml");
+        final ZipEntry zipentry = new ZipEntry("meta-inf\\manifest.xml");
         zipentry.setTime(System.currentTimeMillis());
         try {
             fout.putNextEntry(zipentry);
             fout.write(manifest.getBytes());
             fout.closeEntry();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -74,18 +74,18 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
         // write out the xml record information for each field that is selected
 
-        row++;
         int c = 0;
         rb.append("   <table:table-row table:style-name=\"ro1\">\n");
 
         for (int x = 0; x < ffd.size(); x++, c++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
 
                 switch (f.getFieldType()) {
@@ -113,13 +113,13 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
         try {
             fout.write(rb.toString().getBytes());
             fout.flush();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
             System.out.println("parse fields " + ioe.getMessage());
         }
     }
 
-    private String tr2xml(String s) {
+    private String tr2xml(final String s) {
 
         sb.setLength(0);
 
@@ -332,8 +332,9 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+            final List<FileFieldDef> ffd, final char decChar) {
 
         final String header1 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -374,7 +375,7 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
                         "   <table:table-column table:style-name=\"co1\" table:number-columns-repeated=\"251\" table:default-cell-style-name=\"Default\"/>\n";
 
 
-        ZipEntry zipentry = new ZipEntry("content.xml");
+        final ZipEntry zipentry = new ZipEntry("content.xml");
         zipentry.setTime(System.currentTimeMillis());
         try {
             fout.putNextEntry(zipentry);
@@ -386,11 +387,11 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
             FileFieldDef f;
 
             // lets write out some formats for numeric values.
-            int n100 = 100;
+            final int n100 = 100;
             int ce = 0;
             String s = "";
             for (int k = 0; k < ffd.size(); k++, ce++) {
-                f = (FileFieldDef) ffd.get(k);
+                f = ffd.get(k);
                 if (f.isWriteField()) {
                     if (f.getFieldType() == 'P' ||
                             f.getFieldType() == 'S') {
@@ -409,12 +410,10 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
 
             // write out the record information for each field that is selected
 
-            row++;
-            int column = 1;
             fout.write("   <table:table-row table:style-name=\"ro1\">\n".getBytes());
 
             for (int x = 0; x < ffd.size(); x++) {
-                f = (FileFieldDef) ffd.get(x);
+                f = ffd.get(x);
                 if (f.isWriteField()) {
                     fout.write("    <table:table-cell>\n".getBytes());
                     fout.write("     <text:p>".getBytes());
@@ -425,7 +424,7 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
             }
             fout.write("   </table:table-row>\n".getBytes());
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -434,7 +433,8 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the xml output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         final String footer =
                 "  </table:table>\n" +
@@ -457,16 +457,18 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
             fout.write(footer.getBytes());
             fout.flush();
             fout.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return false;
     }
 
+    @Override
     public void setCustomProperties() {
 
     }

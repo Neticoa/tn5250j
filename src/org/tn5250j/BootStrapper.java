@@ -1,38 +1,58 @@
 package org.tn5250j;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Vector;
 
-import org.tn5250j.event.*;
+import org.tn5250j.event.BootEvent;
+import org.tn5250j.event.BootListener;
+import org.tn5250j.tools.AsyncServices;
 
 public class BootStrapper extends Thread {
 
-    private Socket socket = null;
     private ServerSocket serverSocket = null;
     boolean listening = true;
     private Vector<BootListener> listeners;
-    private BootEvent bootEvent;
 
     public BootStrapper() {
         super("BootStrapper");
         try {
             serverSocket = new ServerSocket(3036);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Could not listen on port: 3036.");
         }
 
     }
 
+    @Override
     public void run() {
 
         System.out.println("BootStrapper listening");
-        while (true) {
-            listen();
-            getNewSessionOptions();
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                final Socket socket = serverSocket.accept();
+                AsyncServices.startTask(() -> {
+                    try {
+                        final BufferedReader in = new BufferedReader(
+                                new InputStreamReader(
+                                        socket.getInputStream()));
+
+                        final BootEvent bootEvent = new BootEvent(this, in.readLine());
+                        System.out.println(bootEvent.getNewSessionOptions());
+                        return bootEvent;
+                    } finally {
+                        socket.close();
+                    }
+                }, this::fireBootEvent, Throwable::printStackTrace);
+
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
             System.out.println("got one");
         }
-
     }
 
     /**
@@ -40,7 +60,7 @@ public class BootStrapper extends Thread {
      *
      * @param listener The BootListener to be added
      */
-    public synchronized void addBootListener(BootListener listener) {
+    public synchronized void addBootListener(final BootListener listener) {
 
         if (listeners == null) {
             listeners = new java.util.Vector<BootListener>(3);
@@ -52,54 +72,15 @@ public class BootStrapper extends Thread {
     /**
      * Notify all registered listeners of the BootEvent.
      */
-    private void fireBootEvent() {
+    private void fireBootEvent(final BootEvent bootEvent) {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                BootListener target =
+                final BootListener target =
                         listeners.elementAt(i);
                 target.bootOptionsReceived(bootEvent);
             }
         }
-    }
-
-    /**
-     * Listen for a connection from another tn5250j session starting.
-     */
-    private void listen() {
-
-        try {
-            socket = serverSocket.accept();
-        } catch (IOException ioe) {
-            System.out.println(this.getName() + ": " + ioe.getMessage());
-        }
-
-    }
-
-    /**
-     * Retrieve the boot options from the other JVM wanting to start a new
-     * session.
-     */
-    private void getNewSessionOptions() {
-
-        try {
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                            socket.getInputStream()));
-
-            bootEvent = new BootEvent(this, in.readLine());
-
-            System.out.println(bootEvent.getNewSessionOptions());
-            fireBootEvent();
-
-            in.close();
-            socket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

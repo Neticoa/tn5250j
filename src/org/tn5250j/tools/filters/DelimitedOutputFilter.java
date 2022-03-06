@@ -23,7 +23,7 @@ package org.tn5250j.tools.filters;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
@@ -55,14 +55,14 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
      * Write the html header of the output file
      */
     @Override
-    public void parseFields(final byte[] cByte, final ArrayList ffd, final StringBuffer rb) {
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
         // write out the html record information for each field that is selected
 
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
 
 
@@ -89,14 +89,14 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
      */
     @Override
     public void writeHeader(final String fileName, final String host,
-                            final ArrayList ffd, final char decChar) {
+                            final List<FileFieldDef> ffd, final char decChar) {
 
         FileFieldDef f;
         final StringBuffer sb = new StringBuffer();
         //  loop through each of the fields and write out the field name for
         //    each selected field
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
                 sb.append(f.getFieldName() + delimiter);
             }
@@ -110,7 +110,7 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
      * write the footer of the html output
      */
     @Override
-    public void writeFooter(final ArrayList ffd) {
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         fout.flush();
         fout.close();

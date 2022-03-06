@@ -44,7 +44,7 @@ public class FTP5250Prot {
     private int timeout = 50000;
     private boolean connected;
     private String remoteDir;
-    private ArrayList ffd;
+    private List<FileFieldDef> ffd;
     private tnvt vt;
     private int recordLength;
     private int recordOutLength;
@@ -54,8 +54,7 @@ public class FTP5250Prot {
     private boolean aborted;
     private char decChar;
     private OutputFilterInterface ofi;
-    private Vector members;
-    private Thread getThread;
+    private List<MemberInfo> members;
 
     public FTP5250Prot(final tnvt v) {
         vt = v;
@@ -288,7 +287,7 @@ public class FTP5250Prot {
      */
     public boolean isFieldSelected(final int which) {
 
-        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         return ffD.isWriteField();
 
     }
@@ -300,7 +299,7 @@ public class FTP5250Prot {
 
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             f.setWriteField(true);
         }
 
@@ -313,7 +312,7 @@ public class FTP5250Prot {
     protected void selectNone() {
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             f.setWriteField(false);
         }
 
@@ -326,7 +325,7 @@ public class FTP5250Prot {
 
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField())
                 return true;
         }
@@ -338,7 +337,7 @@ public class FTP5250Prot {
      */
     public void setFieldSelected(final int which, final boolean value) {
 
-        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         ffD.setWriteField(value);
 
     }
@@ -348,7 +347,7 @@ public class FTP5250Prot {
      */
     public String getFieldName(final int which) {
 
-        final FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         return ffD.getFieldName();
 
     }
@@ -509,7 +508,7 @@ public class FTP5250Prot {
                 ffd = null;
             }
 
-            ffd = new ArrayList();
+            ffd = new ArrayList<>();
             while ((data = dis.readLine()) != null) {
                 final FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
 
@@ -556,7 +555,7 @@ public class FTP5250Prot {
                 // WHNULL Allow NULL Data
                 if (data.substring(503, 503 + 1).equals("Y")) {
                     if (allowsNullFields == null)
-                        allowsNullFields = new ArrayList(3);
+                        allowsNullFields = new ArrayList<>(3);
                     allowsNullFields.add(ffDesc.getFieldName());
                     printFTPInfo("Warning -- File allows null fields!!!");
                 }
@@ -596,7 +595,7 @@ public class FTP5250Prot {
         printFTPInfo("<----------------- File Field Information ---------------->");
 
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             l += f.getFieldLength();
             o += f.getBufferOutLength();
             printFTPInfo(f.toString());
@@ -681,7 +680,7 @@ public class FTP5250Prot {
         DataInputStream datainputstream = null;
         executeCommand("TYPE", "I");
         final String remoteFile = "QTEMP/FML";
-        members = new Vector(10);
+        members = new ArrayList<>(10);
 
         try {
             socket = createPassiveSocket("RETR " + remoteFile);
@@ -690,7 +689,6 @@ public class FTP5250Prot {
 
                 final byte abyte0[] = new byte[858];
 
-                int c = 0;
                 int len = 0;
                 final StringBuffer sb = new StringBuffer(10);
 
@@ -701,7 +699,7 @@ public class FTP5250Prot {
                     j = datainputstream.read();
                     if (j == -1)
                         break;
-                    c++;
+
                     abyte0[len++] = (byte) j;
 
                     if (len == abyte0.length) {
@@ -766,17 +764,16 @@ public class FTP5250Prot {
         if (members != null) {
 
             if (member2 == null) {
-                final MemberInfo mi = (MemberInfo) members.get(0);
+                final MemberInfo mi = members.get(0);
                 fileSize = mi.getSize();
                 status.setFileLength(mi.getSize());
                 member2 = mi.getName();
             } else {
 
-                final Iterator<?> i = members.iterator();
-                MemberInfo mi = null;
+                final Iterator<MemberInfo> i = members.iterator();
 
                 while (i.hasNext()) {
-                    mi = (MemberInfo) i.next();
+                    final MemberInfo mi = i.next();
                     if (mi.getName().trim().equalsIgnoreCase(member2.trim())) {
                         fileSize = mi.getSize();
                         status.setFileLength(mi.getSize());
@@ -910,7 +907,7 @@ public class FTP5250Prot {
             }
         };
 
-        getThread = new Thread(getRun);
+        final Thread getThread = new Thread(getRun);
         getThread.setPriority(2);
         getThread.start();
 
@@ -1054,9 +1051,11 @@ public class FTP5250Prot {
      * write the footer of the html output
      */
     private void writeFooter() {
-
         ofi.writeFooter(ffd);
+    }
 
+    public String getRemoteDir() {
+        return remoteDir;
     }
 
     class MemberInfo {

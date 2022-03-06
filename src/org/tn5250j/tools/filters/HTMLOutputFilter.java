@@ -20,16 +20,19 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.List;
 
 public class HTMLOutputFilter implements OutputFilterInterface {
 
     PrintStream fout = null;
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
         fout = new PrintStream(new FileOutputStream(fileName));
     }
@@ -37,7 +40,8 @@ public class HTMLOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
@@ -46,7 +50,7 @@ public class HTMLOutputFilter implements OutputFilterInterface {
         rb.append("<TR>");
         rb.append('\n');
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
                 rb.append("<TD>");
                 rb.append(f.parseData(cByte));
@@ -65,8 +69,9 @@ public class HTMLOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+                            final List<FileFieldDef> ffd, final char decChar) {
 
         try {
 
@@ -118,7 +123,7 @@ public class HTMLOutputFilter implements OutputFilterInterface {
             //  loop through each of the fields and write out the field name for
             //    each selected field
             for (int x = 0; x < ffd.size(); x++) {
-                f = (FileFieldDef) ffd.get(x);
+                f = ffd.get(x);
                 if (f.isWriteField()) {
                     out = "<TH>" + f.getFieldName() + "</TH>";
                     fout.write(out.getBytes());
@@ -129,7 +134,7 @@ public class HTMLOutputFilter implements OutputFilterInterface {
             fout.write("</TR>".getBytes());
             fout.write('\n');
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
 //         printFTPInfo(" error writing header " + ioe.getMessage());
         }
@@ -139,7 +144,8 @@ public class HTMLOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the html output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         try {
 
@@ -153,17 +159,19 @@ public class HTMLOutputFilter implements OutputFilterInterface {
             fout.flush();
             fout.close();
 
-        } catch (IOException ioex) {
+        } catch (final IOException ioex) {
             System.out.println(ioex.getMessage());
         }
 
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return false;
     }
 
+    @Override
     public void setCustomProperties() {
 
     }

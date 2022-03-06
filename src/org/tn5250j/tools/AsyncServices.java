@@ -14,7 +14,20 @@ import javafx.concurrent.Task;
  *
  */
 public class AsyncServices {
-    public static <V> void startTask(final Task<V> task) {
+    /**
+     * Used for launch the task in services thread pool.
+     * @param task task to run.
+     */
+    public static void runTask(final Runnable task) {
+        startTask(new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                task.run();
+                return null;
+            }
+        });
+    }
+    public static <V> Service<V> startTask(final Task<V> task) {
         final Service<V> service = new Service<V>() {
             @Override
             protected Task<V> createTask() {
@@ -22,9 +35,10 @@ public class AsyncServices {
             }
         };
         service.start();
+        return service;
     }
-    public static <V> void startTask(final Callable<V> call, final Consumer<V> onSuccess, final Consumer<Throwable> onError) {
-        startTask(new Task<V>() {
+    public static <V> Service<V> startTask(final Callable<V> call, final Consumer<V> onSuccess, final Consumer<Throwable> onError) {
+        return startTask(new Task<V>() {
             @Override
             protected V call() throws Exception {
                 return call.call();
