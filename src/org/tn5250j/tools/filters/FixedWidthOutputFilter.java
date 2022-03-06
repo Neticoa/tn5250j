@@ -20,9 +20,10 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.List;
 
 public class FixedWidthOutputFilter implements OutputFilterInterface {
 
@@ -30,7 +31,8 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
     StringBuffer sb = new StringBuffer();
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
         fout = new PrintStream(new FileOutputStream(fileName));
     }
@@ -38,13 +40,14 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
         // write out the html record information for each field that is selected
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
 
 
@@ -73,7 +76,7 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
      * @param f
      * @return
      */
-    private String getFixedLength(byte[] cByte, FileFieldDef f) {
+    private String getFixedLength(final byte[] cByte, final FileFieldDef f) {
 
         sb.setLength(0);
 
@@ -99,14 +102,14 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
 
     }
 
-    private void formatNumeric(StringBuffer sb) {
+    private void formatNumeric(final StringBuffer sb) {
 
         if (sb.length() == 0) {
             sb.append('0');
             return;
         }
 
-        int len = sb.length();
+        final int len = sb.length();
         int counter = 0;
         boolean done = false;
         boolean neg = false;
@@ -148,8 +151,9 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+            final List<FileFieldDef> ffd, final char decChar) {
 
 //      FileFieldDef f;
 //      StringBuffer sb = new StringBuffer();
@@ -169,17 +173,20 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the html output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         fout.flush();
         fout.close();
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return false;
     }
 
+    @Override
     public void setCustomProperties() {
 
     }

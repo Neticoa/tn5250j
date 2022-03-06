@@ -20,9 +20,11 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.List;
 
 public class KSpreadOutputFilter implements OutputFilterInterface {
 
@@ -32,7 +34,8 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
     PrintStream fout = null;
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
         fout = new PrintStream(new FileOutputStream(fileName));
 
@@ -44,7 +47,8 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
@@ -54,7 +58,7 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
         int column = 1;
 
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
                 rb.append("    <cell row=" + "\"" + row + "\"");
                 rb.append(" column=" + "\"" + column++ + "\" > \n");
@@ -80,7 +84,7 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
         fout.flush();
     }
 
-    private String tr2xml(String s) {
+    private String tr2xml(final String s) {
 
         sb.setLength(0);
 
@@ -107,8 +111,9 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+            final List<FileFieldDef> ffd, final char decChar) {
 
         final String head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<!DOCTYPE spreadsheet >" +
@@ -150,7 +155,7 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
             int column = 1;
 
             for (int x = 0; x < ffd.size(); x++) {
-                f = (FileFieldDef) ffd.get(x);
+                f = ffd.get(x);
                 if (f.isWriteField()) {
                     fout.print("   <cell row=" + "\"" + row + "\"");
                     fout.print(" column=" + "\"" + column++ + "\" >\n");
@@ -162,7 +167,7 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
                 }
             }
             fout.flush();
-        } catch (IOException ioex) {
+        } catch (final IOException ioex) {
             System.out.println(ioex.getMessage());
         }
 
@@ -172,7 +177,8 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the xml output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         try {
 
@@ -183,17 +189,19 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
             fout.flush();
             fout.close();
 
-        } catch (IOException ioex) {
+        } catch (final IOException ioex) {
             System.out.println(ioex.getMessage());
         }
 
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return false;
     }
 
+    @Override
     public void setCustomProperties() {
 
     }

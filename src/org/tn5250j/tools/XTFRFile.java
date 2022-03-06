@@ -42,6 +42,7 @@ import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ActionDelegateDialogPane;
+import org.tn5250j.gui.FxProxyBuilder;
 import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.NotClosableDialogPane;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
@@ -83,9 +84,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
-public class XTFRFile
-        extends GenericTn5250Frame
-        implements FTPStatusListener {
+public class XTFRFile extends GenericTn5250Frame {
 
     private FTP5250Prot ftpProtocol;
     private AS400Xtfr axtfr;
@@ -166,10 +165,26 @@ public class XTFRFile
             }
         });
 
+        final FTPStatusListener statusListener = FxProxyBuilder.buildProxy(new FTPStatusListener() {
+            @Override
+            public void statusReceived(final FTPStatusEvent e) {
+                statusReceivedImpl(e);
+            }
+            @Override
+            public void fileInfoReceived(final FTPStatusEvent e) {
+                fileInfoReceivedImpl(e);
+            }
+            @Override
+            public void commandStatusReceived(final FTPStatusEvent e) {
+                commandStatusReceivedImpl(e);
+            }
+        }, FTPStatusListener.class);
+
+
         ftpProtocol = new FTP5250Prot(vt);
-        ftpProtocol.addFTPStatusListener(this);
+        ftpProtocol.addFTPStatusListener(statusListener );
         axtfr = new AS400Xtfr(vt);
-        axtfr.addFTPStatusListener(this);
+        axtfr.addFTPStatusListener(statusListener);
         createProgressMonitor();
 
         messageProgress = LangTool.getString("xtfr.messageProgress");
@@ -206,8 +221,7 @@ public class XTFRFile
         //      ExcelWorkbookFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelWorkbookOutputFilter");
     }
 
-    @Override
-    public void statusReceived(final FTPStatusEvent statusevent) {
+    private void statusReceivedImpl(final FTPStatusEvent statusevent) {
 
         if (monitor.isCanceled()) {
             ftpProtocol.setAborted();
@@ -262,14 +276,12 @@ public class XTFRFile
         }
     }
 
-    @Override
-    public void commandStatusReceived(final FTPStatusEvent statusevent) {
-        final String message = statusevent.getMessage() + '\n';
+    private void commandStatusReceivedImpl(final FTPStatusEvent e) {
+        final String message = e.getMessage() + '\n';
         Platform.runLater(() -> taskOutput.setText(taskOutput.getText() + message));
     }
 
-    @Override
-    public void fileInfoReceived(final FTPStatusEvent statusevent) {
+    private void fileInfoReceivedImpl(final FTPStatusEvent e) {
 
         hostFile.setText(ftpProtocol.getFullFileName(hostFile.getText()));
 

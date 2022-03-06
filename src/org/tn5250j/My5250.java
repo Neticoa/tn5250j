@@ -111,27 +111,26 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
         try {
             final Socket boot = new Socket("localhost", 3036);
+            try {
+                final PrintWriter out = new PrintWriter(boot.getOutputStream(), true);
 
-            final PrintWriter out = new PrintWriter(boot.getOutputStream(), true);
-
-            // parse args into a string to send to the other instance of
-            //    tn5250j
-            String opts = null;
-            for (int x = 0; x < args.length; x++) {
-                if (opts != null)
-                    opts += args[x] + " ";
-                else
-                    opts = args[x] + " ";
+                // parse args into a string to send to the other instance of
+                //    tn5250j
+                String opts = null;
+                for (int x = 0; x < args.length; x++) {
+                    if (opts != null)
+                        opts += args[x] + " ";
+                    else
+                        opts = args[x] + " ";
+                }
+                out.println(opts);
+                out.flush();
+            } finally {
+                boot.close();
             }
-            out.println(opts);
-            out.flush();
-            out.close();
-            boot.close();
+
             return true;
 
-        } catch (final UnknownHostException e) {
-            // TODO: Should be logged @ DEBUG level
-            //         System.err.println("localhost not known.");
         } catch (final IOException e) {
             // TODO: Should be logged @ DEBUG level
             //         System.err.println("No other instances of tn5250j running.");

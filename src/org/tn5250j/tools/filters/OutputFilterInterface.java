@@ -20,24 +20,22 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.util.List;
 
 public interface OutputFilterInterface {
 
 
-    public void createFileInstance(String fileName) throws
+    void createFileInstance(String fileName) throws
             FileNotFoundException;
 
-    public abstract void writeHeader(String fileName, String host,
-                                     ArrayList ffd, char decSep);
+    void writeHeader(String fileName, String host, List<FileFieldDef> ffd, char decSep);
 
-    public abstract void writeFooter(ArrayList ffd);
+    void writeFooter(List<FileFieldDef> ffd);
 
-    public abstract void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb);
+    void parseFields(byte[] cByte, List<FileFieldDef> ffd, StringBuffer rb);
 
-    public abstract boolean isCustomizable();
+    boolean isCustomizable();
 
-    public abstract void setCustomProperties();
+    void setCustomProperties();
 }

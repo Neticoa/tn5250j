@@ -47,6 +47,7 @@ import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -125,9 +126,7 @@ public class Tn5250jController extends Thread {
             try {
                 final Tn5250jListener module = (Tn5250jListener) ext.newInstance();
                 listeners.add(module);
-                final ModuleThread thrd =
-                        new ModuleThread(jar.getParentFile(), module, config);
-                thrd.start();
+                AsyncServices.runTask(new ModuleTask(jar.getParentFile(), module, config));
 
             } catch (final InstantiationException e2) {
                 log.warn("Error instantiating class " + name);
@@ -222,20 +221,18 @@ public class Tn5250jController extends Thread {
         }
     }
 
-    private class ModuleThread extends Thread {
+    private class ModuleTask implements Runnable {
         File dir;
         Tn5250jListener mod;
         Properties config;
 
-        public ModuleThread(
+        public ModuleTask(
                 final File directory,
                 final Tn5250jListener module,
                 final Properties config) {
             dir = directory;
             mod = module;
             this.config = config;
-            this.setDaemon(true);
-            this.setName(module.getName());
         }
 
         @Override

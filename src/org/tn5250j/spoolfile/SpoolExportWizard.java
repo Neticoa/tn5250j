@@ -15,6 +15,7 @@ import org.tn5250j.gui.UiUtils;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.LangTool;
 
 import com.ibm.as400.access.AS400;
@@ -31,6 +32,8 @@ import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
 
 import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -110,9 +113,7 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
 
     // conical path of file
     private String conicalPath;
-
-    // exporting worker thread
-    private Thread workingThread;
+    private Service<Void> workingThread;
 
     //Construct the frame
     public SpoolExportWizard(final SpooledFile splfile, final SessionGui session) throws Exception {
@@ -551,24 +552,19 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
         if (!pagesValid())
             return;
 
-        workingThread = null;
+        final boolean isPdf = cvtType.getSelectionModel().getSelectedIndex() == 0;
 
-        if (cvtType.getSelectionModel().getSelectedIndex() == 0)
-            workingThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+        workingThread = AsyncServices.startTask(new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                if (isPdf) {
                     cvtToPDF();
-                }
-            });
-        else
-            workingThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+                } else {
                     cvtToText();
                 }
-            });
-
-        workingThread.start();
+                return null;
+            }
+        });
     }
 
     /**
@@ -828,7 +824,7 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
     /**
      * Open the correct type of output file depending on selection(s)
      */
-    public void openOutputFile() {
+    private void openOutputFile() {
 
         try {
 
@@ -1026,7 +1022,7 @@ public class SpoolExportWizard extends GenericTn5250Frame implements WizardListe
     public void canceled(final WizardEvent e) {
 //      System.out.println("It is canceled!");
         if (workingThread != null) {
-            workingThread.interrupt();
+            workingThread.cancel();
             workingThread = null;
         }
         this.setVisible(false);

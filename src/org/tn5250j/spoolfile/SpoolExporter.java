@@ -36,6 +36,7 @@ import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
+import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
@@ -243,16 +244,7 @@ public class SpoolExporter extends GenericTn5250Frame {
     }
 
     private void runLoader() {
-        final Runnable loader = new Runnable() {
-            @Override
-            public void run() {
-                loadSpoolFiles();
-            }
-        };
-
-        final Thread t = new Thread(loader);
-        t.setDaemon(true);
-        t.start();
+        AsyncServices.runTask(this::loadSpoolFiles);
     }
 
     private void loadSpoolFiles() {

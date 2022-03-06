@@ -20,9 +20,11 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 public class ExcelOutputFilter implements OutputFilterInterface {
@@ -34,11 +36,12 @@ public class ExcelOutputFilter implements OutputFilterInterface {
     Vector formats;
 
     // create instance of file for output
-    public void createFileInstance(String fileName) throws
+    @Override
+    public void createFileInstance(final String fileName) throws
             FileNotFoundException {
         try {
             fout = new DataOutputStream(new FileOutputStream(fileName));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println("create file " + e.getMessage());
         }
 
@@ -51,7 +54,8 @@ public class ExcelOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb) {
+    @Override
+    public void parseFields(final byte[] cByte, final List<FileFieldDef> ffd, final StringBuffer rb) {
 
         FileFieldDef f;
 
@@ -60,9 +64,9 @@ public class ExcelOutputFilter implements OutputFilterInterface {
         int col = 0;
         row++;
 
-        int fmt = 0;
+        final int fmt = 0;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField()) {
                 switch (f.getFieldType()) {
 
@@ -81,9 +85,9 @@ public class ExcelOutputFilter implements OutputFilterInterface {
     }
 
 
-    private void writeLabel(String label, int col) {
+    private void writeLabel(final String label, final int col) {
 
-        int wLen = label.length();
+        final int wLen = label.length();
 
         try {
             writeShort(0x04);
@@ -95,7 +99,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
             fout.write(0x00);
             fout.writeByte(wLen);
             fout.writeBytes(label);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
             System.out.println("write label: " + ioe.getMessage());
         }
@@ -110,7 +114,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
 //
 //   }
 
-    private void writeDouble(String string, int col, int fmtCode) {
+    private void writeDouble(final String string, final int col, final int fmtCode) {
 
         try {
             writeShort(0x03);
@@ -130,17 +134,17 @@ public class ExcelOutputFilter implements OutputFilterInterface {
 //         fout.writeByte(0x00);
 //         fout.writeByte(0x03);
 //         fout.writeShort(fmtCode);
-            double d = Double.parseDouble(string);
+            final double d = Double.parseDouble(string);
             writeLong(Double.doubleToLongBits(d));
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
             System.out.println("write double: " + ioe.getMessage());
         }
 
     }
 
-    private void writeFormat(int len, int decPos, int fmtCode) {
+    private void writeFormat(final int len, final int decPos, final int fmtCode) {
 
         if (formats == null) {
             formats = new Vector();
@@ -160,7 +164,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
         }
 
 
-        int fLen = sb.length();
+        final int fLen = sb.length();
 
         if (!formats.contains(Integer.toString(decPos))) {
 
@@ -173,7 +177,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
                 fout.writeByte(fLen);
 //         fout.writeByte(0x0);
                 fout.writeBytes(sb.toString());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
 
                 System.out.println("write label: " + ioe.getMessage());
             }
@@ -187,7 +191,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
      * @param l the <code>long</code> to be written.
      * @throws IOException if the underlying stream throws an IOException.
      */
-    public void writeLong(long l) throws IOException {
+    public void writeLong(final long l) throws IOException {
 
         fout.write((int) l & 0xFF);
         fout.write((int) (l >>> 8) & 0xFF);
@@ -207,7 +211,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
      * @param s the <code>short</code> to be written.
      * @throws IOException if the underlying stream throws an IOException.
      */
-    public void writeShort(int s) throws IOException {
+    public void writeShort(final int s) throws IOException {
 
         fout.write(s & 0xFF);
         fout.write((s >>> 8) & 0xFF);
@@ -216,8 +220,9 @@ public class ExcelOutputFilter implements OutputFilterInterface {
     /**
      * Write the html header of the output file
      */
-    public void writeHeader(String fileName, String host,
-                            ArrayList ffd, char decChar) {
+    @Override
+    public void writeHeader(final String fileName, final String host,
+                            final List<FileFieldDef> ffd, final char decChar) {
 
         final byte[] bof = {0x09, 0x08, 0x06, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00};
 
@@ -236,7 +241,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
             int c = 0;
 
             for (int x = 0; x < ffd.size(); x++) {
-                f = (FileFieldDef) ffd.get(x);
+                f = ffd.get(x);
                 if (f.isWriteField()) {
 
                     switch (f.getFieldType()) {
@@ -256,14 +261,14 @@ public class ExcelOutputFilter implements OutputFilterInterface {
             //    each selected field
             c = 0;
             for (int x = 0; x < ffd.size(); x++) {
-                f = (FileFieldDef) ffd.get(x);
+                f = ffd.get(x);
                 if (f.isWriteField()) {
                     writeLabel(f.getFieldName(), c++);
                 }
             }
 
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
 //      catch (Exception e) {
             System.out.println("header " + ioe.getMessage());
@@ -276,7 +281,8 @@ public class ExcelOutputFilter implements OutputFilterInterface {
     /**
      * write the footer of the html output
      */
-    public void writeFooter(ArrayList ffd) {
+    @Override
+    public void writeFooter(final List<FileFieldDef> ffd) {
 
         try {
 
@@ -287,17 +293,19 @@ public class ExcelOutputFilter implements OutputFilterInterface {
             fout.flush();
             fout.close();
 
-        } catch (IOException ioex) {
+        } catch (final IOException ioex) {
             System.out.println("write footer: " + ioex.getMessage());
         }
 
 
     }
 
+    @Override
     public boolean isCustomizable() {
         return false;
     }
 
+    @Override
     public void setCustomProperties() {
 
     }
