@@ -221,7 +221,7 @@ public class EditSessionDialogController implements Initializable {
     }
 
     private void sdnSelectionChanged() {
-        deviceName.setDisable(!sdn.isSelected());
+        deviceName.setDisable(sdn.isSelected());
     }
 
     private void addOptButton(final Button button, final String labelKey, final Runnable listener, final boolean enabled) {

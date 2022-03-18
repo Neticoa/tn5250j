@@ -544,7 +544,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final Session5250 s2 = manager.openSession(sesProps, propFileName, sel);
 
         final SessionGui gui = UiUtils.callInFxAndWait(() -> {
-            final SessionGui s = new SessionPanel(s2);
+            final SessionGui s = SessionGuiFactory.createGui(s2);
 
             if (!frame1.isVisible()) {
                 splash.updateProgress(++step);

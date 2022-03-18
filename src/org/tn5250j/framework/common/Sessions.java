@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.interfaces.SessionsInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -35,9 +35,9 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * Contains a collection of Session objects. This list is a static snapshot
  * of the list of Session objects available at the time of the snapshot.
  */
-public class Sessions implements SessionsInterface {
+public class Sessions {
 
-    private List<Session5250> sessions = new ArrayList<Session5250>();
+    private List<Session5250> sessions = new CopyOnWriteArrayList<>();
     private int count = 0;
     private Timer heartBeater;
 
@@ -102,20 +102,14 @@ public class Sessions implements SessionsInterface {
         removeSession(item(index));
     }
 
-    @Override
     public int getCount() {
-
         return count;
     }
 
-    @Override
     public Session5250 item(final int index) {
-
         return sessions.get(index);
-
     }
 
-    @Override
     public Session5250 item(final String sessionName) {
 
         Session5250 s = null;
@@ -132,7 +126,6 @@ public class Sessions implements SessionsInterface {
         }
 
         return null;
-
     }
 
     public Session5250 item(final Session5250 sessionObject) {
@@ -159,11 +152,5 @@ public class Sessions implements SessionsInterface {
         for (int x = 0; x < sessions.size(); x++)
             newS.add(sessions.get(x));
         return newS;
-    }
-
-    @Override
-    public void refresh() {
-
-
     }
 }

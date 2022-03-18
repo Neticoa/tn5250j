@@ -39,7 +39,7 @@ import java.util.jar.JarFile;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGuiFactory;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
@@ -51,6 +51,7 @@ import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -260,10 +261,10 @@ public class Tn5250jController extends Thread {
         final Session5250 newses = manager.openSession(fin, null, name);
 
         UiUtils.callInFxAndWait(() -> {
-            final SessionPanel gui = new SessionPanel(newses);
+            final SessionGui gui = SessionGuiFactory.createGui(newses);
 
             final Stage stage = new Stage();
-            stage.setScene(new Scene(gui));
+            stage.setScene(new Scene((Parent) gui));
             return gui;
         });
 

@@ -20,7 +20,7 @@ package org.tn5250j.event;
  * Boston, MA 02111-1307 USA
  *
  */
-
+@FunctionalInterface
 public interface SessionConfigListener {
 
     /**

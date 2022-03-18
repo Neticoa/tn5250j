@@ -20,15 +20,16 @@
  */
 package org.tn5250j.framework.common;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.SessionDescriptor;
+import org.tn5250j.SessionDescriptorFactory;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.interfaces.SessionManagerInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -37,54 +38,35 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * The SessionManager is the central repository for access to all sessions.
  * The SessionManager contains a list of all Session objects available.
  */
-public class SessionManager implements SessionManagerInterface {
+public final class SessionManager {
 
-    static private Sessions sessions;
-    static private List<SessionConfig> configs;
+    static private final Sessions sessions = new Sessions();
+    static private final List<SessionConfig> configs = new CopyOnWriteArrayList<>();
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
     /**
      * A handle to the unique SessionManager class
      */
-    static private SessionManager _instance;
+    static private final SessionManager _instance = new SessionManager();
 
     /**
      * The constructor is made protected to allow overriding.
      */
-    protected SessionManager() {
-        if (_instance == null) {
-            // initialize the settings information
-            initialize();
-            // set our instance to this one.
-            _instance = this;
-        }
+    private SessionManager() {
+        log.info("New session Manager initialized");
     }
 
     /**
      * @return The unique instance of this class.
      */
     static public SessionManager instance() {
-
-        if (_instance == null) {
-            _instance = new SessionManager();
-        }
         return _instance;
-
     }
 
-    private void initialize() {
-        log.info("New session Manager initialized");
-        sessions = new Sessions();
-        configs = new ArrayList<SessionConfig>();
-
-    }
-
-    @Override
     public Sessions getSessions() {
         return sessions;
     }
 
-    @Override
     public void closeSession(final SessionGui sesspanel) {
 
         sesspanel.closeDown();
@@ -92,7 +74,6 @@ public class SessionManager implements SessionManagerInterface {
 
     }
 
-    @Override
     public synchronized Session5250 openSession(final Properties sesProps, String configurationResource
             , final String sessionName) {
 
@@ -118,11 +99,9 @@ public class SessionManager implements SessionManagerInterface {
             configs.add(useConfig);
         }
 
-        final Session5250 newSession = new Session5250(sesProps, configurationResource,
-                sessionName, useConfig);
+        final SessionDescriptor sessionDescriptor = SessionDescriptorFactory.create(sessionName, useConfig, sesProps);
+        final Session5250 newSession = new Session5250(sessionDescriptor, useConfig);
         sessions.addSession(newSession);
         return newSession;
-
     }
-
 }

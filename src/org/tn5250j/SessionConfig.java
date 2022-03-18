@@ -57,12 +57,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
@@ -98,11 +98,11 @@ public class SessionConfig {
 
     private String configurationResource;
     private String sessionName;
-    private Properties sesProps;
+    private final Properties sesProps = new Properties();
     private boolean usingDefaults;
 
-    private List<SessionConfigListener> sessionCfglisteners = null;
-    private final ReadWriteLock sessionCfglistenersLock = new ReentrantReadWriteLock();
+    private final List<SessionConfigListener> sessionCfglisteners = new CopyOnWriteArrayList<>();
+    private boolean modified;
 
     public SessionConfig(final String configurationResource, final String sessionName) {
         this.configurationResource = configurationResource;
@@ -131,18 +131,10 @@ public class SessionConfig {
             return;
         }
 
-        sessionCfglistenersLock.readLock().lock();
-        try {
-            if (this.sessionCfglisteners != null) {
-                final SessionConfigEvent sce = new SessionConfigEvent(source, propertyName, oldValue, newValue);
-                for (final SessionConfigListener target : this.sessionCfglisteners) {
-                    target.onConfigChanged(sce);
-                }
-            }
-        } finally {
-            sessionCfglistenersLock.readLock().unlock();
+        final SessionConfigEvent sce = new SessionConfigEvent(source, propertyName, oldValue, newValue);
+        for (final SessionConfigListener target : this.sessionCfglisteners) {
+            target.onConfigChanged(sce);
         }
-
     }
 
     /**
@@ -155,15 +147,17 @@ public class SessionConfig {
         return sesProps;
     }
 
-    public void setModified() {
-        sesProps.setProperty("saveme", "");
+    public void setModified(final boolean v) {
+        modified = v;
+    }
+
+    public boolean isModified() {
+        return modified;
     }
 
     public void saveSessionProps(final Parent parent) {
 
-        if (sesProps.containsKey("saveme")) {
-
-            sesProps.remove("saveme");
+        if (isModified()) {
 
             final Object[] args = {getConfigurationResource()};
             final String message = MessageFormat.format(
@@ -186,6 +180,8 @@ public class SessionConfig {
             if (result == ButtonType.APPLY) {
                 saveSessionProps();
             }
+
+            setModified(false);
         }
     }
 
@@ -211,9 +207,6 @@ public class SessionConfig {
     }
 
     private void loadConfigurationResource() {
-
-        sesProps = new Properties();
-
         if (configurationResource == null || configurationResource.trim().isEmpty()) {
             configurationResource = "TN5250JDefaults.props";
             usingDefaults = true;
@@ -242,8 +235,8 @@ public class SessionConfig {
     private void loadDefaults() {
         final ConfigureFactory configureFactory = ConfigureFactory.getInstance();
         try {
-            sesProps = configureFactory
-                    .getProperties("dfltSessionProps", getConfigurationResource(), true, "Default Settings");
+            sesProps.putAll(configureFactory
+                    .getProperties("dfltSessionProps", getConfigurationResource(), true, "Default Settings"));
             if (sesProps.size() == 0) {
                 sesProps.putAll(loadPropertiesFromResource(getConfigurationResource()));
 
@@ -389,6 +382,25 @@ public class SessionConfig {
         return defaultValue;
     }
 
+    /**
+     * @param key property key.
+     * @return property value.
+     */
+    public Object getProperty(final String key) {
+        return sesProps.get(key);
+    }
+
+    /**
+     * @return property keys.
+     */
+    public Set<String> getPropertyKeys() {
+        final Set<String> keys = new HashSet<>();
+        for (final Object key : sesProps.keySet()) {
+            keys.add((String) key);
+        }
+        return keys;
+    }
+
     public Object setProperty(final String key, final String value) {
         return sesProps.setProperty(key, value);
     }
@@ -403,15 +415,7 @@ public class SessionConfig {
      * @param listener The SessionListener to be added
      */
     public final void addSessionConfigListener(final SessionConfigListener listener) {
-        sessionCfglistenersLock.writeLock().lock();
-        try {
-            if (sessionCfglisteners == null) {
-                sessionCfglisteners = new ArrayList<SessionConfigListener>(3);
-            }
-            sessionCfglisteners.add(listener);
-        } finally {
-            sessionCfglistenersLock.writeLock().unlock();
-        }
+        sessionCfglisteners.add(listener);
     }
 
     /**
@@ -420,14 +424,7 @@ public class SessionConfig {
      * @param listener The SessionListener to be removed
      */
     public final void removeSessionConfigListener(final SessionConfigListener listener) {
-        sessionCfglistenersLock.writeLock().lock();
-        try {
-            if (sessionCfglisteners != null) {
-                sessionCfglisteners.remove(listener);
-            }
-        } finally {
-            sessionCfglistenersLock.writeLock().unlock();
-        }
+        sessionCfglisteners.remove(listener);
     }
 
     public SessionConfiguration getConfig() {
@@ -472,5 +469,4 @@ public class SessionConfig {
         }
 
     }
-
 }

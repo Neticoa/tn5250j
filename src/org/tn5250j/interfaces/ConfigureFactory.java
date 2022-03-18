@@ -23,9 +23,9 @@
  */
 package org.tn5250j.interfaces;
 
-import org.tn5250j.GlobalConfigure;
-
 import java.util.Properties;
+
+import org.tn5250j.GlobalConfigure;
 
 /**
  * An interface defining objects that can create Configure
@@ -42,29 +42,14 @@ public abstract class ConfigureFactory {
      * @return An instance of the Configure.
      */
     public static ConfigureFactory getInstance() {
-        ConfigureFactory.setFactory();
+        if (factory == null) {
+            setFactory(new GlobalConfigure());
+        }
         return factory;
     }
 
-    private static final void setFactory() {
-        if (factory == null) {
-            try {
-                String className = System.getProperty(ConfigureFactory.class.getName());
-                if (className != null) {
-                    Class<?> classObject = Class.forName(className);
-                    Object object = classObject.newInstance();
-                    if (object instanceof ConfigureFactory) {
-                        ConfigureFactory.factory = (ConfigureFactory) object;
-                    }
-                }
-            } catch (Exception ex) {
-                ;
-            }
-            if (ConfigureFactory.factory == null) { //take the default
-//        ConfigureFactory.factory = new GlobalConfigureFactory();
-                ConfigureFactory.factory = new GlobalConfigure();
-            }
-        }
+    protected static final void setFactory(final ConfigureFactory f) {
+        factory = f;
     }
 
     abstract public void reloadSettings();

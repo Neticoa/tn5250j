@@ -20,11 +20,8 @@
  */
 package org.tn5250j;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
@@ -36,54 +33,32 @@ import org.tn5250j.gui.FxProxyBuilder;
 import org.tn5250j.gui.SystemRequestDialog;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ScanListener;
-import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.tools.AsyncServices;
 
 /**
  * A host session
  */
-public class Session5250 implements SessionInterface {
+public class Session5250  {
 
-    private String configurationResource;
-    private String sessionName;
     private int sessionType;
-    protected Properties sesProps;
-    private boolean heartBeat;
+    protected SessionDescriptor sesProps;
     private final SessionConfig sesConfig;
     private tnvt vt;
     private final Screen5250Facade screen;
     private SessionGui guiComponent;
 
-    private List<SessionListener> sessionListeners = null;
-    private final ReadWriteLock sessionListenerLock = new ReentrantReadWriteLock();
+    private final List<SessionListener> sessionListeners = new CopyOnWriteArrayList<>();
 
     private boolean scan; // = false;
-    private List<ScanListener> scanListeners = null;
-    private final ReadWriteLock scanListenerLock = new ReentrantReadWriteLock();
+    private final List<ScanListener> scanListeners = new CopyOnWriteArrayList<>();
 
-    public Session5250(final Properties props, final String configurationResource,
-                       final String sessionName,
+    public Session5250(final SessionDescriptor props,
                        final SessionConfig config) {
 
         sesConfig = config;
-        this.configurationResource = configurationResource;
-        this.sessionName = sessionName;
         sesProps = props;
 
-        if (sesProps.containsKey(TN5250jConstants.SESSION_HEART_BEAT))
-            heartBeat = true;
-
         screen = FxProxyBuilder.buildProxy(new Screen5250(), Screen5250Facade.class);
-
-        //screen.setVT(vt);
-
-    }
-
-    @Override
-    public String getConfigurationResource() {
-
-        return configurationResource;
-
     }
 
     public SessionConfig getConfiguration() {
@@ -95,13 +70,11 @@ public class Session5250 implements SessionInterface {
         return SessionManager.instance();
     }
 
-    @Override
     public boolean isConnected() {
         if (vt == null) {
             return false;
         }
         return vt.isConnected();
-
     }
 
     /**
@@ -121,27 +94,21 @@ public class Session5250 implements SessionInterface {
      * @see {@link #isSslSocket()}
      */
     public boolean isSslConfigured() {
-        if (sesProps.get(TN5250jConstants.SSL_TYPE) != null) {
-            final String sslType = (String) sesProps.get(TN5250jConstants.SSL_TYPE);
-            if (!TN5250jConstants.SSL_TYPE_NONE.equals(sslType)) {
-                return true;
-            }
-        }
-        return false;
+        return sesProps.getSslType() != SslType.None;
     }
 
     public boolean isSendKeepAlive() {
-        return heartBeat;
+        return this.sesProps.isHeartBeat();
     }
 
     /**
      * @return true if configured, that the host name should be
      */
     public boolean isUseSystemName() {
-        return sesProps.getProperty(TN5250jConstants.SESSION_TERM_NAME_SYSTEM) != null;
+        return sesProps.isHostNameAsTermName();
     }
 
-    public Properties getConnectionProperties() {
+    public SessionDescriptor getConnectionProperties() {
         return sesProps;
     }
 
@@ -153,9 +120,8 @@ public class Session5250 implements SessionInterface {
         return guiComponent;
     }
 
-    @Override
     public String getSessionName() {
-        return sessionName;
+        return sesProps.getSessionName();
     }
 
     public String getAllocDeviceName() {
@@ -165,7 +131,6 @@ public class Session5250 implements SessionInterface {
         return null;
     }
 
-    @Override
     public int getSessionType() {
 
         return sessionType;
@@ -182,7 +147,6 @@ public class Session5250 implements SessionInterface {
 
     }
 
-    @Override
     public void signalBell() {
         UiUtils.beep();
     }
@@ -190,71 +154,35 @@ public class Session5250 implements SessionInterface {
     /* (non-Javadoc)
      * @see org.tn5250j.interfaces.SessionInterface#displaySystemRequest()
      */
-    @Override
     public String showSystemRequest() {
         final SystemRequestDialog sysreqdlg = new SystemRequestDialog();
         return sysreqdlg.show();
     }
 
-    @Override
     public void connect() {
 
-        String proxyPort = "1080"; // default socks proxy port
-        boolean enhanced = false;
-        boolean support132 = false;
-        int port = 23; // default telnet port
-
-        enhanced = sesProps.containsKey(TN5250jConstants.SESSION_TN_ENHANCED);
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE))
-            if ((sesProps.getProperty(TN5250jConstants.SESSION_SCREEN_SIZE)).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR))
-                support132 = true;
-
-        final tnvt vt = new tnvt(this, screen, enhanced, support132);
+        final tnvt vt = new tnvt(this, screen, sesProps.isEnhanced(), sesProps.getTerminal().getColumns() == 132);
         setVT(vt);
 
-        //      vt.setController(this);
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_PORT))
-            proxyPort = sesProps.getProperty(TN5250jConstants.SESSION_PROXY_PORT);
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_HOST))
-            vt.setProxy(sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
-                    proxyPort);
-
-        final String sslType;
-        if (sesProps.containsKey(TN5250jConstants.SSL_TYPE)) {
-            sslType = sesProps.getProperty(TN5250jConstants.SSL_TYPE);
-        } else {
-            // set default to none
-            sslType = TN5250jConstants.SSL_TYPE_NONE;
+        if (sesProps.getProxy() != null) {
+            vt.setProxy(sesProps.getProxy().getHost(), Integer.toString(sesProps.getProxy().getPort()));
         }
-        vt.setSSLType(sslType);
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE))
-            vt.setCodePage(sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE));
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_DEVICE_NAME))
-            vt.setDeviceName(sesProps.getProperty(TN5250jConstants.SESSION_DEVICE_NAME));
-
-        if (sesProps.containsKey(TN5250jConstants.SESSION_HOST_PORT)) {
-            port = Integer.parseInt(sesProps.getProperty(TN5250jConstants.SESSION_HOST_PORT));
-        } else {
-            // set to default 23 of telnet
-            port = 23;
+        if (sesProps.getSslType() != SslType.None) {
+            vt.setSSLType(sesProps.getSslType().getType());
         }
 
-        final String ses = sesProps.getProperty(TN5250jConstants.SESSION_HOST);
-        final int portp = port;
+        vt.setCodePage(sesProps.getCodePage().getEncoding());
+        if (sesProps.getDeviceName() != null) {
+            vt.setDeviceName(sesProps.getDeviceName());
+        }
 
         // lets set this puppy up to connect within its own thread
         // now lets set it to connect within its own daemon thread
         //    this seems to work better and is more responsive than using
         //    invokelater
-        AsyncServices.runTask(() -> vt.connect(ses, portp));
+        AsyncServices.runTask(() -> vt.connect(sesProps.getHost(), sesProps.getPort()));
     }
 
-    @Override
     public void disconnect() {
         vt.disconnect();
     }
@@ -327,15 +255,8 @@ public class Session5250 implements SessionInterface {
      * @see scanned(String,String)
      */
     public final void fireScanned(final String command, final String remainder) {
-        scanListenerLock.readLock().lock();
-        try {
-            if (this.scanListeners != null) {
-                for (final ScanListener listener : this.scanListeners) {
-                    listener.scanned(command, remainder);
-                }
-            }
-        } finally {
-            scanListenerLock.readLock().unlock();
+        for (final ScanListener listener : this.scanListeners) {
+            listener.scanned(command, remainder);
         }
     }
 
@@ -343,29 +264,14 @@ public class Session5250 implements SessionInterface {
      * @param listener
      */
     public final void addScanListener(final ScanListener listener) {
-        scanListenerLock.writeLock().lock();
-        try {
-            if (scanListeners == null) {
-                scanListeners = new ArrayList<ScanListener>(3);
-            }
-            scanListeners.add(listener);
-        } finally {
-            scanListenerLock.writeLock().unlock();
-        }
+        scanListeners.add(listener);
     }
 
     /**
      * @param listener
      */
     public final void removeScanListener(final ScanListener listener) {
-        scanListenerLock.writeLock().lock();
-        try {
-            if (scanListeners != null) {
-                scanListeners.remove(listener);
-            }
-        } finally {
-            scanListenerLock.writeLock().unlock();
-        }
+        scanListeners.remove(listener);
     }
 
     /**
@@ -374,17 +280,10 @@ public class Session5250 implements SessionInterface {
      * @param state The state change property object.
      */
     public final void fireSessionChanged(final int state) {
-        sessionListenerLock.readLock().lock();
-        try {
-            if (this.sessionListeners != null) {
-                for (final SessionListener listener : this.sessionListeners) {
-                    final SessionChangeEvent sce = new SessionChangeEvent(this);
-                    sce.setState(state);
-                    listener.onSessionChanged(sce);
-                }
-            }
-        } finally {
-            sessionListenerLock.readLock().unlock();
+        for (final SessionListener listener : this.sessionListeners) {
+            final SessionChangeEvent sce = new SessionChangeEvent(this);
+            sce.setState(state);
+            listener.onSessionChanged(sce);
         }
     }
 
@@ -393,17 +292,8 @@ public class Session5250 implements SessionInterface {
      *
      * @param listener The SessionListener to be added
      */
-    @Override
     public final void addSessionListener(final SessionListener listener) {
-        sessionListenerLock.writeLock().lock();
-        try {
-            if (sessionListeners == null) {
-                sessionListeners = new ArrayList<SessionListener>(3);
-            }
-            sessionListeners.add(listener);
-        } finally {
-            sessionListenerLock.writeLock().unlock();
-        }
+        sessionListeners.add(listener);
     }
 
     /**
@@ -411,16 +301,7 @@ public class Session5250 implements SessionInterface {
      *
      * @param listener The SessionListener to be removed
      */
-    @Override
     public final void removeSessionListener(final SessionListener listener) {
-        sessionListenerLock.writeLock().lock();
-        try {
-            if (sessionListeners != null) {
-                sessionListeners.remove(listener);
-            }
-        } finally {
-            sessionListenerLock.writeLock().unlock();
-        }
+        sessionListeners.remove(listener);
     }
-
 }

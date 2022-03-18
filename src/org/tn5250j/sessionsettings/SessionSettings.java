@@ -26,7 +26,6 @@ package org.tn5250j.sessionsettings;
  */
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.UiUtils;
@@ -52,7 +51,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SessionSettings extends DialogPane {
-    private final Properties props;
     private BorderPane jpm = new BorderPane();
 
     private final SessionConfig changes;
@@ -60,7 +58,6 @@ public class SessionSettings extends DialogPane {
     private TreeView<AbstractAttributesController> tree = new TreeView<>();
     private final Stage parent;
 
-    @SuppressWarnings("deprecation")
     public SessionSettings(final Stage parent, final SessionConfig config) {
         super();
         this.parent = parent;
@@ -68,7 +65,6 @@ public class SessionSettings extends DialogPane {
 
         parent.getScene().getRoot().setCursor(Cursor.WAIT);
 
-        this.props = config.getProperties();
         changes = config;
 
         jbInit();
@@ -141,36 +137,6 @@ public class SessionSettings extends DialogPane {
         tree.getRoot().getChildren().add(item);
     }
 
-    protected final String getStringProperty(final String prop) {
-
-        if (props.containsKey(prop))
-            return (String) props.get(prop);
-        else
-            return "";
-
-    }
-
-    protected final String getStringProperty(final String prop, final String defaultValue) {
-
-        if (props.containsKey(prop)) {
-            final String p = (String) props.get(prop);
-            if (p.length() > 0)
-                return p;
-            else
-                return defaultValue;
-        } else
-            return defaultValue;
-
-    }
-
-    protected final void setProperty(final String key, final String val) {
-        props.setProperty(key, val);
-    }
-
-    public Properties getAllProperties() {
-        return props;
-    }
-
     @Override
     protected Node createButton(final ButtonType buttonType) {
         Button button = (Button) super.createButton(buttonType);
@@ -212,8 +178,8 @@ public class SessionSettings extends DialogPane {
         if (result == ButtonType.APPLY) {
             applyAttributes();
         } else if (result == ButtonType.OK) {
-            if (props.containsKey("saveme")) {
-                props.remove("saveme");
+            if (changes.isModified()) {
+                changes.setModified(false);
             }
             changes.saveSessionProps();
         }
@@ -225,6 +191,6 @@ public class SessionSettings extends DialogPane {
             item.getValue().applyAttributes();
         }
 
-        setProperty("saveme", "yes");
+        changes.setModified(true);
     }
 }

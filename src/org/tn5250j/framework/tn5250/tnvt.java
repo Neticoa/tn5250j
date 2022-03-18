@@ -87,6 +87,7 @@ import java.util.concurrent.BlockingQueue;
 
 import javax.net.ssl.SSLSocket;
 
+import org.tn5250j.ConnectUser;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
@@ -166,11 +167,7 @@ public final class tnvt implements Runnable {
     private static int STRSCAN = 1;
     // WVL - LDC : 05/08/2005 : TFX.006253 - support STRPCCMD
     private boolean strpccmd; // = false;
-    private String user;
-    private String password;
-    private String library;
-    private String initialMenu;
-    private String program;
+    private ConnectUser user;
     private boolean keepTrucking = true;
     private boolean pendingUnlock = false;
     private boolean[] dataIncluded;
@@ -198,21 +195,7 @@ public final class tnvt implements Runnable {
         this.screen52 = screen52;
         dataIncluded = new boolean[24];
 
-        if (System.getProperties().containsKey("SESSION_CONNECT_USER")) {
-            user = System.getProperties().getProperty("SESSION_CONNECT_USER");
-            if (System.getProperties().containsKey("SESSION_CONNECT_PASSWORD"))
-                password = System.getProperties().getProperty(
-                        "SESSION_CONNECT_PASSWORD");
-            if (System.getProperties().containsKey("SESSION_CONNECT_LIBRARY"))
-                library = System.getProperties().getProperty(
-                        "SESSION_CONNECT_LIBRARY");
-            if (System.getProperties().containsKey("SESSION_CONNECT_MENU"))
-                initialMenu = System.getProperties().getProperty(
-                        "SESSION_CONNECT_MENU");
-            if (System.getProperties().containsKey("SESSION_CONNECT_PROGRAM"))
-                program = System.getProperties().getProperty(
-                        "SESSION_CONNECT_PROGRAM");
-        }
+        user = session.getConnectionProperties().getConnectUser();
 
         baosp = new ByteArrayOutputStream();
         baosrsp = new ByteArrayOutputStream();
@@ -278,24 +261,6 @@ public final class tnvt implements Runnable {
 
 
     public final boolean connect(final String s, final int port) {
-
-        // We will now see if there are any bypass signon parameters to be
-        //    processed. The system properties override these parameters so
-        //    have precidence if specified.
-        final Properties props = controller.getConnectionProperties();
-        if (user == null && props.containsKey("SESSION_CONNECT_USER")) {
-            user = props.getProperty("SESSION_CONNECT_USER");
-            log.info(" user -> " + user + " " + controller.getSessionName());
-            if (props.containsKey("SESSION_CONNECT_PASSWORD"))
-                password = props.getProperty("SESSION_CONNECT_PASSWORD");
-            if (props.containsKey("SESSION_CONNECT_LIBRARY"))
-                library = props.getProperty("SESSION_CONNECT_LIBRARY");
-            if (props.containsKey("SESSION_CONNECT_MENU"))
-                initialMenu = props.getProperty("SESSION_CONNECT_MENU");
-            if (props.containsKey("SESSION_CONNECT_PROGRAM"))
-                program = props.getProperty("SESSION_CONNECT_PROGRAM");
-        }
-
 
         try {
             session = s;
@@ -2511,9 +2476,9 @@ public final class tnvt implements Runnable {
             baosp.write(VAR);
             baosp.write("USER".getBytes());
             baosp.write(VALUE);
-            baosp.write(user.getBytes());
+            baosp.write(user.getUser().getBytes());
 
-            if (password != null) {
+            if (user.getPassword() != null) {
                 baosp.write(USERVAR);
                 baosp.write("IBMRSEED".getBytes());
                 baosp.write(VALUE);
@@ -2529,28 +2494,28 @@ public final class tnvt implements Runnable {
                 baosp.write(USERVAR);
                 baosp.write("IBMSUBSPW".getBytes());
                 baosp.write(VALUE);
-                baosp.write(password.getBytes());
+                baosp.write(user.getPassword().getBytes());
             }
 
-            if (library != null) {
+            if (user.getLibrary() != null) {
                 baosp.write(USERVAR);
                 baosp.write("IBMCURLIB".getBytes());
                 baosp.write(VALUE);
-                baosp.write(library.getBytes());
+                baosp.write(user.getLibrary().getBytes());
             }
 
-            if (initialMenu != null) {
+            if (user.getInitialMenu() != null) {
                 baosp.write(USERVAR);
                 baosp.write("IBMIMENU".getBytes());
                 baosp.write(VALUE);
-                baosp.write(initialMenu.getBytes());
+                baosp.write(user.getInitialMenu().getBytes());
             }
 
-            if (program != null) {
+            if (user.getProgram() != null) {
                 baosp.write(USERVAR);
                 baosp.write("IBMPROGRAM".getBytes());
                 baosp.write(VALUE);
-                baosp.write(program.getBytes());
+                baosp.write(user.getProgram().getBytes());
             }
         }
         baosp.write(IAC);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.metrixware.tn5250.category"
+            class="com.metrixware.eclipse.NewConnectionWizard"
+            icon="images/tn5250j-16x16.png"
+            id="com.metrixware.tn5250.newConnectionWizard"
+            name="%wizard.name">
+      </wizard>
+      <category
+            id="com.metrixware.tn5250.category"
+            name="%category.name">
+      </category>
+   </extension>
+</plugin>

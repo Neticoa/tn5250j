@@ -21,9 +21,6 @@
  */
 package org.tn5250j;
 
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_ENABLED;
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_FONT_SIZE;
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
 import static org.tn5250j.SessionConfig.YES;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
@@ -37,16 +34,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.event.SessionConfigEvent;
-import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.FxProxyBuilder;
 import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.UiUtils;
-import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.keyboard.actions.EmulatorAction;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -93,8 +88,7 @@ import javafx.stage.Window;
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanel extends BorderPane implements
-        SessionGui, SessionConfigListener, SessionListener {
+public class SessionPanel extends BorderPane implements SessionGui {
     private boolean firstScreen;
     private char[] signonSave;
 
@@ -108,8 +102,6 @@ public class SessionPanel extends BorderPane implements
     private final List<EmulatorActionListener> actionListeners = new CopyOnWriteArrayList<>();
     private boolean macroRunning;
     private boolean stopMacro;
-    private boolean doubleClick;
-    protected SessionConfig sesConfig;
     protected KeyboardHandler keyHandler;
 
     private final EventHandler<ScrollEvent> scroller = this::sessionPanelScrolled;
@@ -119,8 +111,10 @@ public class SessionPanel extends BorderPane implements
     private final Canvas canvas = new Canvas();
     private final CompoundCursor cursor = new CompoundCursor();
     private final Map<KeyCodeCombination, EmulatorAction> keyActions = new ConcurrentHashMap<>();
+    private MutableUiConfiguration uiConfiguration;
+    private SessionConfig sesConfig;
 
-    public SessionPanel(final Session5250 session) {
+    public SessionPanel(final Session5250 session, final MutableUiConfiguration uiConfig) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
         this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
@@ -134,8 +128,8 @@ public class SessionPanel extends BorderPane implements
             log.warn("Error in constructor: " + e.getMessage());
         }
 
-        session.getConfiguration().addSessionConfigListener(this);
-        session.addSessionListener(this);
+        this.uiConfiguration = uiConfig;
+        session.addSessionListener(FxProxyBuilder.buildProxy(this::onSessionChanged, SessionListener.class));
 
         addEventHandler(KeyEvent.ANY, this::processKeyEvent);
     }
@@ -200,7 +194,6 @@ public class SessionPanel extends BorderPane implements
 
         this.requestFocus();
 
-        doubleClick = YES.equals(getStringProperty("doubleClick"));
         resizeMe();
     }
 
@@ -212,7 +205,7 @@ public class SessionPanel extends BorderPane implements
         });
         container.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (!rubberband.isAreaSelected() && e.getButton() == MouseButton.PRIMARY) {
-                if (e.getClickCount() == 2 & doubleClick) {
+                if (e.getClickCount() == 2 & uiConfiguration.isDoubleClick()) {
                     screen.sendKeys(ENTER);
                 } else {
                     final int pos = guiGraBuf.getRowColFromPoint(e.getX(), e.getY());
@@ -452,32 +445,16 @@ public class SessionPanel extends BorderPane implements
         this.requestFocus();
     }
 
-    @Override
-    public void onConfigChanged(final SessionConfigEvent configEvent) {
-        final String configName = configEvent.getPropertyName();
+    public void updateUiConfiguration(final MutableUiConfiguration cfg) {
+        uiConfiguration = cfg;
 
-        if (CONFIG_KEYPAD_ENABLED.equals(configName)) {
-            keypadPanel.setVisible(YES.equals(configEvent.getNewValue()));
-        }
+        keypadPanel.setVisible(uiConfiguration.isKeyPanelVisible());
+        keypadPanel.reInitializeButtons(uiConfiguration.getKeyMnemonics());
+        keypadPanel.updateButtonFontSize(uiConfiguration.getFontSize());
 
-        if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
-            keypadPanel.reInitializeButtons(new KeyMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
-        }
-
-        if (CONFIG_KEYPAD_FONT_SIZE.equals(configName)) {
-            keypadPanel.updateButtonFontSize(Float.parseFloat((String) configEvent.getNewValue()));
-        }
-
-        if ("doubleClick".equals(configName)) {
-            doubleClick = YES.equals(configEvent.getNewValue());
-        }
-
-        if ("mouseWheel".equals(configName)) {
-            removeEventHandler(ScrollEvent.SCROLL, scroller);
-
-            if (YES.equals(configEvent.getNewValue())) {
-                addEventHandler(ScrollEvent.SCROLL, scroller);
-            }
+        removeEventHandler(ScrollEvent.SCROLL, scroller);
+        if (uiConfiguration.isScrollable()) {
+            addEventHandler(ScrollEvent.SCROLL, scroller);
         }
 
         resizeMe();
@@ -892,7 +869,7 @@ public class SessionPanel extends BorderPane implements
         if (session.getVT() != null) {
             return session.getVT().getHostName();
         }
-        return session.getConnectionProperties().getProperty(TN5250jConstants.SESSION_HOST);
+        return session.getConnectionProperties().getHost();
     }
 
     @Override
@@ -914,10 +891,9 @@ public class SessionPanel extends BorderPane implements
         session.disconnect();
     }
 
-    @Override
-    public void onSessionChanged(final SessionChangeEvent changeEvent) {
+    private void onSessionChanged(final SessionChangeEvent e) {
 
-        switch (changeEvent.getState()) {
+        switch (e.getState()) {
             case TN5250jConstants.STATE_CONNECTED:
                 // first we check for the signon save or now
                 if (!firstScreen) {

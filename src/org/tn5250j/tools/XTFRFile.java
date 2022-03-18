@@ -769,7 +769,7 @@ public class XTFRFile extends GenericTn5250Frame {
 
         saveXTFRFields(props);
 
-        config.setModified();
+        config.setModified(true);
 
     }
 
