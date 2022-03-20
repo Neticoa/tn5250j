@@ -33,7 +33,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.tn5250j.SessionConfig;
@@ -48,6 +50,7 @@ import org.tn5250j.gui.NotClosableDialogPane;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
+import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
@@ -139,10 +142,6 @@ public class XTFRFile extends GenericTn5250Frame {
     static String messageProgress;
 
     public XTFRFile(final tnvt pvt, final SessionGui session) {
-        this(pvt, session, null);
-    }
-
-    public XTFRFile(final tnvt pvt, final SessionGui session, final Properties XTFRProps) {
         this.session = session;
         this.parent = session.getWindow();
         this.vt = pvt;
@@ -157,7 +156,7 @@ public class XTFRFile extends GenericTn5250Frame {
 
         contentPane.setCursor(Cursor.WAIT);
         initFileFilters();
-        contentPane.setCenter(initXTFRInfo(XTFRProps));
+        contentPane.setCenter(initXTFRInfo(null));
 
         stage.setOnHiding(e -> {
             if (ftpProtocol != null && ftpProtocol.isConnected()) {
@@ -673,7 +672,7 @@ public class XTFRFile extends GenericTn5250Frame {
         queryStatement.setWrapText(true);
         as400QueryP.setCenter(queryStatement);
 
-        initXTFRFields(XTFRProps);
+        initXTFRFields();
 
         return mp;
     }
@@ -705,46 +704,43 @@ public class XTFRFile extends GenericTn5250Frame {
         }
     }
 
-    private void initXTFRFields(Properties props) {
-
-        if (props == null) {
-            final SessionConfig config = session.getSession().getConfiguration();
-            props = config.getProperties();
-        }
+    private void initXTFRFields() {
+        final SessionConfig config = session.getSession().getConfiguration();
+        final Map<String, String> props = config.getProperties();
 
         if (props.containsKey("xtfr.fileName"))
-            hostFile.setText(props.getProperty("xtfr.fileName"));
+            hostFile.setText(props.get("xtfr.fileName"));
 
         if (props.containsKey("xtfr.user"))
-            user.setText(props.getProperty("xtfr.user"));
+            user.setText(props.get("xtfr.user"));
 
         if (props.containsKey("xtfr.useQuery")) {
-            if (props.getProperty("xtfr.useQuery").equals("true"))
+            if (props.get("xtfr.useQuery").equals("true"))
                 useQuery.setSelected(true);
             else
                 useQuery.setSelected(false);
         }
 
         if (props.containsKey("xtfr.queryStatement")) {
-            queryStatement.setText(props.getProperty("xtfr.queryStatement"));
+            queryStatement.setText(props.get("xtfr.queryStatement"));
         }
 
         if (props.containsKey("xtfr.allFields")) {
-            if (props.getProperty("xtfr.allFields").equals("true"))
+            if (props.get("xtfr.allFields").equals("true"))
                 allFields.setSelected(true);
             else
                 allFields.setSelected(false);
         }
 
         if (props.containsKey("xtfr.txtDesc")) {
-            if (props.getProperty("xtfr.txtDesc").equals("true"))
+            if (props.get("xtfr.txtDesc").equals("true"))
                 txtDesc.setSelected(true);
             else
                 txtDesc.setSelected(false);
         }
 
         if (props.containsKey("xtfr.intDesc")) {
-            if (props.getProperty("xtfr.intDesc").equals("true")) {
+            if (props.get("xtfr.intDesc").equals("true")) {
                 intDesc.setSelected(true);
             } else {
                 intDesc.setSelected(false);
@@ -752,82 +748,80 @@ public class XTFRFile extends GenericTn5250Frame {
         }
 
         if (props.containsKey("xtfr.fileFormat"))
-            fileFormat.getSelectionModel().select(props.getProperty("xtfr.fileFormat"));
+            fileFormat.getSelectionModel().select(props.get("xtfr.fileFormat"));
 
         if (props.containsKey("xtfr.localFile"))
-            localFile.setText(props.getProperty("xtfr.localFile"));
+            localFile.setText(props.get("xtfr.localFile"));
 
         if (props.containsKey("xtfr.decimalSeparator"))
-            decimalSeparator.getSelectionModel().select(props.getProperty("xtfr.decimalSeparator"));
+            decimalSeparator.getSelectionModel().select(props.get("xtfr.decimalSeparator"));
 
     }
 
     private void saveXTFRFields() {
 
         final SessionConfig config = session.getSession().getConfiguration();
-        final Properties props = config.getProperties();
-
-        saveXTFRFields(props);
+        saveXTFRFields(config.getProperties());
 
         config.setModified(true);
 
     }
 
-    private void saveXTFRFields(final Properties props) {
+    private void saveXTFRFields(final Map<String, String> props) {
 
         if (hostFile.getText().trim().length() > 0)
-            props.setProperty("xtfr.fileName", hostFile.getText().trim());
+            props.put("xtfr.fileName", hostFile.getText().trim());
         else
             props.remove("xtfr.fileName");
 
         if (user.getText().trim().length() > 0)
-            props.setProperty("xtfr.user", user.getText().trim());
+            props.put("xtfr.user", user.getText().trim());
         else
             props.remove("xtfr.user");
 
         if (useQuery.isSelected())
-            props.setProperty("xtfr.useQuery", "true");
+            props.put("xtfr.useQuery", "true");
         else
             props.remove("xtfr.useQuery");
 
         if (queryStatement.getText().trim().length() > 0)
-            props.setProperty(
+            props.put(
                     "xtfr.queryStatement",
                     queryStatement.getText().trim());
         else
             props.remove("xtfr.queryStatement");
 
         if (allFields.isSelected())
-            props.setProperty("xtfr.allFields", "true");
+            props.put("xtfr.allFields", "true");
         else
             props.remove("xtfr.allFields");
 
         // TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)
         if (txtDesc.isSelected())
-            props.setProperty("xtfr.txtDesc", "true");
+            props.put("xtfr.txtDesc", "true");
         else
             props.remove("xtfr.txtDesc");
         if (intDesc.isSelected())
-            props.setProperty("xtfr.intDesc", "true");
+            props.put("xtfr.intDesc", "true");
         else
             props.remove("xtfr.intDesc");
 
-        props.setProperty(
+        props.put(
                 "xtfr.fileFormat",
                 fileFormat.getValue());
 
         if (localFile.getText().trim().length() > 0)
-            props.setProperty("xtfr.localFile", localFile.getText().trim());
+            props.put("xtfr.localFile", localFile.getText().trim());
         else
             props.remove("xtfr.localFile");
 
-        props.setProperty("xtfr.decimalSeparator", decimalSeparator.getValue());
+        props.put("xtfr.decimalSeparator", decimalSeparator.getValue());
     }
 
     private void saveXTFRInfo() {
 
-        final Properties xtfrProps = new Properties();
-        xtfrProps.setProperty("xtfr.destination", "FROM");
+        final Map<String, String> xtfrProps = new HashMap<>();
+        xtfrProps.put("xtfr.destination", "FROM");
         this.saveXTFRFields(xtfrProps);
         final FileChooser pcFileChooser = new FileChooser();
         pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
@@ -845,12 +839,12 @@ public class XTFRFile extends GenericTn5250Frame {
 
             try {
                 final FileOutputStream out = new FileOutputStream(file);
-                // save off the width and height to be restored later
-                xtfrProps.store(out, "------ Transfer Details --------");
-
-                out.flush();
-                out.close();
-            } catch (final FileNotFoundException fnfe) {
+                try {
+                    // save off the width and height to be restored later
+                    ConfigureFactory.storeProperties(xtfrProps, "------ Transfer Details --------", out);
+                } finally {
+                    out.close();
+                }
             } catch (final IOException ioe) {
             }
         }
@@ -888,7 +882,7 @@ public class XTFRFile extends GenericTn5250Frame {
         if (xtfrProps.containsKey("xtfr.destination") &&
                 (xtfrProps.get("xtfr.destination").equals("FROM"))) {
 
-            this.initXTFRFields(xtfrProps);
+            this.initXTFRFields();
         }
     }
 

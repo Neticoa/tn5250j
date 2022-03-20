@@ -4,9 +4,7 @@
 package com.metrixware.eclipse;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.tn5250j.Terminal;
 import org.tn5250j.TlsVersion;
@@ -49,6 +47,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
 
         //PORT: Text
         port = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardPortLabel), createText());
+        port.setText("23");
         setSizeInSumbols(port, 5);
 
         //TSL: Combo
@@ -67,7 +66,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         session = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardSessionLabel), createText());
 
         //DEVICE: Text Field
-        device = addLabelAndLayout(parent, createLabel(Messages.DeviceLabel), createText());
+        device = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardDeviceLabel), createText());
         setSizeInSumbols(device, 12);
 
         //TIMEOUT:Text Field
@@ -79,15 +78,6 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         initIdleOut();
 
         updateEnablement();
-    }
-
-    @Override
-    public void createControl(final Composite container) {
-        final Composite control = new Composite(container, SWT.BORDER);
-
-        this.parent = new Composite(control, SWT.NONE);
-        parent.setLayout(new GridLayout(2, false));
-
     }
 
     private void initIdleOut() {
@@ -143,5 +133,19 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
                 && containsIntValue(timeOut)
                 && containsIntValue(idleOut);
         setPageComplete(isOk);
+    }
+
+    public ConnectionBean getConnection() {
+        final ConnectionBean con = new ConnectionBean();
+        con.setHost(host.getText());
+        con.setPort(Integer.parseInt(port.getText()));
+        con.setTls(TlsVersion.values()[tls.getSelectionIndex()]);
+        con.setTerminal(Terminal.values()[terminal.getSelectionIndex()]);
+        con.setCodePage(CodePage.values()[codePage.getSelectionIndex()]);
+        con.setName(session.getText());
+        con.setDevice(device.getText());
+        con.setTimeOut(Integer.parseInt(timeOut.getText()));
+        con.setIdleOut(Integer.parseInt(idleOut.getText()));
+        return con;
     }
 }

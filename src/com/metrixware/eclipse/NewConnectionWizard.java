@@ -1,13 +1,16 @@
 package com.metrixware.eclipse;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -26,7 +29,7 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
     private ConfigureConnectionWizardPage configureConnectionPage;
 
     private List<String> errors = new LinkedList<>();
-    private IResource folder;
+    private IContainer folder;
 
     public NewConnectionWizard() {
         super();
@@ -46,7 +49,7 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
 
     @Override
     public void init(final IWorkbench workbench, final IStructuredSelection selection) {
-        final IResource folder = getFolder(selection);
+        final IContainer folder = getFolder(selection);
         checkIsJavaProject(folder);
         this.folder = folder;
 
@@ -58,8 +61,8 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
      * @param selection current selection.
      * @return target parent folder
      */
-    private IResource getFolder(final IStructuredSelection selection) {
-        IResource parent = null;
+    private IContainer getFolder(final IStructuredSelection selection) {
+        IContainer parent = null;
 
         final Iterator<?> it = selection.iterator();
         if (it.hasNext()) {
@@ -69,8 +72,8 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
                 if (selectedResource.getType() == IResource.FILE) {
                     selectedResource = selectedResource.getParent();
                 }
-                if (selectedResource.isAccessible()) {
-                    parent = selectedResource;
+                if (selectedResource.isAccessible() && selectedResource instanceof IContainer) {
+                    parent = (IContainer) selectedResource;
                 }
             }
         }
@@ -106,8 +109,14 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
 
     @Override
     public boolean performFinish() {
-        //TODO get connection definition from forst page
-        //and create folder by second page.
-        return true;
+        final ConnectionBean bean = configureConnectionPage.getConnection();
+        try {
+            createConnectionPage.createConnectionFile(bean);
+            return true;
+        } catch (final IOException e) {
+            MessageDialog.openError(getShell(),
+                    Messages.ErrorTitleFailedToCreateConnection, e.getMessage());
+        }
+        return false;
     }
 }

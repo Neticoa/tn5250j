@@ -27,7 +27,7 @@ package org.tn5250j.tools;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 
 import org.tn5250j.SessionGui;
@@ -46,7 +46,7 @@ import javafx.scene.layout.HBox;
 
 public class Macronizer {
 
-    private static Properties macros;
+    private static Map<String, String> macros;
     private static boolean macrosExist;
 
     public static void init() {
@@ -86,12 +86,12 @@ public class Macronizer {
     public final static String[] getMacroList() {
 
         final String[] macroList = new String[macros.size()];
-        final Set<Object> macroSet = macros.keySet();
-        final Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<String> macroSet = macros.keySet();
+        final Iterator<String> macroIterator = macroSet.iterator();
         String byName = null;
         int x = 0;
         while (macroIterator.hasNext()) {
-            byName = (String) macroIterator.next();
+            byName = macroIterator.next();
             final int period = byName.indexOf(".");
             macroList[x++] = byName.substring(period + 1);
         }
@@ -102,13 +102,13 @@ public class Macronizer {
     public final static String getMacroByNumber(final int num) {
         final String mac = "macro" + num + ".";
 
-        final Set<Object> macroSet = macros.keySet();
-        final Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<String> macroSet = macros.keySet();
+        final Iterator<String> macroIterator = macroSet.iterator();
         String byNum = null;
         while (macroIterator.hasNext()) {
-            byNum = (String) macroIterator.next();
+            byNum = macroIterator.next();
             if (byNum.startsWith(mac)) {
-                return (String) macros.get(byNum);
+                return macros.get(byNum);
             }
         }
         return null;
@@ -116,13 +116,13 @@ public class Macronizer {
 
     public final static String getMacroByName(final String name) {
 
-        final Set<Object> macroSet = macros.keySet();
-        final Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<String> macroSet = macros.keySet();
+        final Iterator<String> macroIterator = macroSet.iterator();
         String byName = null;
         while (macroIterator.hasNext()) {
-            byName = (String) macroIterator.next();
+            byName = macroIterator.next();
             if (byName.endsWith(name)) {
-                return (String) macros.get(byName);
+                return macros.get(byName);
             }
         }
         return null;
@@ -130,11 +130,11 @@ public class Macronizer {
 
     public final static void removeMacroByName(final String name) {
 
-        final Set<Object> macroSet = macros.keySet();
-        final Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<String> macroSet = macros.keySet();
+        final Iterator<String> macroIterator = macroSet.iterator();
         String byName = null;
         while (macroIterator.hasNext()) {
-            byName = (String) macroIterator.next();
+            byName = macroIterator.next();
             if (byName.endsWith(name)) {
                 macros.remove(byName);
                 saveMacros();
@@ -159,12 +159,12 @@ public class Macronizer {
         // first let's go through all the macros and replace the macro entry if it
         //   already exists.
         if (macrosExist && getMacroByName(name) != null) {
-            final Set<Object> macroSet = macros.keySet();
-            final Iterator<Object> macroIterator = macroSet.iterator();
+            final Set<String> macroSet = macros.keySet();
+            final Iterator<String> macroIterator = macroSet.iterator();
             String byName = null;
             String prefix = null;
             while (macroIterator.hasNext()) {
-                byName = (String) macroIterator.next();
+                byName = macroIterator.next();
                 if (byName.endsWith(name)) {
                     //  we need to obtain the prefix so that we can replace
                     //   the slot with the new keystrokes.  If not the keymapping

@@ -7,8 +7,7 @@ import static org.tn5250j.gui.UiUtils.addOptButton;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -65,7 +64,7 @@ public class ConnectionsPaneController implements Initializable {
 
     private final ObservableList<SessionsDataModel> data = FXCollections.observableArrayList();
 
-    private final Properties properties;
+    private final Map<String, String> properties;
 
     public ConnectionsPaneController() {
         properties = ConfigureFactory.getInstance().getProperties(
@@ -180,7 +179,7 @@ public class ConnectionsPaneController implements Initializable {
     }
 
     private void defaultSessionPropertyChanged(final String sessionName) {
-        properties.setProperty(EMUL_DEFAULT_PROPERTY, sessionName);
+        properties.put(EMUL_DEFAULT_PROPERTY, sessionName);
         for (final SessionsDataModel model : data) {
             if (!model.getName().equals(sessionName)) {
                 model.setDeflt(false);
@@ -189,13 +188,11 @@ public class ConnectionsPaneController implements Initializable {
     }
 
     private void parseConnections() {
-        final String defaultSessionName = properties.getProperty(EMUL_DEFAULT_PROPERTY, "");
+        final String defaultSessionName = properties.put(EMUL_DEFAULT_PROPERTY, "");
 
-        final Enumeration<Object> e = properties.keys();
-        while (e.hasMoreElements()) {
-            final String ses = (String) e.nextElement();
+        for (final String ses : properties.keySet()) {
             if (!ses.startsWith("emul.")) {
-                final String[] args = EditSessionDialogController.parseArgs(properties.getProperty(ses));
+                final String[] args = EditSessionDialogController.parseArgs(properties.get(ses));
                 final boolean deflt = ses.equals(defaultSessionName);
 
                 final SessionsDataModel model = new SessionsDataModel(ses, args[0], deflt);

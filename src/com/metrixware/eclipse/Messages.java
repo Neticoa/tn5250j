@@ -19,12 +19,17 @@ public class Messages extends NLS {
     public static String CreateConnectionWizardHostLabel;
     public static String CreateConnectionWizardIdleOutLabel;
     public static String CreateConnectionWizardFileName;
+    public static String CreateConnectionWizardDeviceLabel;
 
     public static String FailedToCreateConnection;
     public static String OnlyJavaProjectCanBeUsed;
     public static String NotValidParentSelected;
     public static String NewConnectionWizard;
-    public static String DeviceLabel;
+
+    //errors
+    public static String ErrorTitleFailedToLoadSessings;
+    public static String ErrorTitleFailedToSaveSessings;
+    public static String ErrorTitleFailedToCreateConnection;
 
     static {
         // initialize resource bundle

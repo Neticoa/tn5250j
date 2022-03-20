@@ -4,7 +4,7 @@
 package org.tn5250j.connectdialog;
 
 import java.net.URL;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.tn5250j.gui.TitledBorderedPane;
@@ -44,7 +44,7 @@ public class OptionsPaneController implements Initializable {
     @FXML
     Pane view;
 
-    private final Properties properties;
+    private final Map<String, String> properties;
 
     public OptionsPaneController() {
         properties = ConfigureFactory.getInstance().getProperties(
@@ -60,7 +60,7 @@ public class OptionsPaneController implements Initializable {
 
         // create the checkbox for hiding the tab bar when only one tab exists
         hideTabBar.setText(LangTool.getString("conf.labelHideTabBar"));
-        hideTabBar.setSelected("yes".equalsIgnoreCase(properties.getProperty(HIDE_TAB_BAR_OPTION)));
+        hideTabBar.setSelected("yes".equalsIgnoreCase(properties.get(HIDE_TAB_BAR_OPTION)));
         hideTabBar.selectedProperty().addListener((src, old, value) -> hideTabBar_itemStateChanged(value));
 
         final ToggleGroup intGroup = new ToggleGroup();
@@ -93,7 +93,7 @@ public class OptionsPaneController implements Initializable {
 
     private void updateOption(final String key, final String value, final boolean state) {
         if (state) {
-            properties.setProperty(key, value);
+            properties.put(key, value);
         } else {
             properties.remove(key);
         }

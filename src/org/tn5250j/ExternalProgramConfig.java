@@ -1,11 +1,13 @@
 package org.tn5250j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.tn5250j.connectdialog.ExternalProgram;
@@ -28,7 +30,7 @@ public class ExternalProgramConfig {
 	private static final String EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME = "tn5250jExternalProgram.properties";
 	private static final String EXTERNAL_PROGRAM_HEADER = "External Program Settings";
 
-	protected final Properties etnPgmProps;
+	protected final Map<String, String> etnPgmProps;
     private final List<ExternalProgram> programs = new LinkedList<>();
 
 	public static ExternalProgramConfig getInstance(){
@@ -44,8 +46,8 @@ public class ExternalProgramConfig {
 		sort();
 	}
 
-    protected Properties loadExternalProgramSettings() {
-        Properties etnProps = null;
+    protected Map<String, String> loadExternalProgramSettings() {
+        Map<String, String> etnProps = new ConcurrentHashMap<>();
         try {
             etnProps = ConfigureFactory.getInstance().getProperties(EXTERNAL_PROGRAM_REGISTRY_KEY,
                     EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME, false, "Default Settings");
@@ -54,7 +56,12 @@ public class ExternalProgramConfig {
 
             if (etnProps.isEmpty()) {
                 final URL file = getClass().getClassLoader().getResource(EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME);
-                etnProps.load(file.openStream());
+                final InputStream in = file.openStream();
+                try {
+                    etnProps = ConfigureFactory.loadProperties(in);
+                } finally {
+                    in.close();
+                }
 
                 ConfigureFactory.getInstance().saveSettings(EXTERNAL_PROGRAM_REGISTRY_KEY,
                         EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME, EXTERNAL_PROGRAM_HEADER);
@@ -114,9 +121,9 @@ public class ExternalProgramConfig {
 
         int order = 0;
         for (final ExternalProgram p : programs) {
-            etnPgmProps.setProperty(PREFIX + order + NAME_SUFFIX, p.getName());
-            etnPgmProps.setProperty(PREFIX + order + WINDOW_SUFFIX, p.getWCommand());
-            etnPgmProps.setProperty(PREFIX + order + UNIX_SUFFIX, p.getUCommand());
+            etnPgmProps.put(PREFIX + order + NAME_SUFFIX, p.getName());
+            etnPgmProps.put(PREFIX + order + WINDOW_SUFFIX, p.getWCommand());
+            etnPgmProps.put(PREFIX + order + UNIX_SUFFIX, p.getUCommand());
 
             order++;
         }
@@ -127,9 +134,9 @@ public class ExternalProgramConfig {
         nums.sort(Comparator.naturalOrder());
 
         for (final Integer num : nums) {
-            final String program = etnPgmProps.getProperty(PREFIX + num + NAME_SUFFIX);
-            final String wCommand = etnPgmProps.getProperty(PREFIX + num + WINDOW_SUFFIX);
-            final String uCommand = etnPgmProps.getProperty(PREFIX + num + UNIX_SUFFIX);
+            final String program = etnPgmProps.get(PREFIX + num + NAME_SUFFIX);
+            final String wCommand = etnPgmProps.get(PREFIX + num + WINDOW_SUFFIX);
+            final String uCommand = etnPgmProps.get(PREFIX + num + UNIX_SUFFIX);
             programs.add(new ExternalProgram(program, wCommand, uCommand));
         }
     }

@@ -28,9 +28,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -63,7 +63,7 @@ public class Tn5250jController extends Thread {
     private List<Tn5250jEvent> eventList;
     private List<Tn5250jListener> listeners;
     private SessionManager manager;
-    Properties sesprops;
+    Map<String, String> sesprops;
     private static Tn5250jController current;
 
     private Tn5250jController() {
@@ -255,7 +255,7 @@ public class Tn5250jController extends Thread {
 
     public Screen5250Facade startSession(final String name) {
         final String args[] = new String[15];
-        parseArgs((String) sesprops.get(name), args);
+        parseArgs(sesprops.get(name), args);
         final Properties fin = convertToProps(args);
 
         final Session5250 newses = manager.openSession(fin, null, name);
@@ -273,17 +273,16 @@ public class Tn5250jController extends Thread {
     }
 
     public List<String> getSessions() {
-        final Enumeration<Object> e = sesprops.keys();
         final ArrayList<String> list = new ArrayList<String>();
-        String ses = null;
-        //This has the nasty tendency to grab data it isn't suposed to grab.
-        //please fix
-        while (e.hasMoreElements()) {
-            ses = (String) e.nextElement();
+
+        for (final String ses : sesprops.keySet()) {
+            //This has the nasty tendency to grab data it isn't suposed to grab.
+            //please fix
             if (!ses.startsWith("emul.")) {
                 list.add(ses);
             }
         }
+
         log.error(list.toString());
         return list;
     }

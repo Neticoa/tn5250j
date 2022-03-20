@@ -582,7 +582,7 @@ public class SessionPanel extends BorderPane implements SessionGui {
     @Override
     public void closeDown() {
 
-        sesConfig.saveSessionProps(getParent());
+        sesConfig.saveSessionPropsOnClose();
         if (session.getVT() != null) session.getVT().disconnect();
         // Added by Luc to fix a memory leak. The keyHandler was still receiving
         //   events even though nothing was really attached.

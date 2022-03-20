@@ -22,7 +22,7 @@ package org.tn5250j.tools.system;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Properties;
+import java.util.Map;
 
 import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.connectdialog.ExternalProgram;
@@ -105,12 +105,12 @@ public class OperatingSystem {
             LOG.warn(e.getMessage());
         }
 
-        final Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
+        final Map<String, String> props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
 
         // We now check if we have a property defined for the external program to
         //   handle this protocol.
-        if (props.getProperty("emul.protocol." + protocol, "").trim().length() > 0) {
-            String commandTemplate = props.getProperty("emul.protocol." + protocol).trim();
+        if (props.getOrDefault("emul.protocol." + protocol, "").trim().length() > 0) {
+            String commandTemplate = props.get("emul.protocol." + protocol).trim();
 
             final Object[] urlParm = new Object[1];
             urlParm[0] = url;

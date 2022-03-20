@@ -26,6 +26,8 @@
 package org.tn5250j.mailtools;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -62,7 +64,7 @@ public class SendEMail {
     private String fileName;
 
     // SMTP Properties file
-    java.util.Properties SMTPProperties;
+    Map<String, String> SMTPProperties;
 
     public void setTo(final String to) {
         this.to = to;
@@ -181,7 +183,10 @@ public class SendEMail {
             if (!loadConfig(configFile))
                 return false;
 
-            final Session session = Session.getDefaultInstance(SMTPProperties, null);
+            final Properties props = new Properties();
+            props.putAll(SMTPProperties);
+
+            final Session session = Session.getDefaultInstance(props, null);
             session.setDebug(false);
 
             // create the Multipart and its parts to it
@@ -202,10 +207,10 @@ public class SendEMail {
                 msg.setSubject(subject.trim());
 
             if (from == null)
-                from = SMTPProperties.getProperty("mail.smtp.from");
+                from = SMTPProperties.get("mail.smtp.from");
 
             if (from != null && from.length() > 0) {
-                pers = SMTPProperties.getProperty("mail.smtp.realname");
+                pers = SMTPProperties.get("mail.smtp.realname");
                 if (pers != null) msg.setFrom(new InternetAddress(from, pers));
             }
 

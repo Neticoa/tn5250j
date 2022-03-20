@@ -34,8 +34,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.tn5250j.connectdialog.ConnectionDialogController;
@@ -68,7 +70,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
     private Gui5250Frame frame1;
     private String[] sessionArgs = null;
-    private static Properties sessions = new Properties();
+    private static Map<String, String> sessions = new ConcurrentHashMap<>();
     private static BootStrapper strapper = null;
     private SessionManager manager;
     private static List<Gui5250Frame> frames;
@@ -158,7 +160,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
                 final String sd = getParm("-s", args);
                 if (sessions.containsKey(sd)) {
-                    parseArgs(sessions.getProperty(sd), args);
+                    parseArgs(sessions.get(sd), args);
                     final String[] args2 = args;
                     final String sd2 = sd;
                     Platform.runLater(() -> newSession(sd2, args2));
@@ -239,7 +241,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
                     final String sd = getParm("-s", args);
                     if (sessions.containsKey(sd)) {
-                        sessions.setProperty("emul.default", sd);
+                        sessions.put("emul.default", sd);
                     } else {
                         args = null;
                     }
@@ -282,7 +284,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
             }
 
             m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-            My5250.parseArgs(sessions.getProperty(viewName), m.sessionArgs);
+            My5250.parseArgs(sessions.get(viewName), m.sessionArgs);
             m.newSession(viewName, m.sessionArgs);
         }
     }
@@ -308,7 +310,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     static List<String> loadLastSessionViewNames() {
         final List<String> sessionNames = new ArrayList<String>();
         if (sessions.containsKey("emul.startLastView")) {
-            final String emulview = sessions.getProperty("emul.view", "");
+            final String emulview = sessions.getOrDefault("emul.view", "");
             int idxstart = 0;
             int idxend = emulview.indexOf(PARAM_START_SESSION, idxstart);
             for (; idxend > -1; idxend = emulview.indexOf(PARAM_START_SESSION, idxstart)) {
@@ -350,11 +352,9 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     }
 
     private void setDefaultLocale() {
-
         if (sessions.containsKey("emul.locale")) {
-            Locale.setDefault(parseLocal(sessions.getProperty("emul.locale")));
+            Locale.setDefault(parseLocal(sessions.get("emul.locale")));
         }
-
     }
 
     static private String getParm(final String parm, final String[] args) {
@@ -383,7 +383,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     }
 
     private static String getDefaultSession() {
-        final String defaultSession = sessions.getProperty("emul.default");
+        final String defaultSession = sessions.get("emul.default");
         if (defaultSession != null && !defaultSession.trim().isEmpty()) {
             return defaultSession;
         }
@@ -404,7 +404,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
         if (sel != null && sess.getCount() == 0 && sessions.containsKey(sel)) {
             sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-            parseArgs(sessions.getProperty(sel), sessionArgs);
+            parseArgs(sessions.get(sel), sessionArgs);
         }
 
         if (sessionArgs == null || sess.getCount() > 0 || sessions.containsKey("emul.showConnectDialog")) {
@@ -419,7 +419,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final String sel = UiUtils.callInFxAndWait(this:: openConnectSessionDialog);
         final Sessions sess = manager.getSessions();
         if (sel != null) {
-            final String selArgs = sessions.getProperty(sel);
+            final String selArgs = sessions.get(sel);
             sessionArgs = new String[TN5250jConstants.NUM_PARMS];
             parseArgs(selArgs, sessionArgs);
 
@@ -445,7 +445,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
             }
         }
 
-        final String selArgs = sessions.getProperty(ses.getSessionName());
+        final String selArgs = sessions.get(ses.getSessionName());
         sessionArgs = new String[TN5250jConstants.NUM_PARMS];
         parseArgs(selArgs, sessionArgs);
 
@@ -588,7 +588,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
             frame1.setCursor(Cursor.WAIT);
 
             if (sessions.containsKey("emul.frame" + frame1.getFrameSequence())) {
-                final String location = sessions.getProperty("emul.frame" + frame1.getFrameSequence());
+                final String location = sessions.get("emul.frame" + frame1.getFrameSequence());
                 //         System.out.println(location + " seq > " + frame1.getFrameSequence() );
                 restoreFrame(frame1, location);
             } else {
@@ -601,9 +601,9 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                 double height = bounds.getHeight();
 
                 if (sessions.containsKey("emul.width"))
-                    width = Integer.parseInt(sessions.getProperty("emul.width"));
+                    width = Integer.parseInt(sessions.get("emul.width"));
                 if (sessions.containsKey("emul.height"))
-                    height = Integer.parseInt(sessions.getProperty("emul.height"));
+                    height = Integer.parseInt(sessions.get("emul.height"));
 
                 frame1.setSize(width, height);
                 frame1.centerStage();
@@ -648,7 +648,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
             closeSessionInternal(sesspanel);
         }
 
-        sessions.setProperty("emul.frame" + view.getFrameSequence(),
+        sessions.put("emul.frame" + view.getFrameSequence(),
                 (int) view.getX() + "," +
                         (int) view.getY() + "," +
                         (int) view.getWidth() + "," +
@@ -664,10 +664,10 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         log.info("view settings " + viewNamesForNextStartBuilder);
         if (sess.getCount() == 0) {
 
-            sessions.setProperty("emul.width", Integer.toString((int) view.getWidth()));
-            sessions.setProperty("emul.height", Integer.toString((int) view.getHeight()));
+            sessions.put("emul.width", Integer.toString((int) view.getWidth()));
+            sessions.put("emul.height", Integer.toString((int) view.getHeight()));
 
-            sessions.setProperty("emul.view", viewNamesForNextStartBuilder.toString());
+            sessions.put("emul.view", viewNamesForNextStartBuilder.toString());
 
             // save off the session settings before closing down
             ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
@@ -811,7 +811,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                 + File.pathSeparator + "itext.jar";
 
         if (sessions.containsKey("emul.scriptClassPath")) {
-            jarClassPaths += File.pathSeparator + sessions.getProperty("emul.scriptClassPath");
+            jarClassPaths += File.pathSeparator + sessions.get("emul.scriptClassPath");
         }
 
         System.setProperty("python.path", jarClassPaths);
@@ -819,9 +819,4 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         splash.updateProgress(++step);
 
     }
-
-    static Properties getSessions() {
-        return sessions;
-    }
-
 }

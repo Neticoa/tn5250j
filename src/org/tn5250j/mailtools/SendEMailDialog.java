@@ -368,7 +368,7 @@ public class SendEMailDialog {
      * @param parent
      */
     private void configureSMTP(final Window parent) {
-        new SMTPConfig(parent, null, true).show();
+        new SMTPConfig(null, true).show();
     }
 
     /**

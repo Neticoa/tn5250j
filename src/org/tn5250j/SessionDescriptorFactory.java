@@ -18,7 +18,7 @@ public class SessionDescriptorFactory {
     private static final String SESSION_CONNECT_PASSWORD = "SESSION_CONNECT_PASSWORD";
     private static final String SESSION_CONNECT_USER = "SESSION_CONNECT_USER";
 
-    public static SessionDescriptor create(final String sessionName, final SessionConfig config, final Properties sesProps) {
+    public static SessionDescriptor create(final String sessionName, final AbstractSessionConfig config, final Properties sesProps) {
         final SessionDescriptor d = new SessionDescriptor();
 
         d.setSessionName(sessionName);

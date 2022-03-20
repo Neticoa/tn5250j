@@ -70,6 +70,7 @@ public final class SessionManager {
     public void closeSession(final SessionGui sesspanel) {
 
         sesspanel.closeDown();
+        //TODO save
         sessions.removeSession(sesspanel.getSession());
 
     }

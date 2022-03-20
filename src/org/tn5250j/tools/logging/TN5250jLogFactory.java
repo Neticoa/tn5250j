@@ -22,14 +22,16 @@
  */
 package org.tn5250j.tools.logging;
 
-import java.util.*;
-
-import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.interfaces.ConfigureFactory;
-
 import static java.lang.Integer.parseInt;
 import static org.tn5250j.interfaces.ConfigureFactory.SESSIONS;
 import static org.tn5250j.tools.logging.TN5250jLogger.INFO;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
  * An interface defining objects that can create Configure
@@ -52,21 +54,21 @@ public final class TN5250jLogFactory {
     static {
         try {
             initOrResetLogger();
-        } catch (Exception ignore) {
+        } catch (final Exception ignore) {
             // ignore
         }
     }
 
     static void initOrResetLogger() {
-        Properties props = ConfigureFactory.getInstance().getProperties(SESSIONS);
-        level = parseInt(props.getProperty("emul.logLevel", Integer.toString(INFO)));
+        final Map<String, String> props = ConfigureFactory.getInstance().getProperties(SESSIONS);
+        level = parseInt(props.getOrDefault("emul.logLevel", Integer.toString(INFO)));
 
         customLogger = System.getProperty(TN5250jLogFactory.class.getName());
         if (customLogger == null) {
             try {
                 Class.forName("org.apache.log4j.Logger");
                 log4j = true;
-            } catch (Exception ignore) {
+            } catch (final Exception ignore) {
                 // ignore
             }
         }
@@ -82,14 +84,14 @@ public final class TN5250jLogFactory {
     /**
      * @return An instance of the TN5250jLogger.
      */
-    public static TN5250jLogger getLogger(Class<?> clazz) {
+    public static TN5250jLogger getLogger(final Class<?> clazz) {
         return getLogger(clazz.getName());
     }
 
     /**
      * @return An instance of the TN5250jLogger.
      */
-    public static TN5250jLogger getLogger(String clazzName) {
+    public static TN5250jLogger getLogger(final String clazzName) {
         TN5250jLogger logger = null;
 
         if (_loggers.containsKey(clazzName)) {
@@ -99,12 +101,12 @@ public final class TN5250jLogFactory {
             if (customLogger != null) {
                 try {
 
-                    Class<?> classObject = Class.forName(customLogger);
-                    Object object = classObject.newInstance();
+                    final Class<?> classObject = Class.forName(customLogger);
+                    final Object object = classObject.newInstance();
                     if (object instanceof TN5250jLogger) {
                         logger = (TN5250jLogger) object;
                     }
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     // ignore
                 }
             } else {
@@ -126,13 +128,13 @@ public final class TN5250jLogFactory {
         return log4j;
     }
 
-    public static void setLogLevels(int newLevel) {
+    public static void setLogLevels(final int newLevel) {
         if (level != newLevel) {
             level = newLevel;
-            Set<String> loggerSet = _loggers.keySet();
-            Iterator<String> loggerIterator = loggerSet.iterator();
+            final Set<String> loggerSet = _loggers.keySet();
+            final Iterator<String> loggerIterator = loggerSet.iterator();
             while (loggerIterator.hasNext()) {
-                TN5250jLogger logger = _loggers.get(loggerIterator.next());
+                final TN5250jLogger logger = _loggers.get(loggerIterator.next());
                 logger.setLevel(newLevel);
             }
         }

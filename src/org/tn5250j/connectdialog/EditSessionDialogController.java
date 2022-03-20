@@ -6,7 +6,7 @@ package org.tn5250j.connectdialog;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
@@ -137,7 +137,7 @@ public class EditSessionDialogController implements Initializable {
 
     private String result;
 
-    private final Properties properties;
+    private final Map<String, String> properties;
 
     public EditSessionDialogController() {
         properties = ConfigureFactory.getInstance().getProperties(
@@ -237,7 +237,7 @@ public class EditSessionDialogController implements Initializable {
         if (result == null) {
             properties.put(result, toArgString());
         } else {
-            properties.setProperty(result, toArgString());
+            properties.put(result, toArgString());
         }
         cancel();
     }
@@ -277,7 +277,7 @@ public class EditSessionDialogController implements Initializable {
             ok.setText("conf.addEntryATitle");
             UiUtils.setLabel(ok, "conf.optEdit");
 
-            final String[] args = parseArgs(properties.getProperty(name));
+            final String[] args = parseArgs(properties.get(name));
 
             if (isSpecified("-p", args)) {
                 port.setText(getParm("-p", args));

@@ -6,7 +6,7 @@ package org.tn5250j.connectdialog;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.tn5250j.ExternalProgramConfig;
@@ -72,7 +72,7 @@ public class ExternalProgramsController implements Initializable {
     @FXML
     Pane view;
 
-    private final Properties properties;
+    private final Map<String, String> properties;
     private final ExternalProgramConfig externalProgramConfig;
 
     public ExternalProgramsController() {
@@ -88,12 +88,12 @@ public class ExternalProgramsController implements Initializable {
         externalPrograms.setTitle(LangTool.getString("external.title"));
         browserLabel.setText(LangTool.getString("external.http"));
         if (properties.containsKey(PROTOCOL_HTTP_PROPERTY)) {
-            browser.setText(properties.getProperty(PROTOCOL_HTTP_PROPERTY));
+            browser.setText(properties.get(PROTOCOL_HTTP_PROPERTY));
         }
 
         mailerLabel.setText(LangTool.getString("external.mailto"));
         if (properties.containsKey(PROTOCOL_MAILTO_PROPERTY)) {
-            mailer.setText(properties.getProperty(PROTOCOL_MAILTO_PROPERTY));
+            mailer.setText(properties.get(PROTOCOL_MAILTO_PROPERTY));
         }
 
         final TableColumn<ExternalProgram, String> nameColumn = createTableColumn(
@@ -210,7 +210,7 @@ public class ExternalProgramsController implements Initializable {
     private void setProperty(final String key, final String origin) {
         final String value = origin == null ? null : origin.trim();
         if (value != null && value.length() > 0) {
-            properties.setProperty(key, value);
+            properties.put(key, value);
         } else {
             properties.remove(key);
         }

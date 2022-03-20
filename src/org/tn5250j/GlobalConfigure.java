@@ -25,20 +25,15 @@
  */
 package org.tn5250j;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -54,23 +49,12 @@ public class GlobalConfigure extends ConfigureFactory {
     public static final String TN5250J_FOLDER = ".tn5250j";
 
     /**
-     * A handle to the unique GlobalConfigure class
-     */
-    static private GlobalConfigure _instance;
-
-    /**
      * A handle to the the Global Properties
      */
-    static private Properties settings;
+    static private Map<String, String> settings = new ConcurrentHashMap<>();
 
-    static private Map<String, Object> registry = new ConcurrentHashMap<>();
-    static private Map<String, Object>  headers = new ConcurrentHashMap<>();  //LUC GORRENS
-
-    // Moved to ConfigureFactory
-    //   static final public String SESSIONS = "sessions";
-    static final public File ses = new File(SESSIONS);
-    //   static final public String MACROS = "macros";
-    //   static final public String KEYMAP = "keymap";
+    static private Map<String, Map<String, String>> registry = new ConcurrentHashMap<>();
+    static private Map<String, String>  headers = new ConcurrentHashMap<>();  //LUC GORRENS
 
     static final private String settingsFile = "tn5250jstartup.cfg";
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -79,30 +63,6 @@ public class GlobalConfigure extends ConfigureFactory {
      * The constructor is made protected to allow overriding.
      */
     public GlobalConfigure() {
-        if (_instance == null) {
-            // initialize the settings information
-            initialize();
-            // set our instance to this one.
-            _instance = this;
-        }
-    }
-
-    /**
-     * @return The unique instance of this class.
-     */
-    static public GlobalConfigure instance() {
-
-        if (_instance == null) {
-            _instance = new GlobalConfigure();
-        }
-        return _instance;
-
-    }
-
-    /**
-     * Initialize the properties registry for use later.
-     */
-    private void initialize() {
         verifiySettingsFolder();
         loadSettings();
         loadSessions();
@@ -180,30 +140,37 @@ public class GlobalConfigure extends ConfigureFactory {
 
         FileInputStream in = null;
         FileInputStream again = null;
-        settings = new Properties();
+        settings = new ConcurrentHashMap<>();
 
         // here we will check for a system property is provided first.
         if (System.getProperties().containsKey("emulator.settingsDirectory")) {
-            settings.setProperty("emulator.settingsDirectory",
+            settings.put("emulator.settingsDirectory",
                     System.getProperty("emulator.settingsDirectory") +
                             File.separator);
             checkDirs();
         } else {
-            settings.setProperty("emulator.settingsDirectory",
+            settings.put("emulator.settingsDirectory",
                     System.getProperty("user.home") + File.separator +
                             TN5250J_FOLDER + File.separator);
             try {
                 in = new FileInputStream(settingsFile);
-                settings.load(in);
+                try {
+                    settings = loadProperties(in);
+                } finally {
+                    in.close();
+                }
             } catch (final FileNotFoundException fnfe) {
                 try {
                     again = new FileInputStream(settingsDirectory() + settingsFile);
-                    settings.load(again);
+                    try {
+                        settings = loadProperties(again);
+                    } finally {
+                        again.close();
+                    }
                 } catch (final FileNotFoundException fnfea) {
                     log.info(" Information Message: "
                             + fnfea.getMessage() + ".  The file " + settingsFile
                             + " will be created for first time use.");
-                    checkLegacy();
                     saveSettings();
                 } catch (final IOException ioea) {
                     log.warn("IO Exception accessing File "
@@ -228,72 +195,9 @@ public class GlobalConfigure extends ConfigureFactory {
 
     private void checkDirs() {
         // we now check to see if the settings directory is a directory.  If not then we create it
-        final File sd = new File(settings.getProperty("emulator.settingsDirectory"));
+        final File sd = new File(settings.get("emulator.settingsDirectory"));
         if (!sd.isDirectory())
             sd.mkdirs();
-    }
-
-    private void checkLegacy() {
-        // we check if the sessions file already exists in the directory
-        // if it does exist we are working with an old install so we
-        // need to set the settings directory to the users directory
-        // SESSIONS is declared as a string, so we just can use the keyword here.
-        if (ses.exists()) {
-            final boolean cfc = UiUtils.showYesNoWarning("Dear User,\n\n" +
-                            "Seems you are using an old version of tn5250j.\n" +
-                            "In meanwhile the application became multi-user capable,\n" +
-                            "which means ALL the config- and settings-files are\n" +
-                            "placed in your home-dir to avoid further problems in\n" +
-                            "the near future.\n\n" +
-                            "You have the choice to choose if you want the files\n" +
-                            "to be copied or not, please make your choice !\n\n" +
-                            "Shall we copy the files to the new location ?",
-                    "Old install detected");
-            if (cfc) {
-                // Here we do a checkdir so we know the destination-dir exists
-                checkDirs();
-                copyConfigs(SESSIONS);
-                copyConfigs(MACROS);
-                copyConfigs(KEYMAP);
-            } else {
-                UiUtils.showWarning("Dear User,\n\n" +
-                        "You choosed not to copy the file.\n" +
-                        "This means the program will end here.\n\n" +
-                        "To use this NON-STANDARD behaviour start tn5250j\n" +
-                        "with -Demulator.settingsDirectory=<settings-dir> \n" +
-                        "as a parameter to avoid this question all the time.",
-                "Using NON-STANDARD behaviour");
-                System.exit(0);
-            }
-        }
-    }
-
-    private void copyConfigs(final String sesFile) {
-        /** Copy the config-files to the user's home-dir */
-        final String srcFile = System.getProperty("user.dir") + File.separator + sesFile;
-        final String dest = System.getProperty("user.home") +
-                File.separator + TN5250J_FOLDER + File.separator + sesFile;
-        final File rmvFile = new File(sesFile);
-        try {
-            final FileReader r = new FileReader(srcFile);
-            final BufferedReader b = new BufferedReader(r);
-
-            final FileWriter w = new FileWriter(dest);
-            final PrintWriter p = new PrintWriter(w);
-            String regel = b.readLine();
-            while (regel != null) {
-                p.println(regel);
-                regel = b.readLine();
-            }
-            b.close();
-            p.close();
-            rmvFile.delete();
-        } catch (final FileNotFoundException e) {
-            log.warn(srcFile + " not found !");
-        } catch (final IOException e) {
-            log.warn("Global io-error !");
-        } catch (final ArrayIndexOutOfBoundsException e) {
-        }
     }
 
     /**
@@ -304,36 +208,16 @@ public class GlobalConfigure extends ConfigureFactory {
 
         try {
             final FileOutputStream out = new FileOutputStream(settingsDirectory() + settingsFile);
-            settings.store(out, "----------------- tn5250j Global Settings --------------");
+            try {
+                storeProperties(settings, "----------------- tn5250j Global Settings --------------", out);
+            } finally {
+                out.close();
+            }
         } catch (final FileNotFoundException fnfe) {
         } catch (final IOException ioe) {
         }
     }
 
-    /**
-     * Save the setting in the registry using the key passed in with no header
-     * output.
-     *
-     * @param regKey
-     */
-    @Override
-    public void saveSettings(final String regKey) {
-
-        saveSettings(regKey, "");
-    }
-
-    /**
-     * Save the settings in the registry using the key passed with a header
-     * in the output.
-     *
-     * @param regKey
-     * @param header
-     */
-    @Override
-    public void saveSettings(final String regKey, final String header) {
-
-        saveSettings(regKey, regKey, header);
-    }
 
     /**
      * Save the settings in the registry using the key passed with a header
@@ -349,10 +233,11 @@ public class GlobalConfigure extends ConfigureFactory {
             try {
                 final FileOutputStream out = new FileOutputStream(
                         settingsDirectory() + fileName);
-                final Properties props = (Properties) registry.get(regKey);
-                props.store(out, header);
-                out.flush();
-                out.close();
+                try {
+                    storeProperties(registry.get(regKey), header, out);
+                } finally {
+                    out.close();
+                }
             } catch (final FileNotFoundException fnfe) {
                 log.warn("File not found : writing file "
                         + fileName + ".  Description of error is "
@@ -372,31 +257,6 @@ public class GlobalConfigure extends ConfigureFactory {
     }
 
     /**
-     * Place the Properties in the registry under a given registry name
-     *
-     * @param regKey
-     * @param regProps
-     */
-    @Override
-    public void setProperties(final String regKey, final Properties regProps) {
-
-        registry.put(regKey, regProps);
-
-    }
-
-    /**
-     * Set the properties for the given registry key.
-     *
-     * @param regKey
-     * @param fileName
-     * @param header
-     */
-    @Override
-    public void setProperties(final String regKey, final String fileName, final String header) {  //LG NEW
-        setProperties(regKey, fileName, header, false);
-    }
-
-    /**
      * Set the properties for the given registry key.
      *
      * @param regKey
@@ -404,18 +264,20 @@ public class GlobalConfigure extends ConfigureFactory {
      * @param header
      * @param createFile
      */
-    @Override
-    public void setProperties(final String regKey, final String fileName, final String header,
+    private void setProperties(final String regKey, final String fileName, final String header,
                               final boolean createFile) {
 
-        FileInputStream in = null;
-        final Properties props = new Properties();
+        Map<String, String> props = new ConcurrentHashMap<>();
         headers.put(regKey, header);
 
         try {
-            in = new FileInputStream(settingsDirectory()
+            final InputStream in = new FileInputStream(settingsDirectory()
                     + fileName);
-            props.load(in);
+            try {
+                props = loadProperties(in);
+            } finally {
+                in.close();
+            }
 
         } catch (final FileNotFoundException fnfe) {
 
@@ -453,44 +315,28 @@ public class GlobalConfigure extends ConfigureFactory {
      * @return
      */
     @Override
-    public Properties getProperties(final String regKey) {
-
-        if (registry.containsKey(regKey)) {
-            return (Properties) registry.get(regKey);
-        }
-        return null;
-    }
-
-    public Properties getProperties() {
-        return settings;
+    public Map<String, String> getProperties(final String regKey) {
+        return registry.get(regKey);
     }
 
     @Override
-    public Properties getProperties(final String regKey, final String fileName) {
-        return getProperties(regKey, fileName, false, "", false);
-    }
-
-    @Override
-    public Properties getProperties(final String regKey, final String fileName,
-                                    final boolean createFile, final String header) {
-        return getProperties(regKey, fileName, false, "", false);
-    }
-
-    @Override
-    public Properties getProperties(final String regKey, final String fileName,
+    public Map<String, String> getProperties(final String regKey, final String fileName,
                                     final boolean createFile, final String header,
                                     final boolean reloadIfLoaded) {
 
         if (!registry.containsKey(regKey) || reloadIfLoaded) {
 
-            FileInputStream in = null;
-            final Properties props = new Properties();
+            Map<String, String> props = new ConcurrentHashMap<>();
             headers.put(regKey, header);
 
             try {
-                in = new FileInputStream(settingsDirectory()
+                final InputStream in = new FileInputStream(settingsDirectory()
                         + fileName);
-                props.load(in);
+                try {
+                    props = loadProperties(in);
+                } finally {
+                    in.close();
+                }
 
             } catch (final FileNotFoundException fnfe) {
 
@@ -525,24 +371,8 @@ public class GlobalConfigure extends ConfigureFactory {
 
             return props;
         } else {
-            return (Properties) registry.get(regKey);
+            return registry.get(regKey);
         }
-    }
-
-    /**
-     * Returns the setting from the given key of the global properties or the
-     * default passed if the property does not exist.
-     *
-     * @param key
-     * @param def
-     * @return
-     */
-    @Override
-    public String getProperty(final String key, final String def) {
-        if (settings.containsKey(key))
-            return settings.getProperty(key);
-        else
-            return def;
     }
 
     /**
@@ -553,7 +383,7 @@ public class GlobalConfigure extends ConfigureFactory {
      */
     @Override
     public String getProperty(final String key) {
-        return settings.getProperty(key);
+        return settings.get(key);
     }
 
     /**
@@ -563,22 +393,6 @@ public class GlobalConfigure extends ConfigureFactory {
      */
     private String settingsDirectory() {
         //System.out.println(settings.getProperty("emulator.settingsDirectory"));
-        return settings.getProperty("emulator.settingsDirectory");
-
+        return settings.get("emulator.settingsDirectory");
     }
-
-    /**
-     * Not sure yet so be careful using this.
-     *
-     * @return
-     */
-    public ClassLoader getClassLoader() {
-
-        ClassLoader loader = GlobalConfigure.class.getClassLoader();
-        if (loader == null)
-            loader = ClassLoader.getSystemClassLoader();
-
-        return loader;
-    }
-
 }

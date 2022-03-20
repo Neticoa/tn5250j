@@ -25,13 +25,12 @@
  */
 package org.tn5250j;
 
-import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.keyboard.KeyMnemonicResolver;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.interfaces.OptionAccessFactory;
 
 /**
  * Utility class for referencing the global options allowed for access
@@ -50,8 +49,6 @@ public class OptionAccess extends OptionAccessFactory {
      * A handle to non valid options.
      */
     static private List<String> restricted = new ArrayList<String>();
-
-    private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
     /**
      * The constructor is made protected to allow overriding.
@@ -91,12 +88,12 @@ public class OptionAccess extends OptionAccessFactory {
     private void loadOptions() {
 
         restricted.clear();
-        String restrictedProp =
+        final String restrictedProp =
                 ConfigureFactory.getInstance().getProperties(
-                        ConfigureFactory.SESSIONS).getProperty("emul.restricted");
+                        ConfigureFactory.SESSIONS).get("emul.restricted");
 
         if (restrictedProp != null) {
-            StringTokenizer tokenizer = new StringTokenizer(restrictedProp, ";");
+            final StringTokenizer tokenizer = new StringTokenizer(restrictedProp, ";");
             while (tokenizer.hasMoreTokens()) {
                 restricted.add(tokenizer.nextToken());
             }
@@ -104,21 +101,25 @@ public class OptionAccess extends OptionAccessFactory {
 
     }
 
-    public boolean isValidOption(String option) {
+    @Override
+    public boolean isValidOption(final String option) {
 
         return !restricted.contains(option);
     }
 
-    public boolean isRestrictedOption(String option) {
+    @Override
+    public boolean isRestrictedOption(final String option) {
 
         return restricted.contains(option);
     }
 
+    @Override
     public int getNumberOfRestrictedOptions() {
 
         return restricted.size();
     }
 
+    @Override
     public void reload() {
         loadOptions();
     }

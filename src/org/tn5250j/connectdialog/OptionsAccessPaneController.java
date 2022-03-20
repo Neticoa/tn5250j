@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.tn5250j.interfaces.ConfigureFactory;
@@ -74,7 +74,7 @@ public class OptionsAccessPaneController implements Initializable {
     @FXML
     Pane view;
 
-    private final Properties properties;
+    private final Map<String, String> properties;
 
     public OptionsAccessPaneController() {
         properties = ConfigureFactory.getInstance().getProperties(
@@ -152,7 +152,7 @@ public class OptionsAccessPaneController implements Initializable {
     }
 
     private boolean isAccessDigestUsed() {
-        return properties.getProperty(ACCESS_DIGEST_PROPERTY) != null;
+        return properties.containsKey(ACCESS_DIGEST_PROPERTY);
     }
 
     private void setPassword() {
@@ -160,7 +160,7 @@ public class OptionsAccessPaneController implements Initializable {
         if (pwd != null && pwd.length() > 0) {
             try {
                 final DESSHA1 sha = new DESSHA1();
-                properties.setProperty(ACCESS_DIGEST_PROPERTY, sha.digest(new String(pwd), CRYPTO_KEY));
+                properties.put(ACCESS_DIGEST_PROPERTY, sha.digest(new String(pwd), CRYPTO_KEY));
             } catch (final Exception ex) {
             }
         }
@@ -179,7 +179,7 @@ public class OptionsAccessPaneController implements Initializable {
         if (isAccessDigestUsed()) {
             try {
                 final DESSHA1 sha = new DESSHA1();
-                if (properties.getProperty("emul.accessDigest").equals(sha.digest(password.getText(), CRYPTO_KEY))) {
+                if (properties.get("emul.accessDigest").equals(sha.digest(password.getText(), CRYPTO_KEY))) {
                     setAccessOptionsEnabled(true);
                     setPassButton.setDisable(false);
                 }
@@ -278,7 +278,7 @@ public class OptionsAccessPaneController implements Initializable {
             }
             sb.append(item.getName());
         }
-        properties.setProperty("emul.restricted", sb.toString());
+        properties.put("emul.restricted", sb.toString());
         OptionAccessFactory.getInstance().reload();
     }
 }

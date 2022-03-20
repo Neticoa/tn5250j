@@ -26,7 +26,7 @@
 package org.tn5250j;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.tn5250j.event.SessionChangeEvent;
@@ -92,10 +92,10 @@ public class Gui5250Frame extends GenericTn5250Frame implements
                 (src, old, value) -> selectedTabChanged(value));
         sessTabbedPane.getTabs().addListener(this::tabsChanged);
 
-        final Properties props = ConfigureFactory.getInstance().
+        final Map<String, String> props = ConfigureFactory.getInstance().
                 getProperties(ConfigureFactory.SESSIONS);
 
-        if (props.getProperty("emul.hideTabBar", "no").equals("yes"))
+        if (props.getOrDefault("emul.hideTabBar", "no").equals("yes"))
             hideTabBar = true;
 
         if (!hideTabBar) {

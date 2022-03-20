@@ -4,7 +4,7 @@
 package org.tn5250j.connectdialog;
 
 import java.net.URL;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.tn5250j.gui.TitledBorderedPane;
@@ -62,10 +62,10 @@ public class LoggingPaneController implements Initializable {
     private final SimpleObjectProperty<LogAppender> logAppenderProperty = new SimpleObjectProperty<>();
 
     public LoggingPaneController() {
-        final Properties properties = ConfigureFactory.getInstance().getProperties(
+        final Map<String, String> properties = ConfigureFactory.getInstance().getProperties(
                 ConfigureFactory.SESSIONS);
 
-        final int logLevel = Integer.parseInt(properties.getProperty("emul.logLevel",
+        final int logLevel = Integer.parseInt(properties.getOrDefault("emul.logLevel",
                 Integer.toString(TN5250jLogger.INFO)));
         this.logLevelProperty.setValue(logLevel);
         this.logAppenderProperty.setValue(LogAppender.Console);
@@ -187,9 +187,9 @@ public class LoggingPaneController implements Initializable {
     void saveState() {
         final Integer level = logLevelProperty.getValue();
         if (level != null) {
-            final Properties properties = ConfigureFactory.getInstance().getProperties(
+            final Map<String, String> properties = ConfigureFactory.getInstance().getProperties(
                     ConfigureFactory.SESSIONS);
-            properties.setProperty("emul.logLevel", level.toString());
+            properties.put("emul.logLevel", level.toString());
         }
     }
 }

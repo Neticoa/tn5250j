@@ -26,13 +26,11 @@
 package org.tn5250j.keyboard;
 
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -71,7 +69,7 @@ public class KeyMapper {
         mappedKeys = new HashMap<KeyStroker, String>(60);
         workStroke = new KeyStroker(0, false, false, false, false, KeyStroker.KEY_LOCATION_STANDARD);
 
-        final Properties keys = ConfigureFactory.getInstance().getProperties(
+        final Map<String, String> keys = ConfigureFactory.getInstance().getProperties(
                 ConfigureFactory.KEYMAP);
 
         if (!containsProperties(keys)) {
@@ -166,7 +164,7 @@ public class KeyMapper {
 
     }
 
-    private static boolean containsProperties(final Properties keystrokes) {
+    private static boolean containsProperties(final Map<String, String> keystrokes) {
 
         if (keystrokes != null && keystrokes.size() > 0)
             return true;
@@ -174,19 +172,14 @@ public class KeyMapper {
             return false;
     }
 
-    private static void parseKeyStrokes(final Properties keystrokes) {
-
-        String theStringList = "";
-        String theKey = "";
-        final Enumeration<?> ke = keystrokes.propertyNames();
-        while (ke.hasMoreElements()) {
-            theKey = (String) ke.nextElement();
+    private static void parseKeyStrokes(final Map<String, String> keystrokes) {
+        for (final String theKey : keystrokes.keySet()) {
 
             if (OptionAccessFactory.getInstance().isRestrictedOption(theKey)) {
                 continue;
             }
 
-            theStringList = keystrokes.getProperty(theKey);
+            final String theStringList = keystrokes.get(theKey);
             int kc = 0;
             boolean is = false;
             boolean ic = false;
@@ -227,12 +220,10 @@ public class KeyMapper {
             }
 
             mappedKeys.put(new KeyStroker(kc, is, ic, ia, iag, location), theKey);
-
         }
-
     }
 
-    protected static void setKeyMap(final Properties keystrokes) {
+    protected static void setKeyMap(final Map<String, String> keystrokes) {
 
         parseKeyStrokes(keystrokes);
 
@@ -244,7 +235,7 @@ public class KeyMapper {
 
     public final static void saveKeyMap() {
 
-        final Properties map = ConfigureFactory.getInstance().getProperties(ConfigureFactory.KEYMAP);
+        final Map<String, String> map = ConfigureFactory.getInstance().getProperties(ConfigureFactory.KEYMAP);
 
         map.clear();
 

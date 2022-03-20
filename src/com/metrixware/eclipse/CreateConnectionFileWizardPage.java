@@ -5,21 +5,28 @@ package com.metrixware.eclipse;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+
+import com.metrixware.tn5250.config.PropertiesFileConfigure;
 
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
 public class CreateConnectionFileWizardPage extends AbstractConnectionWizardPage {
+    private static final String EXTENSION = ".5250";
 
-    private IResource folder;
+    private IContainer folder;
+    private IFile file;
+
     private Composite parent;
     private Text fileName;
 
-    protected CreateConnectionFileWizardPage(final IResource folder) {
+    protected CreateConnectionFileWizardPage(final IContainer folder) {
         super("createConnectionFile");
         this.folder = folder;
     }
@@ -34,13 +41,27 @@ public class CreateConnectionFileWizardPage extends AbstractConnectionWizardPage
 
     @Override
     protected void updateEnablement() {
+        file = null;
         final boolean valid = isNotEmpty(fileName);
+
         if (valid) {
-            setPageComplete(true);
+            try {
+                file = folder.getFile(Path.fromPortableString(possibleAddExtensioin(fileName.getText().trim())));
+            } catch (final Exception e) {
+            }
         }
+
+        setPageComplete(file != null);
     }
 
-    public void createConnectionFile() throws IOException {
+    private String possibleAddExtensioin(final String str) {
+        return str.endsWith(EXTENSION) ? str : str + EXTENSION;
+    }
 
+    public void createConnectionFile(final ConnectionBean bean) throws IOException {
+        final PropertiesFileConfigure cfgFactory = new PropertiesFileConfigure(file);
+
+
+        System.out.println("CreateConnectionFileWizardPage.createConnectionFile()");
     }
 }

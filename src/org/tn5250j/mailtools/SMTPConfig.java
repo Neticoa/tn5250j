@@ -25,8 +25,7 @@
  */
 package org.tn5250j.mailtools;
 
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Map;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
@@ -42,7 +41,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.stage.Window;
 
 public class SMTPConfig extends DialogPane {
     Label labelHost = new Label();
@@ -56,17 +54,15 @@ public class SMTPConfig extends DialogPane {
     TextField fieldFrom = new TextField();
     Label labelFileName = new Label();
     TextField fieldFileName = new TextField();
-    Properties SMTPProperties;
+    Map<String, String> SMTPProperties;
 
     //   String fileName;
-    private final Window owner;
     private final String title;
     private final boolean modal;
 
     private static final String smtpFileName = "SMTPProperties.cfg";
 
-    public SMTPConfig(final Window frame, final String title, final boolean modal) {
-        this.owner = frame;
+    public SMTPConfig(final String title, final boolean modal) {
         this.title = title;
         this.modal = modal;
 
@@ -142,7 +138,7 @@ public class SMTPConfig extends DialogPane {
     }
 
     public SMTPConfig() {
-        this(null, "", false);
+        this("", false);
     }
 
     public void show() {
@@ -174,13 +170,13 @@ public class SMTPConfig extends DialogPane {
         //
         //                              mail.smtp.from=kjpou@hotmail.com
 
-        fieldHost.setText(SMTPProperties.getProperty("mail.smtp.host"));
-        fieldPort.setText(SMTPProperties.getProperty("mail.smtp.port"));
-        fieldFrom.setText(SMTPProperties.getProperty("mail.smtp.from"));
-        fieldName.setText(SMTPProperties.getProperty("mail.smtp.realname"));
+        fieldHost.setText(SMTPProperties.get("mail.smtp.host"));
+        fieldPort.setText(SMTPProperties.get("mail.smtp.port"));
+        fieldFrom.setText(SMTPProperties.get("mail.smtp.from"));
+        fieldName.setText(SMTPProperties.get("mail.smtp.realname"));
 
         // file name
-        fieldFileName.setText(SMTPProperties.getProperty("fileName"));
+        fieldFileName.setText(SMTPProperties.get("fileName"));
 
     }
 
@@ -203,18 +199,13 @@ public class SMTPConfig extends DialogPane {
 
     private void handleDone() {
 
-        SMTPProperties.setProperty("mail.smtp.host", fieldHost.getText());
-        SMTPProperties.setProperty("mail.smtp.port", fieldPort.getText());
-        SMTPProperties.setProperty("mail.smtp.from", fieldFrom.getText());
-        SMTPProperties.setProperty("mail.smtp.realname", fieldName.getText());
+        SMTPProperties.put("mail.smtp.host", fieldHost.getText());
+        SMTPProperties.put("mail.smtp.port", fieldPort.getText());
+        SMTPProperties.put("mail.smtp.from", fieldFrom.getText());
+        SMTPProperties.put("mail.smtp.realname", fieldName.getText());
 
         // file name
-        SMTPProperties.setProperty("fileName", fieldFileName.getText());
-
-        for (final Enumeration<?> x = SMTPProperties.propertyNames();
-             x.hasMoreElements();
-        )
-            System.out.println(SMTPProperties.get(x.nextElement()));
+        SMTPProperties.put("fileName", fieldFileName.getText());
 
         ConfigureFactory.getInstance().saveSettings(
                 "smtp",
