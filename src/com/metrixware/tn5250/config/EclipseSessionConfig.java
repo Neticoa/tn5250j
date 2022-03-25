@@ -3,6 +3,8 @@
  */
 package com.metrixware.tn5250.config;
 
+import java.io.IOException;
+
 import org.tn5250j.AbstractSessionConfig;
 
 /**
@@ -10,11 +12,13 @@ import org.tn5250j.AbstractSessionConfig;
  *
  */
 public class EclipseSessionConfig extends AbstractSessionConfig {
+
     private final PropertiesFileConfigure configurer;
 
     public EclipseSessionConfig(final String sessionName, final PropertiesFileConfigure configurer) {
         super(sessionName);
         this.configurer = configurer;
+        this.sesProps = configurer.getProperties(PropertiesFileConfigure.SESSION);
     }
 
     @Override
@@ -23,15 +27,17 @@ public class EclipseSessionConfig extends AbstractSessionConfig {
     }
 
     @Override
-    public void saveSessionProps() {
-        // TODO Auto-generated method stub
-
+    public void loadDefaults() throws IOException {
+        super.loadDefaults();
     }
 
     @Override
-    protected void loadConfigurationResource() {
-        configurer.reloadSettings();
-//        this.sesProps = configurer.get
+    public void saveSessionProps() {
+        configurer.saveSettings();
     }
 
+    @Override
+    public void loadConfigurationResource() {
+        configurer.reloadSettings();
+    }
 }

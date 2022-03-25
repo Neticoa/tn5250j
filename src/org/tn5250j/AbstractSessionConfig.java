@@ -89,7 +89,7 @@ public abstract class AbstractSessionConfig {
     private final KeyMnemonicSerializer keyMnemonicSerializer = new KeyMnemonicSerializer();
 
     private final String sessionName;
-    protected final Map<String, String> sesProps = new ConcurrentHashMap<>();
+    protected Map<String, String> sesProps = new ConcurrentHashMap<>();
 
     private final List<SessionConfigListener> sessionCfglisteners = new CopyOnWriteArrayList<>();
     private boolean modified;
@@ -140,7 +140,6 @@ public abstract class AbstractSessionConfig {
     protected void loadDefaults() throws IOException {
         final Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
         final String prefix = colorSchemaDefaults.getProperty("schemaDefault");
-        sesProps.put("colo", colorSchemaDefaults.getProperty(prefix + ".colo"));
         sesProps.put("colorRed", colorSchemaDefaults.getProperty(prefix + ".colorRed"));
         sesProps.put("colorTurq", colorSchemaDefaults.getProperty(prefix + ".colorTurq"));
         sesProps.put("colorCursor", colorSchemaDefaults.getProperty(prefix + ".colorCursor"));

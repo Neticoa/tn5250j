@@ -6,8 +6,8 @@ package com.metrixware.eclipse;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
+import org.tn5250j.SslType;
 import org.tn5250j.Terminal;
-import org.tn5250j.TlsVersion;
 
 import com.metrixware.tn5250.connection.CodePage;
 
@@ -21,7 +21,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
     //PORT: Text
     private Text port;
     //TSL: Combo
-    private Combo tls;
+    private Combo sslType;
     //TERMINAL: Combo
     private Combo terminal;
     //CODEPAGE: Cmobobox
@@ -51,8 +51,8 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         setSizeInSumbols(port, 5);
 
         //TSL: Combo
-        tls = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardTlsLabel), createCombo());
-        pupulateTls();
+        sslType = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardSslTypeLabel), createCombo());
+        pupulateSslType();
 
         //TERMINAL: Combo
         terminal = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardTerminalLabel), createCombo());
@@ -95,15 +95,15 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
             terminal.add(term.getDescription());
         }
 
-        terminal.select(0);
+        terminal.select(Terminal.IBM_5292_2.ordinal());
     }
 
-    private void pupulateTls() {
-        for (final TlsVersion t : TlsVersion.values()) {
-            tls.add(t.getName());
+    private void pupulateSslType() {
+        for (final SslType t : SslType.values()) {
+            sslType.add(t.getType());
         }
 
-        tls.select(TlsVersion.V1_0.ordinal());
+        sslType.select(SslType.None.ordinal());
     }
 
     private void populateCodePage() {
@@ -111,7 +111,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
             codePage.add(cp.name());
         }
 
-        codePage.select(CodePage.DEFAULT.ordinal());
+        codePage.select(CodePage.FRANCE.ordinal());
     }
 
     private Combo createCombo() {
@@ -125,7 +125,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         final boolean isOk =
                 isNotEmpty(host)
                 && containsIntValue(port)
-                && isAnySelected(tls)
+                && isAnySelected(sslType)
                 && isAnySelected(terminal)
                 && isAnySelected(codePage)
                 && isNotEmpty(session)
@@ -139,7 +139,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         final ConnectionBean con = new ConnectionBean();
         con.setHost(host.getText());
         con.setPort(Integer.parseInt(port.getText()));
-        con.setTls(TlsVersion.values()[tls.getSelectionIndex()]);
+        con.setSslType(SslType.values()[sslType.getSelectionIndex()]);
         con.setTerminal(Terminal.values()[terminal.getSelectionIndex()]);
         con.setCodePage(CodePage.values()[codePage.getSelectionIndex()]);
         con.setName(session.getText());

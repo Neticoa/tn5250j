@@ -8,7 +8,8 @@
             class="com.metrixware.eclipse.NewConnectionWizard"
             icon="images/tn5250j-16x16.png"
             id="com.metrixware.tn5250.newConnectionWizard"
-            name="%wizard.name">
+            name="%wizard.name"
+            project="false">
       </wizard>
       <category
             id="com.metrixware.tn5250.category"

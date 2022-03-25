@@ -52,12 +52,12 @@ import com.metrixware.eclipse.Messages;
  * Use GlobalConfigure.instance() to access this instance.
  */
 public class PropertiesFileConfigure extends ConfigureFactory {
-    private static final String SESSION = "session";
+    public static final String SESSION = "session";
 
     /**
      * A handle to the the Global Properties
      */
-    private Map<String, String> settings = new ConcurrentHashMap<>();
+    private final Map<String, String> settings = new ConcurrentHashMap<>();
 
     private Map<String, Map<String, String>> registry = new ConcurrentHashMap<>();
 
@@ -71,6 +71,10 @@ public class PropertiesFileConfigure extends ConfigureFactory {
     public PropertiesFileConfigure(final IFile file) {
         super();
         this.file = file;
+
+        registry.put(SESSION, new ConcurrentHashMap<>());
+        registry.put(MACROS, new ConcurrentHashMap<>());
+        registry.put(KEYMAP, new ConcurrentHashMap<>());
     }
 
     /**
@@ -78,7 +82,7 @@ public class PropertiesFileConfigure extends ConfigureFactory {
      */
     @Override
     public void reloadSettings() {
-        settings.clear();
+        clear();
 
         if (log.isInfoEnabled()) {
             log.info("reloading settings");
@@ -95,6 +99,13 @@ public class PropertiesFileConfigure extends ConfigureFactory {
         if (log.isInfoEnabled()) {
             log.info("Done (reloading settings).");
         }
+    }
+
+    public void clear() {
+        for (final Map.Entry<String, Map<String, String>> e : registry.entrySet()) {
+            e.getValue().clear();
+        }
+        settings.clear();
     }
 
     /**
@@ -173,7 +184,7 @@ public class PropertiesFileConfigure extends ConfigureFactory {
     private void cutProperties(final Map<String, String> rawSettings, final String regKey) {
 
         final int offset = regKey.length() + 1;
-        final Map<String, String> props = new ConcurrentHashMap<>();
+        final Map<String, String> props = registry.get(regKey);
 
         final Iterator<Map.Entry<String, String>> iter = rawSettings.entrySet().iterator();
         while (iter.hasNext()) {
@@ -184,8 +195,6 @@ public class PropertiesFileConfigure extends ConfigureFactory {
                 props.put(key.substring(offset), e.getValue());
             }
         }
-
-        registry.put(regKey, props);
     }
 
     /**

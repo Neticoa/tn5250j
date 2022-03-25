@@ -14,7 +14,7 @@ public class Messages extends NLS {
     public static String CreateConnectionWizardSessionLabel;
     public static String CreateConnectionWizardCodePageLabel;
     public static String CreateConnectionWizardTerminalLabel;
-    public static String CreateConnectionWizardTlsLabel;
+    public static String CreateConnectionWizardSslTypeLabel;
     public static String CreateConnectionWizardPortLabel;
     public static String CreateConnectionWizardHostLabel;
     public static String CreateConnectionWizardIdleOutLabel;
@@ -22,7 +22,6 @@ public class Messages extends NLS {
     public static String CreateConnectionWizardDeviceLabel;
 
     public static String FailedToCreateConnection;
-    public static String OnlyJavaProjectCanBeUsed;
     public static String NotValidParentSelected;
     public static String NewConnectionWizard;
 
@@ -30,6 +29,7 @@ public class Messages extends NLS {
     public static String ErrorTitleFailedToLoadSessings;
     public static String ErrorTitleFailedToSaveSessings;
     public static String ErrorTitleFailedToCreateConnection;
+    public static String ErrorTitleFailedToInitializeFx;
 
     static {
         // initialize resource bundle

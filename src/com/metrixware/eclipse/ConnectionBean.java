@@ -3,8 +3,8 @@
  */
 package com.metrixware.eclipse;
 
+import org.tn5250j.SslType;
 import org.tn5250j.Terminal;
-import org.tn5250j.TlsVersion;
 
 import com.metrixware.tn5250.connection.CodePage;
 
@@ -16,7 +16,7 @@ public class ConnectionBean {
 
     private String host;
     private int port;
-    private TlsVersion tls;
+    private SslType sslType;
     private Terminal terminal;
     private CodePage codePage;
     private String name;
@@ -53,17 +53,17 @@ public class ConnectionBean {
     }
 
     /**
-     * @param tls TLS version.
+     * @param type SSL type.
      */
-    public void setTls(final TlsVersion tls) {
-        this.tls = tls;
+    public void setSslType(final SslType type) {
+        this.sslType = type;
     }
 
     /**
-     * @return TLS version.
+     * @return SSL type.
      */
-    public TlsVersion getTls() {
-        return tls;
+    public SslType getSslType() {
+        return sslType;
     }
 
     /**

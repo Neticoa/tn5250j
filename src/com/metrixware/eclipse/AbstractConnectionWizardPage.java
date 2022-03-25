@@ -86,7 +86,7 @@ public abstract class AbstractConnectionWizardPage extends WizardPage {
     }
 
     protected void setSizeInSumbols(final Text text, final int numChars) {
-        ((GridData) text.getLayoutData()).widthHint = UiUtils.getWidthForNumCharacterrs(text, numChars);
+        ((GridData) text.getLayoutData()).widthHint = PluginUtils.getWidthForNumCharacterrs(text, numChars);
     }
 
     protected abstract void updateEnablement();

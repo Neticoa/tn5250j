@@ -3,7 +3,6 @@
  */
 package org.tn5250j.keyboard;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,31 +25,31 @@ public class KeyStrokeHelper {
     public static final int META_MASK = 1 << 2;
     public static final int ALT_MASK = 1 << 3;
 
-    /**
-     * Used for generated code.
-     * @param args
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     */
-    @SuppressWarnings("deprecation")
-    public static void main(final String[] args) throws IllegalArgumentException, IllegalAccessException {
-        final KeyCode[] values = KeyCode.values();
-        for (final KeyCode code : values) {
-            final int intCode = code.impl_getCode();
-            System.out.println("map.put(" + intCode + ", KeyCode." + getFieldName(code) + ");");
-        }
-    }
-
-    private static KeyCode getFieldName(final KeyCode code) throws IllegalArgumentException, IllegalAccessException {
-        final Field[] fields = KeyCode.class.getDeclaredFields();
-        for (final Field field : fields) {
-            final Object k = field.get(null);
-            if (k == code) {
-                return (KeyCode) k;
-            }
-        }
-        return null;
-    }
+//    /**
+//     * Used for generated code.
+//     * @param args
+//     * @throws IllegalArgumentException
+//     * @throws IllegalAccessException
+//     */
+//    @SuppressWarnings("deprecation")
+//    public static void main(final String[] args) throws IllegalArgumentException, IllegalAccessException {
+//        final KeyCode[] values = KeyCode.values();
+//        for (final KeyCode code : values) {
+//            final int intCode = code.impl_getCode();
+//            System.out.println("map.put(" + intCode + ", KeyCode." + getFieldName(code) + ");");
+//        }
+//    }
+//
+//    private static KeyCode getFieldName(final KeyCode code) throws IllegalArgumentException, IllegalAccessException {
+//        final Field[] fields = KeyCode.class.getDeclaredFields();
+//        for (final Field field : fields) {
+//            final Object k = field.get(null);
+//            if (k == code) {
+//                return (KeyCode) k;
+//            }
+//        }
+//        return null;
+//    }
 
     private static Map<Integer, KeyCode> createCodeMap() {
         final Map<Integer, KeyCode> map = new HashMap<>();
