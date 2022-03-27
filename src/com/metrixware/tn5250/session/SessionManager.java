@@ -14,6 +14,7 @@ import org.tn5250j.framework.common.AbstractSessionManager;
 import com.metrixware.eclipse.Activator;
 import com.metrixware.tn5250.config.SessionConfig;
 
+import javafx.application.Platform;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
@@ -23,6 +24,7 @@ import javafx.scene.Scene;
  */
 public class SessionManager extends AbstractSessionManager {
     private Map<SessionConfig, SessionPanel> uis = new ConcurrentHashMap<>();
+    private boolean isFxInitialized;
 
     /**
      * Stops all sessions.
@@ -37,6 +39,10 @@ public class SessionManager extends AbstractSessionManager {
      */
     public void addSessionComponent(final SessionConfig config, final Composite container) {
         final FXCanvas canvas = new FXCanvas(container, SWT.NONE);
+        if (!isFxInitialized) {
+            Platform.setImplicitExit(false);
+            isFxInitialized = true;
+        }
 
         final Session5250 session = Activator.getInstance().getSessionManager().createSession(config.getSessionName(),
                 config.getProperties(), config);
@@ -63,6 +69,7 @@ public class SessionManager extends AbstractSessionManager {
         final SessionPanel ui = uis.get(config);
         if (ui != null) {
             ui.closeDown();
+            uis.remove(config);
         }
     }
 }
