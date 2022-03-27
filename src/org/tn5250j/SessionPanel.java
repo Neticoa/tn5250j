@@ -21,7 +21,7 @@
  */
 package org.tn5250j;
 
-import static org.tn5250j.SessionConfig.YES;
+import static org.tn5250j.AbstractSessionConfig.YES;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
@@ -112,7 +112,7 @@ public class SessionPanel extends BorderPane implements SessionGui {
     private final CompoundCursor cursor = new CompoundCursor();
     private final Map<KeyCodeCombination, EmulatorAction> keyActions = new ConcurrentHashMap<>();
     private MutableUiConfiguration uiConfiguration;
-    private SessionConfig sesConfig;
+    private AbstractSessionConfig sesConfig;
 
     public SessionPanel(final Session5250 session, final MutableUiConfiguration uiConfig) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());

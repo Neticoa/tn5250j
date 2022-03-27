@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -51,7 +51,7 @@ class ErrorResetAttributesController extends AbstractAttributesController {
     @FXML
     CheckBox backspaceError;
 
-    ErrorResetAttributesController(final SessionConfig config) {
+    ErrorResetAttributesController(final AbstractSessionConfig config) {
         super(config, "ErrorReset");
     }
 

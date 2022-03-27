@@ -3,7 +3,7 @@
  */
 package org.tn5250j;
 
-import java.util.Properties;
+import java.util.Map;
 
 import com.metrixware.tn5250.connection.CodePage;
 
@@ -18,39 +18,40 @@ public class SessionDescriptorFactory {
     private static final String SESSION_CONNECT_PASSWORD = "SESSION_CONNECT_PASSWORD";
     private static final String SESSION_CONNECT_USER = "SESSION_CONNECT_USER";
 
-    public static SessionDescriptor create(final String sessionName, final AbstractSessionConfig config, final Properties sesProps) {
+    public static SessionDescriptor create(final String sessionName,
+            final AbstractSessionConfig config, final Map<String, String> sesProps) {
         final SessionDescriptor d = new SessionDescriptor();
 
         d.setSessionName(sessionName);
         d.setHeartBeat(sesProps.containsKey(TN5250jConstants.SESSION_HEART_BEAT));
-        d.setHostNameAsTermName(sesProps.getProperty(TN5250jConstants.SESSION_TERM_NAME_SYSTEM) != null);
+        d.setHostNameAsTermName(sesProps.get(TN5250jConstants.SESSION_TERM_NAME_SYSTEM) != null);
 
         if (sesProps.get(TN5250jConstants.SSL_TYPE) != null) {
-            final String sslType = (String) sesProps.get(TN5250jConstants.SSL_TYPE);
+            final String sslType = sesProps.get(TN5250jConstants.SSL_TYPE);
             try {
                 d.setSslType(SslType.valueOf(sslType));
             } catch (final Exception e) {
             }
         }
         d.setEnhanced(sesProps.containsKey(TN5250jConstants.SESSION_TN_ENHANCED));
-        d.setHost(sesProps.getProperty(TN5250jConstants.SESSION_HOST));
+        d.setHost(sesProps.get(TN5250jConstants.SESSION_HOST));
         d.setTerminal(calculateCompatibleTerminal(sesProps));
 
-        final String proxyHost = sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST);
+        final String proxyHost = sesProps.get(TN5250jConstants.SESSION_PROXY_HOST);
         if (proxyHost != null && sesProps.containsKey(TN5250jConstants.SESSION_HOST_PORT)) {
             try {
                 d.setProxy(new SessionProxy(proxyHost,
-                        Integer.parseInt(sesProps.getProperty(TN5250jConstants.SESSION_HOST_PORT))));
+                        Integer.parseInt(sesProps.get(TN5250jConstants.SESSION_HOST_PORT))));
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
         if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE)) {
-            d.setCodePage(findCodePage(sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE)));
+            d.setCodePage(findCodePage(sesProps.get(TN5250jConstants.SESSION_CODE_PAGE)));
         }
 
         if (sesProps.containsKey(TN5250jConstants.SESSION_DEVICE_NAME)) {
-            d.setDeviceName(sesProps.getProperty(TN5250jConstants.SESSION_DEVICE_NAME));
+            d.setDeviceName(sesProps.get(TN5250jConstants.SESSION_DEVICE_NAME));
         }
 
         if (System.getProperties().containsKey(SESSION_CONNECT_USER)) {
@@ -95,10 +96,10 @@ public class SessionDescriptorFactory {
      * @param sesProps session properties.
      * @return compatible terminal.
      */
-    private static Terminal calculateCompatibleTerminal(final Properties sesProps) {
+    private static Terminal calculateCompatibleTerminal(final Map<String, String> sesProps) {
         Terminal terminal = Terminal.IBM_3278_2;
 
-        if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE) && sesProps.getProperty(
+        if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE) && sesProps.get(
                 TN5250jConstants.SESSION_SCREEN_SIZE).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR)) {
             terminal = Terminal.IBM_3278_5;
         }

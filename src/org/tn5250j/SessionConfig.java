@@ -43,9 +43,10 @@ public class SessionConfig extends AbstractSessionConfig {
 
     private String configurationResource;
     private boolean usingDefaults;
+    private final String sessionName;
 
     public SessionConfig(final String configurationResource, final String sessionName) {
-        super(sessionName);
+        this.sessionName = sessionName;
         this.configurationResource = configurationResource;
         loadConfigurationResource();
     }
@@ -173,5 +174,13 @@ public class SessionConfig extends AbstractSessionConfig {
         }
 
         return new HashMap<>();
+    }
+
+    /* (non-Javadoc)
+     * @see org.tn5250j.AbstractSessionConfig#getSessionName()
+     */
+    @Override
+    public String getSessionName() {
+        return sessionName;
     }
 }

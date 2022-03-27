@@ -50,7 +50,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250Facade screen, final SessionGui gui,
-            final SessionConfig config, final Canvas canvas, final CompoundCursor cursor) {
+            final AbstractSessionConfig config, final Canvas canvas, final CompoundCursor cursor) {
         super(screen, gui, cursor, config);
         this.bi = canvas;
         fontMetrics = FontMetrics.deriveFrom(font);

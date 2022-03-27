@@ -23,7 +23,7 @@ class JavaFxClassLoaderHook extends ClassLoaderHook {
     @Override
     public Class<?> preFindClass(final String name, final ModuleClassLoader classLoader) throws ClassNotFoundException {
         final Class<?> result = super.preFindClass(name, classLoader);
-        if (result == null && name.startsWith("javafx.")) {
+        if (result == null && (name.contains("javafx.") || name.startsWith("com.sun."))) {
             try {
                 return systemLoader.loadClass(name);
             } catch (final Exception e) {

@@ -49,7 +49,7 @@ class PrinterTask {
     private int numRows;
     private Font font;
     private SessionGui session;
-    private SessionConfig config;
+    private AbstractSessionConfig config;
 
     PrinterTask(final Screen5250Facade scr, final Font font, final int cols, final int rows, final SessionGui ses) {
         session = ses;

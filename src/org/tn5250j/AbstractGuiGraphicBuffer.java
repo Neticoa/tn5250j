@@ -98,11 +98,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Color fg;
     protected Color bg;
 
-    protected final SessionConfig config;
+    protected final AbstractSessionConfig config;
     protected final CompoundCursor cursor;
 
     public AbstractGuiGraphicBuffer(final Screen5250Facade screen, final SessionGui gui,
-            final CompoundCursor cursor, final SessionConfig config) {
+            final CompoundCursor cursor, final AbstractSessionConfig config) {
 
         this.screen = screen;
         this.cursor = cursor;

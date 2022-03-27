@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -50,7 +50,7 @@ class MouseAttributesController extends AbstractAttributesController {
     @FXML
     CheckBox mwCheck;
 
-    MouseAttributesController(final SessionConfig config) {
+    MouseAttributesController(final AbstractSessionConfig config) {
         super(config, "Mouse");
     }
 

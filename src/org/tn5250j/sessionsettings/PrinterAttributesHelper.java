@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.util.Optional;
 import java.util.Set;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 
 import javafx.geometry.Rectangle2D;
 import javafx.print.PageLayout;
@@ -49,7 +49,7 @@ public class PrinterAttributesHelper extends AttributesSupport {
     private PageLayout pappyPort;
     private PageLayout pappyLand;
 
-    public PrinterAttributesHelper(final SessionConfig config) {
+    public PrinterAttributesHelper(final AbstractSessionConfig config) {
         super(config);
 
         pappyPort = getDefaultPageLayout(PageOrientation.PORTRAIT);

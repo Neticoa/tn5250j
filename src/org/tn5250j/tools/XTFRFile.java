@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
@@ -705,7 +705,7 @@ public class XTFRFile extends GenericTn5250Frame {
     }
 
     private void initXTFRFields() {
-        final SessionConfig config = session.getSession().getConfiguration();
+        final AbstractSessionConfig config = session.getSession().getConfiguration();
         final Map<String, String> props = config.getProperties();
 
         if (props.containsKey("xtfr.fileName"))
@@ -760,7 +760,7 @@ public class XTFRFile extends GenericTn5250Frame {
 
     private void saveXTFRFields() {
 
-        final SessionConfig config = session.getSession().getConfiguration();
+        final AbstractSessionConfig config = session.getSession().getConfiguration();
         saveXTFRFields(config.getProperties());
 
         config.setModified(true);

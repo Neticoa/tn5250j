@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -256,7 +257,7 @@ public class Tn5250jController extends Thread {
     public Screen5250Facade startSession(final String name) {
         final String args[] = new String[15];
         parseArgs(sesprops.get(name), args);
-        final Properties fin = convertToProps(args);
+        final Map<String, String> fin = convertToProps(args);
 
         final Session5250 newses = manager.openSession(fin, null, name);
 
@@ -295,8 +296,8 @@ public class Tn5250jController extends Thread {
         }
     }
 
-    protected Properties convertToProps(final String args[]) {
-        final Properties sesProps = new Properties();
+    protected Map<String, String> convertToProps(final String args[]) {
+        final Map<String, String> sesProps = new ConcurrentHashMap<>();
 
         final String session = args[0];
 

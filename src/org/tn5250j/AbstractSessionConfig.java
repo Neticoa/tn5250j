@@ -88,19 +88,15 @@ public abstract class AbstractSessionConfig {
     private final SessionConfiguration sessionConfiguration = new SessionConfiguration();
     private final KeyMnemonicSerializer keyMnemonicSerializer = new KeyMnemonicSerializer();
 
-    private final String sessionName;
     protected Map<String, String> sesProps = new ConcurrentHashMap<>();
 
     private final List<SessionConfigListener> sessionCfglisteners = new CopyOnWriteArrayList<>();
     private boolean modified;
 
-    public AbstractSessionConfig(final String sessionName) {
-        this.sessionName = sessionName;
+    public AbstractSessionConfig() {
     }
 
-    public String getSessionName() {
-        return sessionName;
-    }
+    public abstract String getSessionName();
 
     public final void firePropertyChange(final Object source, final String propertyName, final Object oldValue, final Object newValue) {
 

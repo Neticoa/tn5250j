@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
@@ -70,7 +70,7 @@ class SignoffAttributesController extends AbstractAttributesController {
     @FXML
     TextField toCol;
 
-    SignoffAttributesController(final SessionConfig config) {
+    SignoffAttributesController(final AbstractSessionConfig config) {
         super(config, "Signoff");
     }
 

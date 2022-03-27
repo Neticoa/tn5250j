@@ -42,7 +42,7 @@ public class Session5250  {
 
     private int sessionType;
     protected SessionDescriptor sesProps;
-    private final SessionConfig sesConfig;
+    private final AbstractSessionConfig sesConfig;
     private tnvt vt;
     private final Screen5250Facade screen;
     private SessionGui guiComponent;
@@ -53,7 +53,7 @@ public class Session5250  {
     private final List<ScanListener> scanListeners = new CopyOnWriteArrayList<>();
 
     public Session5250(final SessionDescriptor props,
-                       final SessionConfig config) {
+                       final AbstractSessionConfig config) {
 
         sesConfig = config;
         sesProps = props;
@@ -61,8 +61,7 @@ public class Session5250  {
         screen = FxProxyBuilder.buildProxy(new Screen5250(), Screen5250Facade.class);
     }
 
-    public SessionConfig getConfiguration() {
-
+    public AbstractSessionConfig getConfiguration() {
         return sesConfig;
     }
 

@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -79,7 +79,7 @@ class DisplayAttributesController extends AbstractAttributesController {
     @FXML
     CheckBox guiShowUnderline;
 
-    DisplayAttributesController(final SessionConfig config) {
+    DisplayAttributesController(final AbstractSessionConfig config) {
         super(config, "Display");
     }
 

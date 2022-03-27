@@ -3,7 +3,7 @@
  */
 package org.tn5250j.sessionsettings;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.UiUtils;
 
 import javafx.geometry.Rectangle2D;
@@ -16,9 +16,9 @@ import javafx.scene.text.Font;
  */
 public class AttributesSupport {
 
-    protected final SessionConfig changes;
+    protected final AbstractSessionConfig changes;
 
-    public AttributesSupport(final SessionConfig changes) {
+    public AttributesSupport(final AbstractSessionConfig changes) {
         super();
         this.changes = changes;
     }

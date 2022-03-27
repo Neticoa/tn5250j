@@ -25,7 +25,7 @@
  */
 package org.tn5250j.sessionsettings;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.ControllerWithView;
 import org.tn5250j.tools.LangTool;
 
@@ -39,15 +39,15 @@ public abstract class AbstractAttributesController extends AttributesSupport imp
     private static final String nodePrefix = "sa.node";
 
     private String name;
-    public AbstractAttributesController(final SessionConfig config) {
+    public AbstractAttributesController(final AbstractSessionConfig config) {
         this(config, "", nodePrefix);
     }
 
-    public AbstractAttributesController(final SessionConfig config, final String name) {
+    public AbstractAttributesController(final AbstractSessionConfig config, final String name) {
         this(config, name, nodePrefix);
     }
 
-    public AbstractAttributesController(final SessionConfig config, final String name, final String prefix) {
+    public AbstractAttributesController(final AbstractSessionConfig config, final String name, final String prefix) {
         super(config);
         this.name = LangTool.getString(prefix + name);
     }

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
@@ -71,7 +71,7 @@ public class SendEMailDialog {
     TextField subject;
     TextArea bodyText;
     TextField attachmentName;
-    SessionConfig config;
+    AbstractSessionConfig config;
     SessionGui session;
     String fileName;
     RadioButton text;

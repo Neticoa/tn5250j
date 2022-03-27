@@ -28,7 +28,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -59,7 +59,7 @@ class HotspotAttributesController extends AbstractAttributesController {
     @FXML
     private TextField hsBottom;
 
-    HotspotAttributesController(final SessionConfig config) {
+    HotspotAttributesController(final AbstractSessionConfig config) {
         super(config, "HS");
     }
 

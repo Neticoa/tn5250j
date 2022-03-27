@@ -9,6 +9,9 @@ import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.tn5250j.tools.LangTool;
+
+import com.metrixware.tn5250.session.SessionManager;
 
 import javafx.embed.swt.FXCanvas;
 
@@ -16,6 +19,7 @@ public class Activator implements BundleActivator {
 
     private static Activator ACTIVATOR;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private SessionManager sessionManager = new SessionManager();
 
     private ServiceReference<EnvironmentInfo> configRef;
     private BundleContext context;
@@ -26,6 +30,7 @@ public class Activator implements BundleActivator {
 
         this.context = context;
         configRef = context.getServiceReference(EnvironmentInfo.class);
+        LangTool.init();
     }
 
     /**
@@ -77,9 +82,17 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(final BundleContext context) throws Exception {
         context.ungetService(configRef);
+        sessionManager.stop();
     }
 
     public static Activator getInstance() {
         return ACTIVATOR;
+    }
+
+    /**
+     * @return session manager.
+     */
+    public SessionManager getSessionManager() {
+        return sessionManager;
     }
 }

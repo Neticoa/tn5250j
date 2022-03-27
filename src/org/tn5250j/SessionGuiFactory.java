@@ -3,10 +3,10 @@
  */
 package org.tn5250j;
 
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_ENABLED;
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_FONT_SIZE;
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
-import static org.tn5250j.SessionConfig.YES;
+import static org.tn5250j.AbstractSessionConfig.CONFIG_KEYPAD_ENABLED;
+import static org.tn5250j.AbstractSessionConfig.CONFIG_KEYPAD_FONT_SIZE;
+import static org.tn5250j.AbstractSessionConfig.CONFIG_KEYPAD_MNEMONICS;
+import static org.tn5250j.AbstractSessionConfig.YES;
 
 import java.util.Set;
 
@@ -18,7 +18,7 @@ import org.tn5250j.keyboard.KeyMnemonicSerializer;
  *
  */
 public class SessionGuiFactory {
-    public static SessionGui createGui(final Session5250 session) {
+    public static SessionPanel createGui(final Session5250 session) {
         final MutableUiConfiguration uiCfg = createMutableConfiguration(session.getConfiguration());
 
         final SessionPanel ui = new SessionPanel(session, uiCfg);
@@ -39,7 +39,7 @@ public class SessionGuiFactory {
     private static final String CONFIG_MOUSE_WHEEL = "mouseWheel";
     private static final String CONFIG_DOUBLE_CLICK = "doubleClick";
 
-    public static MutableUiConfiguration createMutableConfiguration(final SessionConfig sessionConfig) {
+    public static MutableUiConfiguration createMutableConfiguration(final AbstractSessionConfig sessionConfig) {
         final MutableUiConfiguration cfg = new MutableUiConfiguration();
 
         final Set<String> keys = sessionConfig.getPropertyKeys();

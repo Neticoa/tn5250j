@@ -27,7 +27,7 @@ package org.tn5250j.sessionsettings;
 
 import java.io.IOException;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
@@ -53,12 +53,12 @@ import javafx.stage.Stage;
 public class SessionSettings extends DialogPane {
     private BorderPane jpm = new BorderPane();
 
-    private final SessionConfig changes;
+    private final AbstractSessionConfig changes;
 
     private TreeView<AbstractAttributesController> tree = new TreeView<>();
     private final Stage parent;
 
-    public SessionSettings(final Stage parent, final SessionConfig config) {
+    public SessionSettings(final Stage parent, final AbstractSessionConfig config) {
         super();
         this.parent = parent;
         getButtonTypes().addAll(ButtonType.YES, ButtonType.APPLY, ButtonType.CANCEL);

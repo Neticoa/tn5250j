@@ -153,4 +153,19 @@ public class Sessions {
             newS.add(sessions.get(x));
         return newS;
     }
+
+    /**
+     * Disposes sessions.
+     */
+    public void dispose() {
+        for (final Session5250 session : sessions) {
+            removeSession(session);
+        }
+
+        if (heartBeater != null) {
+            heartBeater.cancel();
+            heartBeater.purge();
+            heartBeater = null;
+        }
+    }
 }

@@ -25,8 +25,8 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import static org.tn5250j.SessionConfig.KEYPAD_FONT_SIZE_DEFAULT_VALUE;
-import static org.tn5250j.SessionConfig.YES;
+import static org.tn5250j.AbstractSessionConfig.KEYPAD_FONT_SIZE_DEFAULT_VALUE;
+import static org.tn5250j.AbstractSessionConfig.YES;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,6 +40,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.keyboard.KeyMnemonic;
@@ -94,7 +95,7 @@ class KeypadAttributesController extends AbstractAttributesController {
     @FXML
     Button resetButton;
 
-    KeypadAttributesController(final SessionConfig config) {
+    KeypadAttributesController(final AbstractSessionConfig config) {
         super(config, "KP");
     }
 

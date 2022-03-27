@@ -5,7 +5,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="com.metrixware.tn5250.category"
-            class="com.metrixware.eclipse.NewConnectionWizard"
+            class="com.metrixware.eclipse.wizard.NewConnectionWizard"
             icon="images/tn5250j-16x16.png"
             id="com.metrixware.tn5250.newConnectionWizard"
             name="%wizard.name"
@@ -15,5 +15,33 @@
             id="com.metrixware.tn5250.category"
             name="%category.name">
       </category>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="tn5250j.content-type"
+            file-extensions="5250">
+      </file-association>
+      <content-type
+            default-charset="ISO-8859-1"
+            file-extensions="5250"
+            id="tn5250j.content-type"
+            name="%contenttype.name"
+            priority="high">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.metrixware.eclipse.editor.Tn5250Screen"
+            default="true"
+            extensions="5250j"
+            icon="images/tn5250j-16x16.png"
+            id="tn5250j.editor"
+            name="%view.name">
+         <contentTypeBinding
+               contentTypeId="tn5250j.content-type">
+         </contentTypeBinding>
+      </editor>
    </extension>
 </plugin>

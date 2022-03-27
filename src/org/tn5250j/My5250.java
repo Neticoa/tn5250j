@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -467,7 +466,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
     private synchronized void newSession(final String sel, final String[] args) {
 
-        final Properties sesProps = new Properties();
+        final Map<String, String> sesProps = new ConcurrentHashMap<>();
 
         String propFileName = null;
         final String session = args[0];

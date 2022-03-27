@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -61,7 +61,7 @@ class FontAttributesController extends AbstractAttributesController {
     @FXML
     TextField pointSize;
 
-    FontAttributesController(final SessionConfig config) {
+    FontAttributesController(final AbstractSessionConfig config) {
         super(config, "Fonts");
     }
 

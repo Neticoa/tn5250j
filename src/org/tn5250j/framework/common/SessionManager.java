@@ -21,14 +21,11 @@
 package org.tn5250j.framework.common;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionDescriptor;
-import org.tn5250j.SessionDescriptorFactory;
-import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -38,9 +35,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * The SessionManager is the central repository for access to all sessions.
  * The SessionManager contains a list of all Session objects available.
  */
-public final class SessionManager {
+public final class SessionManager extends AbstractSessionManager {
 
-    static private final Sessions sessions = new Sessions();
     static private final List<SessionConfig> configs = new CopyOnWriteArrayList<>();
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -63,23 +59,23 @@ public final class SessionManager {
         return _instance;
     }
 
-    public Sessions getSessions() {
-        return sessions;
-    }
 
-    public void closeSession(final SessionGui sesspanel) {
-
-        sesspanel.closeDown();
-        //TODO save
-        sessions.removeSession(sesspanel.getSession());
-
-    }
-
-    public synchronized Session5250 openSession(final Properties sesProps, String configurationResource
+    public synchronized Session5250 openSession(final Map<String, String> sesProps, final String configurationResource
             , final String sessionName) {
+        final SessionConfig useConfig = createConfiguration(sessionName, sesProps, configurationResource);
+        return createSession(sessionName, sesProps, useConfig);
+    }
 
+    /**
+     * @param sessionName
+     * @param sesProps
+     * @param configurationResource
+     * @return
+     */
+    private SessionConfig createConfiguration(final String sessionName, final Map<String, String> sesProps,
+            String configurationResource) {
         if (sessionName == null)
-            sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sesProps.getProperty(TN5250jConstants.SESSION_HOST));
+            sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sesProps.get(TN5250jConstants.SESSION_HOST));
         else
             sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sessionName);
 
@@ -95,14 +91,9 @@ public final class SessionManager {
         }
 
         if (useConfig == null) {
-
             useConfig = new SessionConfig(configurationResource, sessionName);
             configs.add(useConfig);
         }
-
-        final SessionDescriptor sessionDescriptor = SessionDescriptorFactory.create(sessionName, useConfig, sesProps);
-        final Session5250 newSession = new Session5250(sessionDescriptor, useConfig);
-        sessions.addSession(newSession);
-        return newSession;
+        return useConfig;
     }
 }

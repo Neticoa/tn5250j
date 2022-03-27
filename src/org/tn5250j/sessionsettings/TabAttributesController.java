@@ -29,7 +29,7 @@ package org.tn5250j.sessionsettings;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.tn5250j.SessionConfig;
+import org.tn5250j.AbstractSessionConfig;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
@@ -48,7 +48,7 @@ class TabAttributesController extends AbstractAttributesController {
     @FXML
     CheckBox tabCloseCheck;
 
-    TabAttributesController(final SessionConfig config) {
+    TabAttributesController(final AbstractSessionConfig config) {
         super(config, "Tabs");
     }
 
