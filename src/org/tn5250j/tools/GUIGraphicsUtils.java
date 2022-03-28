@@ -1150,12 +1150,12 @@ public class GUIGraphicsUtils {
         return false;
     }
 
-    public static List<javafx.scene.image.Image> getApplicationIcons() {
+    public static List<Image> getApplicationIcons() {
         if (tnicon == null) {
             tnicon = new LinkedList<>();
-            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png").toString()));
-            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png").toString()));
-            tnicon.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png").toString()));
+            tnicon.add(new Image(GUIGraphicsUtils.class.getClassLoader().getResource("tn5250j-16x16.png").toString()));
+            tnicon.add(new Image(GUIGraphicsUtils.class.getClassLoader().getResource("tn5250j-32x32.png").toString()));
+            tnicon.add(new Image(GUIGraphicsUtils.class.getClassLoader().getResource("tn5250j-48x48.png").toString()));
         }
         return tnicon;
     }
