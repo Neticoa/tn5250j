@@ -351,7 +351,7 @@ public class SessionPopup {
             try {
                 inter = l.next();
             } catch (final Exception e) {
-                log.warn(e);
+                log.warn(e.toString());
             }
 
             sum += inter;

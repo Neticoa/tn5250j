@@ -853,7 +853,7 @@ public final class tnvt implements Runnable {
                 log.debug("RUN result = " + result);
             }
         } catch (final Throwable t) {
-            log.error(t);
+            log.error(t.toString());
         }
     }
 

@@ -43,48 +43,48 @@ public final class ConsoleLogger implements TN5250jLogger {
         this.clazz = clazz;
     }
 
-    public void debug(Object message) {
+    public void debug(String message) {
         if (isDebugEnabled())
             System.out.println("DEBUG [" + clazz + "] " + ((message != null) ? message.toString() : ""));
     }
 
-    public void debug(Object message, Throwable throwable) {
+    public void debug(String message, Throwable throwable) {
         if (isDebugEnabled())
             System.out.println("DEBUG [" + clazz + "] "
                     + ((message != null) ? message.toString() : "")
                     + ((throwable != null) ? throwable.getMessage() : ""));
     }
 
-    public void info(Object message) {
+    public void info(String message) {
         if (isInfoEnabled())
             System.out.println("INFO [" + clazz + "] " + ((message != null) ? message.toString() : ""));
     }
 
-    public void info(Object message, Throwable throwable) {
+    public void info(String message, Throwable throwable) {
         if (isInfoEnabled())
             System.out.println("INFO [" + clazz + "] "
                     + ((message != null) ? message.toString() : "")
                     + ((throwable != null) ? throwable.getMessage() : ""));
     }
 
-    public void warn(Object message) {
+    public void warn(String message) {
         if (isWarnEnabled())
             System.err.println("WARN [" + clazz + "] " + ((message != null) ? message.toString() : ""));
     }
 
-    public void warn(Object message, Throwable throwable) {
+    public void warn(String message, Throwable throwable) {
         if (isWarnEnabled())
             System.err.println("WARN [" + clazz + "] "
                     + ((message != null) ? message.toString() : "")
                     + ((throwable != null) ? throwable.getMessage() : ""));
     }
 
-    public void error(Object message) {
+    public void error(String message) {
         if (isErrorEnabled())
             System.err.println("ERROR [" + clazz + "] " + ((message != null) ? message.toString() : ""));
     }
 
-    public void error(Object message, Throwable throwable) {
+    public void error(String message, Throwable throwable) {
         if (isErrorEnabled())
             System.err.println("ERROR [" + clazz + "] "
                     + ((message != null) ? message.toString() : "")

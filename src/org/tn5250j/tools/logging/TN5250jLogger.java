@@ -44,54 +44,43 @@ public interface TN5250jLogger {
     /**
      * @param message
      */
-    abstract public void debug(Object message);
+    abstract public void debug(String message);
 
     /**
      * @param message
      * @param throwable
      */
-    abstract public void debug(Object message, Throwable throwable);
+    abstract public void debug(String message, Throwable throwable);
 
-    abstract public void info(Object message);
-
-    /**
-     * @param message
-     * @param throwable
-     */
-    abstract public void info(Object message, Throwable throwable);
-
-    /**
-     * @param message
-     */
-    abstract public void warn(Object message);
+    abstract public void info(String message);
 
     /**
      * @param message
      * @param throwable
      */
-    abstract public void warn(Object message, Throwable throwable);
+    abstract public void info(String message, Throwable throwable);
 
     /**
      * @param message
      */
-    abstract public void error(Object message);
-
-    /**
-     * @param message
-     * @param throwable
-     */
-    abstract public void error(Object message, Throwable throwable);
-
-    /**
-     * @param message
-     */
-    abstract public void fatal(Object message);
+    abstract public void warn(String message);
 
     /**
      * @param message
      * @param throwable
      */
-    abstract public void fatal(Object message, Throwable throwable);
+    abstract public void warn(String message, Throwable throwable);
+
+    /**
+     * @param message
+     */
+    abstract public void error(String message);
+
+    /**
+     * @param message
+     * @param throwable
+     */
+    abstract public void error(String message, Throwable throwable);
 
     /**
      * @return
@@ -113,10 +102,6 @@ public interface TN5250jLogger {
      */
     abstract public boolean isErrorEnabled();
 
-    /**
-     * @return
-     */
-    abstract public boolean isFatalEnabled();
 
     /**
      * Sets a new log level.
@@ -125,10 +110,5 @@ public interface TN5250jLogger {
      * @throws IllegalArgumentException If the new level is not allowed
      */
     abstract public void setLevel(int newLevel);
-
-    /**
-     * @return The current log level.
-     */
-    abstract public int getLevel();
 
 }

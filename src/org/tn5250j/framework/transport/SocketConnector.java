@@ -97,7 +97,7 @@ public class SocketConnector {
         }
 
         if (ex != null) {
-            logger.error(ex);
+            logger.error(ex.toString());
         }
         if (socket == null) {
             logger.warn("No socket was created");

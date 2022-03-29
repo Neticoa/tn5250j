@@ -22,8 +22,10 @@
  */
 package org.tn5250j.tools.logging;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the TN5250jLogger to provide log4j logger instances.
@@ -36,51 +38,42 @@ public final class Log4jLogger implements TN5250jLogger {
      * Package level access only
      */
     Log4jLogger() {
-
     }
 
     public void initialize(final String clazz) {
-        log = Logger.getLogger(clazz);
+        log = LoggerFactory.getLogger(clazz);
     }
 
-    public void debug(Object message) {
+    public void debug(String message) {
         log.debug(message);
     }
 
-    public void debug(Object message, Throwable throwable) {
+    public void debug(String message, Throwable throwable) {
         log.debug(message, throwable);
     }
 
-    public void info(Object message) {
+    public void info(String message) {
         log.info(message);
     }
 
-    public void info(Object message, Throwable throwable) {
+    public void info(String message, Throwable throwable) {
         log.info(message, throwable);
     }
 
-    public void warn(Object message) {
+    public void warn(String message) {
         log.warn(message);
     }
 
-    public void warn(Object message, Throwable throwable) {
+    public void warn(String message, Throwable throwable) {
         log.warn(message, throwable);
     }
 
-    public void error(Object message) {
+    public void error(String message) {
         log.error(message);
     }
 
-    public void error(Object message, Throwable throwable) {
+    public void error(String message, Throwable throwable) {
         log.error(message, throwable);
-    }
-
-    public void fatal(Object message) {
-        log.fatal(message);
-    }
-
-    public void fatal(Object message, Throwable throwable) {
-        log.fatal(message, throwable);
     }
 
     public boolean isDebugEnabled() {
@@ -92,68 +85,17 @@ public final class Log4jLogger implements TN5250jLogger {
     }
 
     public boolean isWarnEnabled() {
-        return (Level.WARN.equals(log.getLevel()));
+        return log.isWarnEnabled();
     }
 
-    public boolean isFatalEnabled() {
-        return (Level.FATAL.equals(log.getLevel()));
-    }
 
     public boolean isErrorEnabled() {
-        return (Level.ERROR.equals(log.getLevel()));
+        return log.isErrorEnabled();
     }
 
-    public void setLevel(int newLevel) {
+	@Override
+	public void setLevel(int newLevel) {
+		// does nothing cause slf4J does not provide an API to set the log level
+	}
 
-        switch (newLevel) {
-            case OFF:
-                log.setLevel(Level.OFF);
-                break;
-
-            case DEBUG:
-                log.setLevel(Level.DEBUG);
-                break;
-
-            case INFO:
-                log.setLevel(Level.INFO);
-                break;
-
-            case WARN:
-                log.setLevel(Level.WARN);
-                break;
-
-            case ERROR:
-                log.setLevel(Level.ERROR);
-                break;
-
-            case FATAL:
-                log.setLevel(Level.FATAL);
-                break;
-        }
-
-    }
-
-    public int getLevel() {
-
-        switch (log.getLevel().toInt()) {
-
-            case (org.apache.log4j.Level.DEBUG_INT):
-                return DEBUG;
-
-            case (org.apache.log4j.Level.INFO_INT):
-                return INFO;
-
-            case (org.apache.log4j.Level.WARN_INT):
-                return WARN;
-
-            case (org.apache.log4j.Level.ERROR_INT):
-                return ERROR;
-
-            case (org.apache.log4j.Level.FATAL_INT):
-                return FATAL;
-            default:
-                return WARN;
-        }
-
-    }
 }
