@@ -11,3 +11,4 @@ build.*.properties
 .DS_Store
 /target/
 .settings
+*.jar
