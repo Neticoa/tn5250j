@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: tn5250j
-Bundle-SymbolicName: tn5250j;singleton:=true
+Bundle-Name: TN5250
+Bundle-SymbolicName: com.metrixware.network.emulator.tn5250.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: lib/jfxswt.jar,
+Bundle-ClassPath: tn5250j.jar,
+ lib/jfxswt.jar,
  lib/slf4j-api.jar,
  lib/slf4j-log4j12.jar,
  lib/activation.jar,
@@ -13,8 +14,8 @@ Bundle-ClassPath: lib/jfxswt.jar,
  lib/mailapi.jar,
  lib/smtp.jar,
  lib/jython-standalone.jar
-Automatic-Module-Name: tn5250j
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Activator: com.metrixware.eclipse.Activator
+Bundle-Vendor: MetrixwareSystemobjects
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,
@@ -29,5 +30,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.update.configurator,
  org.slf4j.api,
  org.eclipse.ui.ide
-Bundle-Activator: com.metrixware.eclipse.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: tn5250j
 Bundle-ActivationPolicy: lazy

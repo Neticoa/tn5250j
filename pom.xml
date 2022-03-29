@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.metrixware.network.emulator</groupId>
-	<artifactId>tn5250j</artifactId>
+	<artifactId>com.metrixware.network.emulator.tn5250.plugin</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>TN5250</name>
 	<description>TN5250 compliant emulator as an Eclipse plugin</description>
