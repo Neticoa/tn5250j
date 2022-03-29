@@ -3,17 +3,16 @@ Bundle-ManifestVersion: 2
 Bundle-Name: tn5250j
 Bundle-SymbolicName: tn5250j;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: lib/activation.jar,
+Bundle-ClassPath: lib/jfxswt.jar,
+ lib/slf4j-api.jar,
+ lib/slf4j-log4j12.jar,
+ lib/activation.jar,
  lib/itext.jar,
  lib/jt400.jar,
- lib/jython.jar,
- lib/jythonlib.jar,
  lib/kunststoff.jar,
  lib/mailapi.jar,
  lib/smtp.jar,
- lib/log4j-1.2.15.jar,
- bin/,
- lib/jfxswt.jar
+ lib/jython-standalone.jar
 Automatic-Module-Name: tn5250j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
