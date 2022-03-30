@@ -19,13 +19,13 @@
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
       <file-association
-            content-type="tn5250j.content-type"
+            content-type="tn5250.content-type"
             file-extensions="5250">
       </file-association>
       <content-type
             default-charset="ISO-8859-1"
             file-extensions="5250"
-            id="tn5250j.content-type"
+            id="tn5250.content-type"
             name="%contenttype.name"
             priority="high">
       </content-type>
@@ -40,7 +40,7 @@
             id="tn5250j.editor"
             name="%view.name">
          <contentTypeBinding
-               contentTypeId="tn5250j.content-type">
+               contentTypeId="tn5250.content-type">
          </contentTypeBinding>
       </editor>
    </extension>
