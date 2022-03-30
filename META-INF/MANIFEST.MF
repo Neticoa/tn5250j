@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TN5250
-Bundle-SymbolicName: com.metrixware.network.emulator.tn5250.plugin;singleton:=true
+Bundle-SymbolicName: com.metrixware.emulator.tn5250.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: tn5250j.jar,
  lib/jfxswt.jar,
