@@ -1,9 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.metrixware.emulator</groupId>
 	<artifactId>com.metrixware.emulator.tn5250.plugin</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 	<name>TN5250</name>
 	<description>GPL V3.0 tn5250j compliant emulator as an Eclipse plugin</description>
 	<packaging>eclipse-plugin</packaging>
@@ -256,4 +254,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	<parent>
+		<groupId>com.metrixware.emulator</groupId>
+		<artifactId>tn5250</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.metrixware.emulator.tn5250</groupId>
 </project>
