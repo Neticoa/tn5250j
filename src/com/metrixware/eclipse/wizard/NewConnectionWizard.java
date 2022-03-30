@@ -42,8 +42,8 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
         if (errors.isEmpty()) {
             createConnectionPage = new CreateConnectionFileWizardPage(folder);
             configureConnectionPage = new ConfigureConnectionWizardPage();
-            addPage(configureConnectionPage);
             addPage(createConnectionPage);
+            addPage(configureConnectionPage);
         } else {
             addPage(new ErrorPage(errors));
         }
