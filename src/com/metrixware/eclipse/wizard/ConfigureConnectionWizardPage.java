@@ -26,7 +26,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
     private Combo sslType;
     //TERMINAL: Combo
     private Combo terminal;
-    //CODEPAGE: Cmobobox
+    //CODEPAGE: Combobox
     private Combo codePage;
     //SESSION: Text Field
     private Text session;
@@ -60,7 +60,7 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         terminal = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardTerminalLabel), createCombo());
         populateTerminal();
 
-        //CODEPAGE: Cmobobox
+        //CODEPAGE: Combobox
         codePage = addLabelAndLayout(parent, createLabel(Messages.CreateConnectionWizardCodePageLabel), createCombo());
         populateCodePage();
 
