@@ -1,49 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-<!-- 	<parent>
+	<parent>
 		<groupId>com.metrixware.emulator</groupId>
 		<artifactId>tn5250</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
- -->
- 	<groupId>com.metrixware.emulator.tn5250</groupId>
+	<groupId>com.metrixware.emulator.tn5250</groupId>
 	<artifactId>com.metrixware.emulator.tn5250.plugin</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	<name>TN5250</name>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>TN5250 plugin</name>
 	<description>GPL V3.0 tn5250j compliant emulator as an Eclipse plugin</description>
 	<packaging>eclipse-plugin</packaging>
-	<properties>
-		<tycho>1.6.0</tycho>
-		<tycho-extras>${tycho}</tycho-extras>
-		<memoryOptions1>-Xms512m -Xmx1024m</memoryOptions1>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<jarsigner.skip>true</jarsigner.skip>
-		<mxw-alias>te-3856b29b-b8ba-4c68-b6c0-5d5c93c27e9c</mxw-alias>
-<!-- 
-		<mxw-keystore>${basedir}\..\Signature\metrixware.pfx</mxw-keystore>
- -->
-		<mxw-keystore-dir>file://mxwshare.metrixware.local/Factory/Certificats</mxw-keystore-dir>
-		<mxw-keystore>${mxw-keystore-dir}/metrixware.pfx</mxw-keystore>
-		<mxw-passphrase>metrixware</mxw-passphrase>
-		<archive.name>${project.build.directory}/${project.build.finalName}</archive.name>
-		<archive.ext>.jar</archive.ext>
-		<p2-site-base-url>http://mxw-p2.metrixware.com:88</p2-site-base-url>
-
-		<!-- P2 site urls - see p2-site-base-url in Maven's settings -->
-		<eclipse-site-base-url>${p2-site-base-url}/download.eclipse.org.sdk</eclipse-site-base-url>
-		<metrixware-site-base-url>${p2-site-base-url}/download.metrixware.com.releases</metrixware-site-base-url>
-	</properties>
-	<repositories>
-		<repository>
-			<id>eclipse-neon</id>
-			<url>${eclipse-site-base-url}/neonR3</url>
-			<!--url>${eclipse-site-base-url}/neon</url-->
-			<!--url>http://download.eclipse.org/releases/neon</url-->
-			<layout>p2</layout>
-		</repository>
-	</repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -104,30 +72,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>3.0.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-maven-plugin</artifactId>
-					<version>${tycho}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>target-platform-configuration</artifactId>
-					<version>${tycho}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-p2-publisher-plugin</artifactId>
-					<version>${tycho}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
 			<resource>
@@ -195,68 +139,6 @@
 								</artifactItem>
 							</artifactItems>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<configuration>
-					<environments>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-p2-publisher-plugin</artifactId>
-				<configuration>
-					<publishArtifacts>true</publishArtifacts>
-					<profiles>JavaSE-1.8</profiles>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<configuration>
-					<keystore>${mxw-keystore}</keystore>
-					<alias>${mxw-alias}</alias>
-					<storepass>${mxw-passphrase}</storepass>
-					<keypass>${mxw-passphrase}</keypass>
-					<verbose>true</verbose>
-					<tsa>http://timestamp.sectigo.com</tsa>
-					<archive>${archive.name}${archive.ext}</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>

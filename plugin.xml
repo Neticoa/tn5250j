@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            category="com.metrixware.tn5250.category"
+            category="com.metrixware.emulator.category"
             class="com.metrixware.eclipse.wizard.NewConnectionWizard"
             icon="images/tn5250j-16x16.png"
             id="com.metrixware.tn5250.newConnectionWizard"
@@ -12,7 +12,7 @@
             project="false">
       </wizard>
       <category
-            id="com.metrixware.tn5250.category"
+            id="com.metrixware.emulator.category"
             name="%category.name">
       </category>
    </extension>

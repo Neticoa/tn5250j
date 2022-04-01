@@ -1,13 +1,13 @@
-Manifest-Version: 1.0
+Manifest-Version: 1.0.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TN5250
 Bundle-SymbolicName: com.metrixware.emulator.tn5250.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: tn5250j.jar,
+ lib/activation.jar,
  lib/jfxswt.jar,
  lib/slf4j-api.jar,
  lib/slf4j-log4j12.jar,
- lib/activation.jar,
  lib/itext.jar,
  lib/jt400.jar,
  lib/kunststoff.jar,
