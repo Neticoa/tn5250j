@@ -10,16 +10,16 @@
 
 package org.tn5250j.scripting;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.SessionGui;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class ExecuteScriptAction implements EventHandler<ActionEvent> {
 
-    private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(ExecuteScriptAction.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(ExecuteScriptAction.class);
 
     private String scriptFile;
     private SessionGui ses;

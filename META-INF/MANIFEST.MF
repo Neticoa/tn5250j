@@ -7,7 +7,9 @@ Bundle-ClassPath: tn5250j.jar,
  lib/activation.jar,
  lib/jfxswt.jar,
  lib/slf4j-api.jar,
- lib/slf4j-log4j12.jar,
+ lib/log4j-slf4j-impl.jar,
+ lib/log4j-api.jar,
+ lib/log4j-core.jar,
  lib/itext.jar,
  lib/jt400.jar,
  lib/kunststoff.jar,
@@ -28,7 +30,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.launching,
  org.eclipse.ui.views.log,
  org.eclipse.update.configurator,
- org.slf4j.api,
  org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: tn5250j

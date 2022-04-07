@@ -17,14 +17,11 @@ public enum Terminal {
     IBM_3196_A1("IBM-3196-A1 (24 x 80) monochrome display", 24, 80),
     IBM_5292_2("IBM-5292-2 (24 x 80) color display", 24, 80, true, false),
     IBM_5291_1("IBM-5291-1 (24 x 80) monochrome display", 24, 80),
-    IBM_5251_11("IBM-5251-11 (24 x 80) monochrome display", 24, 80)
-    
-//    TERMINAL type below are only for 3270 stream aka for the TN3270 emulator
-//    IBM_3278_2("IBM-3278-2 IBM-3278-2-E (24 x 80)", 24, 80),
-//    IBM_3278_3("IBM-3278-3 IBM-3278-3-E (32 x 80)", 32, 80),
-//    IBM_3278_4("IBM-3278-4 IBM-3278-4-E (43 x 80)", 43, 80),
-//    IBM_3278_5("IBM-3278-5 IBM-3278-5-E (27 x 132)", 27, 132)
-    ;
+    IBM_5251_11("IBM-5251-11 (24 x 80) monochrome display", 24, 80),
+    IBM_3278_2("IBM-3278-2 IBM-3278-2-E (24 x 80)", 24, 80),
+    IBM_3278_3("IBM-3278-3 IBM-3278-3-E (32 x 80)", 32, 80),
+    IBM_3278_4("IBM-3278-4 IBM-3278-4-E (43 x 80)", 43, 80),
+    IBM_3278_5("IBM-3278-5 IBM-3278-5-E (27 x 132)", 27, 132);
 
     private final int rows;
     private final int columns;

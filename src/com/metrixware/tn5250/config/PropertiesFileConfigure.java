@@ -39,9 +39,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import com.metrixware.eclipse.Messages;
 
@@ -52,6 +52,8 @@ import com.metrixware.eclipse.Messages;
  * Use GlobalConfigure.instance() to access this instance.
  */
 public class PropertiesFileConfigure extends ConfigureFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(PropertiesFileConfigure.class);
     public static final String SESSION = "session";
 
     /**
@@ -60,8 +62,6 @@ public class PropertiesFileConfigure extends ConfigureFactory {
     private final Map<String, String> settings = new ConcurrentHashMap<>();
 
     private Map<String, Map<String, String>> registry = new ConcurrentHashMap<>();
-
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(PropertiesFileConfigure.class);
 
     private final IFile file;
 

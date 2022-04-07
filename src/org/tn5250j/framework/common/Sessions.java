@@ -26,9 +26,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.Session5250;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 /**
@@ -37,11 +37,11 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class Sessions {
 
+    private static final Logger log = LoggerFactory.getLogger(Sessions.class);
+
     private List<Session5250> sessions = new CopyOnWriteArrayList<>();
     private int count = 0;
     private Timer heartBeater;
-
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public Sessions() {
     }

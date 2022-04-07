@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 /**
@@ -39,7 +39,7 @@ public final class SessionManager extends AbstractSessionManager {
 
     static private final List<SessionConfig> configs = new CopyOnWriteArrayList<>();
 
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
     /**
      * A handle to the unique SessionManager class
      */

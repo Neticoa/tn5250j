@@ -28,21 +28,22 @@ package org.tn5250j.tools;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.SessionGui;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.tools.filters.XTFRFileFilterBuilder;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 public class SendScreenImageToFile {
 
+    private static final Logger log = LoggerFactory.getLogger(SendScreenImageToFile.class);
+
     SessionGui session;
     //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
     Window parent;
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public SendScreenImageToFile(final Window parent, final SessionGui ses) {
 

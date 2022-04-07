@@ -1,5 +1,7 @@
 package com.metrixware.eclipse.editor;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +21,8 @@ import com.metrixware.tn5250.session.SessionManager;
 public class Tn5250Screen extends EditorPart {
 
     private SessionConfig config;
+    private Composite canvas;
+    private final AtomicBoolean partOpened = new AtomicBoolean();
 
     public Tn5250Screen() {
         super();
@@ -65,7 +69,7 @@ public class Tn5250Screen extends EditorPart {
         final GridLayout layout = new GridLayout(1, false);
         container.setLayout(layout);
 
-        getSessionManager().addSessionComponent(config, container);
+        this.canvas = getSessionManager().addSessionComponent(config, container);
         getSite().getPage().addPartListener(listener);
     }
 
@@ -75,6 +79,7 @@ public class Tn5250Screen extends EditorPart {
 
     @Override
     public void setFocus() {
+        canvas.forceFocus();
     }
 
     /* (non-Javadoc)
@@ -97,6 +102,10 @@ public class Tn5250Screen extends EditorPart {
         getSessionManager().closeSession(config);
     }
 
+    private boolean isMe(final IWorkbenchPartReference partRef) {
+        return partRef.getPart(false) == this;
+    }
+
     IPartListener2 listener = new IPartListener2() {
         @Override
         public void partVisible(final IWorkbenchPartReference partRef) {
@@ -104,7 +113,12 @@ public class Tn5250Screen extends EditorPart {
 
         @Override
         public void partOpened(final IWorkbenchPartReference partRef) {
+            if (!isMe(partRef) || partOpened.getAndSet(true)) {
+                return;
+            }
+
             openSession();
+            setFocus();
         }
 
         @Override
@@ -121,6 +135,9 @@ public class Tn5250Screen extends EditorPart {
 
         @Override
         public void partClosed(final IWorkbenchPartReference partRef) {
+            if (!isMe(partRef)) {
+                return;
+            }
             closeSession();
         }
 

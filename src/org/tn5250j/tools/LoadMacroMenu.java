@@ -32,12 +32,12 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -54,7 +54,7 @@ public final class LoadMacroMenu {
 
     private static List<Object> macroVector = new LinkedList<>();
 
-    private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
+    private static final Logger log = LoggerFactory.getLogger(LoadMacroMenu.class);
 
     public static void loadMacros(final SessionGui ses, final Menu menu) {
 

@@ -38,11 +38,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.framework.transport.SSLInterface;
 import org.tn5250j.gui.UiUtils;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * <p>
@@ -53,6 +53,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
  */
 public class SSLImplementation implements SSLInterface, X509TrustManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(SSLImplementation.class);
 
     SSLContext sslContext = null;
 
@@ -68,10 +70,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 
     X509Certificate[] acceptedIssuers;
 
-    TN5250jLogger logger;
-
     public SSLImplementation() {
-        logger = TN5250jLogFactory.getLogger(getClass());
     }
 
     @Override

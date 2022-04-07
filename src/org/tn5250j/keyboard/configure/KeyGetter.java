@@ -25,9 +25,9 @@
  */
 package org.tn5250j.keyboard.configure;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.keyboard.KeyStrokeHelper;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.event.EventType;
 import javafx.scene.control.ButtonType;
@@ -41,7 +41,7 @@ import javafx.scene.input.KeyEvent;
  * the key stroke(s) to assign to keys.
  */
 public class KeyGetter extends Label {
-    private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(KeyGetter.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(KeyGetter.class);
 
     KeyEvent keyevent;
     boolean isAltGr;

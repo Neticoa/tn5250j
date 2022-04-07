@@ -39,6 +39,8 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.connectdialog.ConnectionDialogController;
 import org.tn5250j.event.BootEvent;
 import org.tn5250j.event.BootListener;
@@ -54,8 +56,6 @@ import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -65,6 +65,7 @@ import javafx.stage.Screen;
 
 public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
+    private static final Logger log = LoggerFactory.getLogger(My5250.class);
     private static final String PARAM_START_SESSION = "-s";
 
     private Gui5250Frame frame1;
@@ -76,8 +77,6 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     private final TN5250jSplashScreen splash;
     private int step;
     private StringBuilder viewNamesForNextStartBuilder = null;
-
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     My5250(final TN5250jSplashScreen splash) {
         this.splash = splash;

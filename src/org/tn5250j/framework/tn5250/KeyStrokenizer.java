@@ -21,18 +21,18 @@
 
 package org.tn5250j.framework.tn5250;
 
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class KeyStrokenizer {
+
+    private static final Logger log = LoggerFactory.getLogger(KeyStrokenizer.class);
 
     private StringBuffer keyStrokes;
     private StringBuffer sb;
     private int index;
     private int length;
-
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public KeyStrokenizer() {
 
@@ -40,7 +40,7 @@ public class KeyStrokenizer {
         setKeyStrokes(null);
     }
 
-    public void setKeyStrokes(String strokes) {
+    public void setKeyStrokes(final String strokes) {
 
         if (strokes != null) {
             keyStrokes.setLength(0);

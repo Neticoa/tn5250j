@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
 import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -141,15 +140,10 @@ public class LoggingPaneController implements Initializable {
         final boolean oldIsOff = oldValue != null && oldValue.intValue() == TN5250jLogger.OFF;
         final boolean newIsOff = newValue != null && newValue.intValue() == TN5250jLogger.OFF;
 
-        if (oldIsOff && TN5250jLogFactory.isLog4j()) {
+        if (oldIsOff) {
             intConsole.setDisable(false);
             intFile.setDisable(false);
             intBoth.setDisable(false);
-        } else if (newIsOff) {
-            intConsole.setDisable(true);
-            intConsole.setSelected(true);
-            intFile.setDisable(true);
-            intBoth.setDisable(true);
         }
     }
 
@@ -162,7 +156,6 @@ public class LoggingPaneController implements Initializable {
             //if button selected, should change log level property
             if (newValue) {
                 logLevelProperty.setValue(selectedLogLevel);
-                TN5250jLogFactory.setLogLevels(selectedLogLevel);
             }
         });
     }

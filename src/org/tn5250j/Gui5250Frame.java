@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
@@ -36,8 +38,6 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.gui.GenericTn5250Frame;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -55,10 +55,11 @@ import javafx.stage.WindowEvent;
 public class Gui5250Frame extends GenericTn5250Frame implements
         SessionListener, SessionJumpListener {
 
+    private static final Logger log = LoggerFactory.getLogger(Gui5250Frame.class);
+
     private BorderPane contentPane;
     private TabPane sessTabbedPane = new TabPane();
     private boolean hideTabBar = false;
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
     protected static int sequence;
     protected int frameSeq;
     private My5250 me;

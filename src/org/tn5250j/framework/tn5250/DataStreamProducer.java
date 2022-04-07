@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class DataStreamProducer implements Runnable {
+
+    private static final Logger log = LoggerFactory.getLogger(DataStreamProducer.class);
 
     private static final int MINIMAL_PARTIAL_STREAM_LEN = 2;
 
@@ -24,8 +26,6 @@ public class DataStreamProducer implements Runnable {
     private byte[] dataStream;
 
     private DataStreamDumper dataStreamDumper = new DataStreamDumper();
-
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public DataStreamProducer(final tnvt vt, final BufferedInputStream in, final BlockingQueue<Object> queue, final byte[] init) {
         bin = in;

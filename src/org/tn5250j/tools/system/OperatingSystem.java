@@ -24,11 +24,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.connectdialog.ExternalProgram;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Operating system detection routines.
@@ -39,8 +39,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class OperatingSystem {
 
-    private static final TN5250jLogger LOG =
-            TN5250jLogFactory.getLogger("org.tn5250j.tools.system.OperatingSystem");
+    private static final Logger LOG = LoggerFactory.getLogger(OperatingSystem.class);
 
     //{{{ isWindows() method
 

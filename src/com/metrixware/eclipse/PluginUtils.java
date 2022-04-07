@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
  *
  */
 public final class PluginUtils {
+
     private PluginUtils() {}
 
     public static int getWidthForNumCharacterrs(final Text text, final int numChars) {
@@ -33,7 +34,7 @@ public final class PluginUtils {
     }
 
     public static URL locate(final String filePath) {
-        final IPath uriPath = new Path("/plugin").append("tn5250j").append(filePath); //$NON-NLS-1$
+        final IPath uriPath = new Path("/plugin").append(Activator.BUNDLE_SYMBOLIC_NAME).append(filePath); //$NON-NLS-1$
         URL url;
         try {
             final URI uri = new URI("platform", null, uriPath.toString(), null); //$NON-NLS-1$

@@ -30,18 +30,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 public class SendScreenToFile {
 
-    private static final TN5250jLogger LOG = TN5250jLogFactory
-            .getLogger(SendScreenToFile.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SendScreenToFile.class);
 
     /**
      * @param parent

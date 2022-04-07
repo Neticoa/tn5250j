@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.connectdialog.ExternalProgram;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ExternalProgramConfig {
 
@@ -22,8 +22,7 @@ public class ExternalProgramConfig {
     protected static final String NAME_SUFFIX = ".command.name";
     protected static final String PREFIX = "etn.pgm.";
 
-    private static TN5250jLogger log =
-        TN5250jLogFactory.getLogger("org.tn5250j.ExternalProgramConfig");
+    private static Logger log = LoggerFactory.getLogger(ExternalProgramConfig.class);
 
 	private static ExternalProgramConfig etnConfig;
 	private static final String EXTERNAL_PROGRAM_REGISTRY_KEY = "etnPgmProps";

@@ -4,9 +4,9 @@ package org.tn5250j.scripting;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.SessionGui;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Class for managing interpreter drivers.
@@ -16,7 +16,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class InterpreterDriverManager {
 
-    private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(InterpreterDriverManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InterpreterDriverManager.class);
 
     private static Map<String, InterpreterDriver> _extensionDriverMap = new HashMap<String, InterpreterDriver>();
     private static Map<String, InterpreterDriver> _languageDriverMap = new HashMap<String, InterpreterDriver>();

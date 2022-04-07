@@ -87,19 +87,20 @@ import java.util.concurrent.BlockingQueue;
 
 import javax.net.ssl.SSLSocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.ConnectUser;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.application.Platform;
 
 public final class tnvt implements Runnable {
 
+    private static final Logger log = LoggerFactory.getLogger(tnvt.class);
 
     // negotiating commands
     private static final byte IAC = (byte) -1; // 255 FF
@@ -135,8 +136,6 @@ public final class tnvt implements Runnable {
      * </a>
      */
     private static final int PCCMD_MAX_LENGTH = 123;
-
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     private Socket sock;
     private BufferedInputStream bin;

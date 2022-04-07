@@ -36,9 +36,23 @@ public class SessionManager extends AbstractSessionManager {
     /**
      * @param config session configuration.
      * @param container container.
+     * @return created canvas component.
      */
-    public void addSessionComponent(final SessionConfig config, final Composite container) {
-        final FXCanvas canvas = new FXCanvas(container, SWT.NONE);
+    public Composite addSessionComponent(final SessionConfig config, final Composite container) {
+        final FXCanvas canvas = new FXCanvas(container, SWT.NONE) {
+            /* (non-Javadoc)
+             * @see org.eclipse.swt.widgets.Control#forceFocus()
+             */
+            @Override
+            public boolean forceFocus() {
+                final boolean forceFocusResult = super.forceFocus();
+                if (forceFocusResult) {
+                    getScene().getRoot().requestFocus();
+                }
+                return forceFocusResult;
+            }
+        };
+
         if (!isFxInitialized) {
             Platform.setImplicitExit(false);
             isFxInitialized = true;
@@ -50,6 +64,7 @@ public class SessionManager extends AbstractSessionManager {
 
         canvas.setScene(new Scene(uis.get(config)));
         canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        return canvas;
     }
 
     /**

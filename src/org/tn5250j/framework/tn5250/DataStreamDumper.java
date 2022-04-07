@@ -24,17 +24,19 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
-
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tn5250j.encoding.ICodePage;
+
 public class DataStreamDumper {
+
+    private static final Logger log = LoggerFactory.getLogger(DataStreamDumper.class);
 
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -43,10 +45,8 @@ public class DataStreamDumper {
     private boolean dumpActive = false;
     private ICodePage codePage;
 
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-
-    public void toggleDebug(ICodePage cp) {
+    public void toggleDebug(final ICodePage cp) {
 
         if (codePage == null)
             codePage = cp;
@@ -59,7 +59,7 @@ public class DataStreamDumper {
                     fw = new FileOutputStream("log.txt");
                     dw = new BufferedOutputStream(fw);
                 }
-            } catch (FileNotFoundException fnfe) {
+            } catch (final FileNotFoundException fnfe) {
                 log.warn(fnfe.getMessage());
             }
 
@@ -74,7 +74,7 @@ public class DataStreamDumper {
                 dw = null;
                 fw = null;
                 codePage = null;
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
 
                 log.warn(ioe.getMessage());
             }
@@ -83,7 +83,7 @@ public class DataStreamDumper {
         log.info("Data Stream output is now " + dumpActive);
     }
 
-    public void dump(byte[] abyte0) {
+    public void dump(final byte[] abyte0) {
         if (!dumpActive) {
             return;
         }
@@ -93,7 +93,7 @@ public class DataStreamDumper {
             log.info("\n Buffer Dump of data from AS400: ");
             dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
 
-            StringBuilder h = new StringBuilder();
+            final StringBuilder h = new StringBuilder();
             for (int x = 0; x < abyte0.length; x++) {
                 if (x % 16 == 0) {
                     System.out.println("  " + h.toString());
@@ -109,7 +109,7 @@ public class DataStreamDumper {
 
                     h.setLength(0);
                 }
-                char ac = codePage.ebcdic2uni(abyte0[x]);
+                final char ac = codePage.ebcdic2uni(abyte0[x]);
                 if (ac < ' ')
                     h.append('.');
                 else
@@ -134,22 +134,22 @@ public class DataStreamDumper {
             dw.write("\r\n".getBytes());
 
             dw.flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.warn("Cannot dump from host! Message=" + e.getMessage());
         }
 
     }
 
-    void dumpRaw(byte[] buffer) {
+    void dumpRaw(final byte[] buffer) {
         try {
-            String fname = "dump_" + counter.get() + ".data";
+            final String fname = "dump_" + counter.get() + ".data";
             log.debug("Dumping file: " + fname);
-            FileOutputStream fos = new FileOutputStream(fname);
+            final FileOutputStream fos = new FileOutputStream(fname);
             fos.write(buffer);
             fos.close();
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

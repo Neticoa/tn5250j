@@ -25,14 +25,14 @@
  */
 package org.tn5250j;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.application.Platform;
 import javafx.geometry.Dimension2D;
@@ -45,8 +45,9 @@ import javafx.scene.text.Text;
 
 public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
+    private static final Logger log = LoggerFactory.getLogger("GFX");
+
     private final Canvas bi;
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250Facade screen, final SessionGui gui,

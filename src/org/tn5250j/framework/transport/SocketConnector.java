@@ -24,21 +24,20 @@ package org.tn5250j.framework.transport;
 
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SocketConnector {
 
-    String sslType = null;
+    private static final Logger logger = LoggerFactory.getLogger(SocketConnector.class);
 
-    TN5250jLogger logger;
+    String sslType = null;
 
     /**
      * Creates a new instance that creates a plain socket by default.
      */
     public SocketConnector() {
-        logger = TN5250jLogFactory.getLogger(getClass());
     }
 
     /**
@@ -47,7 +46,7 @@ public class SocketConnector {
      * @param type The SSL connection type
      * @see org.tn5250j.framework.transport.SSLConstants
      */
-    public void setSSLType(String type) {
+    public void setSSLType(final String type) {
         sslType = type;
     }
 
@@ -60,7 +59,7 @@ public class SocketConnector {
      * @param port
      * @return a new client socket, or null if
      */
-    public Socket createSocket(String destination, int port) {
+    public Socket createSocket(final String destination, final int port) {
 
         Socket socket = null;
         Exception ex = null;
@@ -71,7 +70,7 @@ public class SocketConnector {
             try {
                 // Use Socket Constructor!!! SocketFactory for jdk 1.4
                 socket = new Socket(destination, port);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 ex = e;
             }
         } else {  //SSL SOCKET
@@ -80,12 +79,12 @@ public class SocketConnector {
 
             SSLInterface sslIf = null;
 
-            String sslImplClassName =
+            final String sslImplClassName =
                     "org.tn5250j.framework.transport.SSL.SSLImplementation";
             try {
-                Class<?> c = Class.forName(sslImplClassName);
+                final Class<?> c = Class.forName(sslImplClassName);
                 sslIf = (SSLInterface) c.newInstance();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 ex = new Exception("Failed to create SSLInterface Instance. " +
                         "Message is [" + e.getMessage() + "]");
             }

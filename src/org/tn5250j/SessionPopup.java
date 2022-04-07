@@ -55,6 +55,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
@@ -71,8 +73,6 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.SendScreenImageToFile;
 import org.tn5250j.tools.SendScreenToFile;
 import org.tn5250j.tools.XTFRFile;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -94,10 +94,11 @@ import javafx.scene.input.KeyCodeCombination;
  */
 public class SessionPopup {
 
+    private static final Logger log = LoggerFactory.getLogger(SessionPopup.class);
+
     private final Screen5250Facade screen;
     private final SessionGui sessiongui;
     private final tnvt vt;
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public SessionPopup(final SessionGui ses, final double x, final double y) {
 

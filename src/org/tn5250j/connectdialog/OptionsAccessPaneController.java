@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -37,7 +37,7 @@ import javafx.scene.layout.Pane;
  */
 public class OptionsAccessPaneController implements Initializable {
 
-    private static final TN5250jLogger LOG = TN5250jLogFactory.getLogger(OptionsAccessPaneController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OptionsAccessPaneController.class);
 
     private static final String CRYPTO_KEY = "tn5205j";
     private static final String ACCESS_DIGEST_PROPERTY = "emul.accessDigest";

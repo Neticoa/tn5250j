@@ -37,6 +37,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
@@ -49,8 +51,6 @@ import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.AsyncServices;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -58,8 +58,10 @@ import javafx.stage.Stage;
 
 
 public class Tn5250jController extends Thread {
+
+    private static final Logger log = LoggerFactory.getLogger(Tn5250jController.class);
+
     private File extensionDir;
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
     //private URLClassLoader loader = new URLClassLoader(null, this.getClass().getClassLoader());
     private List<Tn5250jEvent> eventList;
     private List<Tn5250jListener> listeners;

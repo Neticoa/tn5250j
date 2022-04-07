@@ -11,15 +11,18 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.tn5250j.tools.LangTool;
 
+import com.metrixware.log4j.BundleAppender;
 import com.metrixware.tn5250.session.SessionManager;
 
 import javafx.embed.swt.FXCanvas;
 
 public class Activator implements BundleActivator {
 
+    public static final String BUNDLE_SYMBOLIC_NAME = "om.metrixware.emulator.tn5250.plugin"; //$NON-NLS-1$
+
     private static Activator ACTIVATOR;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
-    private SessionManager sessionManager = new SessionManager();
+    private SessionManager sessionManager;
 
     private ServiceReference<EnvironmentInfo> configRef;
     private BundleContext context;
@@ -30,7 +33,12 @@ public class Activator implements BundleActivator {
 
         this.context = context;
         configRef = context.getServiceReference(EnvironmentInfo.class);
+
+        BundleAppender.setBundle(context.getBundle());
         LangTool.init();
+
+        //init session manager olny after log4j initialization because the class contains loggings
+        sessionManager = new SessionManager();
     }
 
     /**

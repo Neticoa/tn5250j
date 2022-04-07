@@ -36,6 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.event.ScreenListener;
@@ -43,12 +45,12 @@ import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.geometry.Rectangle2D;
 
 public class Screen5250 implements Screen5250Facade {
+
+    private static final Logger log = LoggerFactory.getLogger(Screen5250.class);
 
     // error codes to be sent to the host on an error
     private final static int ERR_CURSOR_PROTECTED = 0x05;
@@ -71,7 +73,6 @@ public class Screen5250 implements Screen5250Facade {
     final static char initChar = 0;
 
     private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     private ScreenFields screenFields;
     private int lastAttr;

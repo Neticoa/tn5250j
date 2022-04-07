@@ -39,9 +39,9 @@ import static org.tn5250j.TN5250jConstants.UPPER_RIGHT;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  *
@@ -53,6 +53,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class WTDSFParser {
 
+    private static final Logger log = LoggerFactory.getLogger(WTDSFParser.class);
+
     private Screen5250Facade screen52;
     private tnvt vt;
     private ICodePage codePage;
@@ -61,8 +63,6 @@ public class WTDSFParser {
     int length;
     boolean error;
     boolean guiStructsExist;
-
-    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     private final List<Window> guiStructs = new ArrayList<Window>(3);
     private final List<ChoiceField> choices = new ArrayList<ChoiceField>(3);

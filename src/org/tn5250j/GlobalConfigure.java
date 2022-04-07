@@ -34,9 +34,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Utility class for referencing global settings and functions of which at most
@@ -46,6 +46,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class GlobalConfigure extends ConfigureFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalConfigure.class);
     public static final String TN5250J_FOLDER = ".tn5250j";
 
     /**
@@ -57,7 +58,6 @@ public class GlobalConfigure extends ConfigureFactory {
     static private Map<String, String>  headers = new ConcurrentHashMap<>();  //LUC GORRENS
 
     static final private String settingsFile = "tn5250jstartup.cfg";
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     /**
      * The constructor is made protected to allow overriding.

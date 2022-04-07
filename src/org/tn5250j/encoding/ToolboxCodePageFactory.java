@@ -29,8 +29,8 @@ package org.tn5250j.encoding;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /* package */ class ToolboxCodePageFactory {
 
@@ -55,7 +55,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
     private static ToolboxCodePageFactory singleton;
 
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(ToolboxCodePageFactory.class);
 
     private ToolboxCodePageFactory() {
         /* private for singleton */
@@ -76,7 +76,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
             final ClassLoader loader = getClassLoader();
             Class.forName(CONVERTER_NAME, false, loader);
             return CODEPAGES;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.info("Couldn't locate JT400 Toolbox in classpath. Charset converters can't be used.");
             return new String[0];
         }
@@ -86,16 +86,16 @@ import org.tn5250j.tools.logging.TN5250jLogger;
      * @param encoding
      * @return
      */
-    public ICodePage getCodePage(String encoding) {
+    public ICodePage getCodePage(final String encoding) {
         try {
-            ClassLoader loader = getClassLoader();
-            Class<?> conv_class = Class.forName(CONVERTER_NAME, true, loader);
-            Constructor<?> conv_constructor = conv_class.getConstructor(new Class[]{String.class});
-            Method toBytes_method = conv_class.getMethod(TOBYTES_NAME, new Class[]{String.class});
-            Method toString_method = conv_class.getMethod(TOSTRING_NAME, new Class[]{byte[].class});
-            Object convobj = conv_constructor.newInstance(new Object[]{encoding});
+            final ClassLoader loader = getClassLoader();
+            final Class<?> conv_class = Class.forName(CONVERTER_NAME, true, loader);
+            final Constructor<?> conv_constructor = conv_class.getConstructor(new Class[]{String.class});
+            final Method toBytes_method = conv_class.getMethod(TOBYTES_NAME, new Class[]{String.class});
+            final Method toString_method = conv_class.getMethod(TOSTRING_NAME, new Class[]{byte[].class});
+            final Object convobj = conv_constructor.newInstance(new Object[]{encoding});
             return new ToolboxConverterProxy(convobj, toBytes_method, toString_method);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("Can't load charset converter from JT400 Toolbox for code page " + encoding, e);
             return null;
         }
@@ -115,7 +115,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
         private final Method tobytesMethod;
         private final Method tostringMethod;
 
-        private ToolboxConverterProxy(Object converterObject, Method tobytesMethod, Method tostringMethod) {
+        private ToolboxConverterProxy(final Object converterObject, final Method tobytesMethod, final Method tostringMethod) {
             super();
             this.converter = converterObject;
             this.tobytesMethod = tobytesMethod;
@@ -123,11 +123,11 @@ import org.tn5250j.tools.logging.TN5250jLogger;
         }
 
         @Override
-        public char ebcdic2uni(int index) {
+        public char ebcdic2uni(final int index) {
             Object result;
             try {
                 result = tostringMethod.invoke(converter, new Object[]{new byte[]{(byte) (index & 0xFF)}});
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 result = null;
             }
 
@@ -138,11 +138,11 @@ import org.tn5250j.tools.logging.TN5250jLogger;
         }
 
         @Override
-        public byte uni2ebcdic(char index) {
+        public byte uni2ebcdic(final char index) {
             Object result;
             try {
                 result = tobytesMethod.invoke(converter, new Object[]{new String(new char[]{index})});
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 result = null;
             }
 

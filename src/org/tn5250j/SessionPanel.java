@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.SessionChangeEvent;
@@ -50,8 +52,6 @@ import org.tn5250j.spoolfile.SpoolExporter;
 import org.tn5250j.tools.AsyncServices;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -89,6 +89,9 @@ import javafx.stage.Window;
  * (Hint: old name was SessionGUI)
  */
 public class SessionPanel extends BorderPane implements SessionGui {
+
+    private static final Logger log = LoggerFactory.getLogger(SessionPanel.class);
+
     private boolean firstScreen;
     private char[] signonSave;
 
@@ -105,8 +108,6 @@ public class SessionPanel extends BorderPane implements SessionGui {
     protected KeyboardHandler keyHandler;
 
     private final EventHandler<ScrollEvent> scroller = this::sessionPanelScrolled;
-
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     private final Canvas canvas = new Canvas();
     private final CompoundCursor cursor = new CompoundCursor();

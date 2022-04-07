@@ -31,9 +31,30 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.tn5250j.encoding.builtin.*;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tn5250j.encoding.builtin.CCSID1025;
+import org.tn5250j.encoding.builtin.CCSID1026;
+import org.tn5250j.encoding.builtin.CCSID1112;
+import org.tn5250j.encoding.builtin.CCSID1140;
+import org.tn5250j.encoding.builtin.CCSID1141;
+import org.tn5250j.encoding.builtin.CCSID1147;
+import org.tn5250j.encoding.builtin.CCSID1148;
+import org.tn5250j.encoding.builtin.CCSID273;
+import org.tn5250j.encoding.builtin.CCSID277;
+import org.tn5250j.encoding.builtin.CCSID278;
+import org.tn5250j.encoding.builtin.CCSID280;
+import org.tn5250j.encoding.builtin.CCSID284;
+import org.tn5250j.encoding.builtin.CCSID285;
+import org.tn5250j.encoding.builtin.CCSID297;
+import org.tn5250j.encoding.builtin.CCSID37;
+import org.tn5250j.encoding.builtin.CCSID424;
+import org.tn5250j.encoding.builtin.CCSID500;
+import org.tn5250j.encoding.builtin.CCSID870;
+import org.tn5250j.encoding.builtin.CCSID871;
+import org.tn5250j.encoding.builtin.CCSID875;
+import org.tn5250j.encoding.builtin.CCSID930;
+import org.tn5250j.encoding.builtin.ICodepageConverter;
 
 /**
  * Methods for built-in code page support.
@@ -43,7 +64,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
     private static BuiltInCodePageFactory singleton;
 
     private final List<Class<?>> clazzes = new ArrayList<Class<?>>();
-    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+    private final static Logger log = LoggerFactory.getLogger(BuiltInCodePageFactory.class);
 
     private BuiltInCodePageFactory() {
         register();
@@ -84,8 +105,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
      * @return unsorted list of available code pages
      */
     public String[] getAvailableCodePages() {
-        HashSet<String> cpset = new HashSet<String>();
-        for (Class<?> clazz : clazzes) {
+        final HashSet<String> cpset = new HashSet<String>();
+        for (final Class<?> clazz : clazzes) {
             final ICodepageConverter converter = getConverterFromClassName(clazz);
             if (converter != null) {
                 cpset.add(converter.getName());
@@ -98,8 +119,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
      * @param encoding
      * @return an {@link ICodePage} object OR null, of not found
      */
-    public ICodePage getCodePage(String encoding) {
-        for (Class<?> clazz : clazzes) {
+    public ICodePage getCodePage(final String encoding) {
+        for (final Class<?> clazz : clazzes) {
             final ICodepageConverter converter = getConverterFromClassName(clazz);
             if (converter != null && converter.getName().equals(encoding)) {
                 return converter;
@@ -115,13 +136,13 @@ import org.tn5250j.tools.logging.TN5250jLogger;
      * @param clazz {@link ICodepageConverter}
      * @return
      */
-    private ICodepageConverter getConverterFromClassName(Class<?> clazz) {
+    private ICodepageConverter getConverterFromClassName(final Class<?> clazz) {
         try {
             final Constructor<?> constructor = clazz.getConstructor(new Class[0]);
             final ICodepageConverter converter = (ICodepageConverter) constructor.newInstance();
             converter.init();
             return converter;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Couldn't load code page converter class:" + clazz.getCanonicalName(), e);
             return null;
         }
