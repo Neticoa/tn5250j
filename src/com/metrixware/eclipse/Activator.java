@@ -18,7 +18,7 @@ import javafx.embed.swt.FXCanvas;
 
 public class Activator implements BundleActivator {
 
-    public static final String BUNDLE_SYMBOLIC_NAME = "om.metrixware.emulator.tn5250.plugin"; //$NON-NLS-1$
+    public static final String BUNDLE_SYMBOLIC_NAME = "com.metrixware.emulator.tn5250.plugin"; //$NON-NLS-1$
 
     private static Activator ACTIVATOR;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -84,7 +84,8 @@ public class Activator implements BundleActivator {
      * This method should be used i.e. in constructor of UI actions wizards, menu actions, edidtor openings, ...
      */
     public static void initializeFx() {
-        getInstance().initializeFxClassLoaderHook();
+    	return;
+        //getInstance().initializeFxClassLoaderHook();
     }
 
     @Override
