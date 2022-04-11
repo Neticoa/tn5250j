@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import com.metrixware.eclipse.Activator;
 import com.metrixware.eclipse.ConnectionBean;
 import com.metrixware.eclipse.Messages;
 import com.metrixware.eclipse.PluginUtils;
@@ -34,7 +33,6 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
 
     public NewConnectionWizard() {
         super();
-        Activator.initializeFx();
     }
 
     @Override

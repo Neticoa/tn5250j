@@ -26,7 +26,6 @@ public class Tn5250Screen extends EditorPart {
 
     public Tn5250Screen() {
         super();
-        Activator.initializeFx();
     }
 
     @Override
