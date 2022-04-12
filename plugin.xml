@@ -35,7 +35,7 @@
       <editor
             class="com.metrixware.eclipse.editor.Tn5250Screen"
             default="true"
-            extensions="5250j"
+            extensions="5250"
             icon="images/tn5250j-16x16.png"
             id="tn5250j.editor"
             name="%view.name">
