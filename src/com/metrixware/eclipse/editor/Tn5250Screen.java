@@ -78,7 +78,9 @@ public class Tn5250Screen extends EditorPart {
 
     @Override
     public void setFocus() {
-        canvas.forceFocus();
+        if (canvas.forceFocus()) {
+            getSessionManager().setFocusToFxComponent(canvas);
+        }
     }
 
     /* (non-Javadoc)

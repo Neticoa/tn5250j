@@ -1,7 +1,5 @@
 package com.metrixware.eclipse;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,17 +14,16 @@ public class Activator implements BundleActivator {
     public static final String BUNDLE_SYMBOLIC_NAME = "com.metrixware.emulator.tn5250.plugin"; //$NON-NLS-1$
 
     private static Activator ACTIVATOR;
-    private final AtomicBoolean initialized = new AtomicBoolean(false);
     private SessionManager sessionManager;
 
     private ServiceReference<EnvironmentInfo> configRef;
-    private BundleContext context;
+    private ClassLoader jfxSwtLoader;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         ACTIVATOR = this;
 
-        this.context = context;
+        jfxSwtLoader = new JfxSwtClassLoader(getClass().getClassLoader());
         configRef = context.getServiceReference(EnvironmentInfo.class);
 
         BundleAppender.setBundle(context.getBundle());
@@ -51,5 +48,12 @@ public class Activator implements BundleActivator {
      */
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    /**
+     * @return class loader for load JavaFX classes from jfxswt.jar
+     */
+    public ClassLoader getJfxSwtLoader() {
+        return jfxSwtLoader;
     }
 }

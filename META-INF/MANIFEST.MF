@@ -5,7 +5,6 @@ Bundle-SymbolicName: com.metrixware.emulator.tn5250.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: tn5250j.jar,
  lib/activation.jar,
- lib/jfxswt.jar,
  lib/slf4j-api.jar,
  lib/log4j-slf4j-impl.jar,
  lib/log4j-api.jar,
