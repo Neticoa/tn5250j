@@ -69,4 +69,15 @@ public class CreateConnectionFileWizardPage extends AbstractConnectionWizardPage
         cfg.setConnectionInfo(bean);
         cfg.saveSessionProps();
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            fileName.setFocus();
+        }
+    }
 }

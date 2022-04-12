@@ -27,7 +27,7 @@ public final class PluginUtils {
         final GC gc = new GC(text);
         try {
             final FontMetrics fm = gc.getFontMetrics();
-            return Math.round(numChars * fm.getAverageCharWidth());
+            return Math.round(numChars * (int) fm.getAverageCharacterWidth());
         } finally {
             gc.dispose();
         }
