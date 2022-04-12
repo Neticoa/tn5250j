@@ -18,7 +18,7 @@ Bundle-ClassPath: tn5250j.jar,
  lib/jython-standalone.jar,
  bin/
 Bundle-Activator: com.metrixware.eclipse.Activator
-Bundle-Vendor: MetrixwareSystemobjects
+Bundle-Vendor: Metrixware Systemobjects
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.views.log,
