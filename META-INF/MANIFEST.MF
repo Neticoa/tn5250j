@@ -15,8 +15,7 @@ Bundle-ClassPath: tn5250j.jar,
  lib/kunststoff.jar,
  lib/mailapi.jar,
  lib/smtp.jar,
- lib/jython-standalone.jar,
- bin/
+ lib/jython-standalone.jar
 Bundle-Activator: com.metrixware.eclipse.Activator
 Bundle-Vendor: Metrixware Systemobjects
 Require-Bundle: org.eclipse.ui,
