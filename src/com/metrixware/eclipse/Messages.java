@@ -21,6 +21,15 @@ public class Messages extends NLS {
     public static String CreateConnectionWizardFileName;
     public static String CreateConnectionWizardDeviceLabel;
 
+    public static String PreferencesPageTitle;
+    public static String PreferencesPageLogLevelLabel;
+    public static String PreferencesPageLogLevelFatal;
+    public static String PreferencesPageLogLevelError;
+    public static String PreferencesPageLogLevelInfo;
+    public static String PreferencesPageLogLevelDebug;
+    public static String PreferencesPageLogLevelWarn;
+    public static String PreferencesPageLogLevelAll;
+
     public static String FailedToCreateConnection;
     public static String NotValidParentSelected;
     public static String NewConnectionWizard;

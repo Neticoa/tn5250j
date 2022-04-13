@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
@@ -86,9 +85,7 @@ public class NewConnectionWizard extends BasicNewResourceWizard {
 
     @Override
     protected void initializeDefaultPageImageDescriptor() {
-        final ImageDescriptor desc = ImageDescriptor.createFromURL(
-                PluginUtils.locate("/images/tn5250j-wizard-48x48.png"));//$NON-NLS-1$ //$NON-NLS-2$
-        setDefaultPageImageDescriptor(desc);
+        setDefaultPageImageDescriptor(PluginUtils.createImageDescriptor("tn5250j-wizard-48x48.png")); //$NON-NLS-1$
     }
 
     @Override

@@ -1,12 +1,14 @@
 package com.metrixware.eclipse;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.tn5250j.tools.LangTool;
 
-import com.metrixware.log4j.BundleAppender;
+import com.metrixware.log4j.Logging;
 import com.metrixware.tn5250.session.SessionManager;
 
 public class Activator implements BundleActivator {
@@ -19,6 +21,8 @@ public class Activator implements BundleActivator {
     private ServiceReference<EnvironmentInfo> configRef;
     private ClassLoader jfxSwtLoader;
 
+    private IEclipsePreferences preferences;
+
     @Override
     public void start(final BundleContext context) throws Exception {
         ACTIVATOR = this;
@@ -26,7 +30,9 @@ public class Activator implements BundleActivator {
         jfxSwtLoader = new JfxSwtClassLoader(getClass().getClassLoader());
         configRef = context.getServiceReference(EnvironmentInfo.class);
 
-        BundleAppender.setBundle(context.getBundle());
+        preferences = InstanceScope.INSTANCE.getNode(Activator.BUNDLE_SYMBOLIC_NAME);
+
+        Logging.getInstance().initialize(context.getBundle());
         LangTool.init();
 
         //init session manager olny after log4j initialization because the class contains loggings
@@ -48,6 +54,10 @@ public class Activator implements BundleActivator {
      */
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    public IEclipsePreferences getPreferences() {
+        return preferences;
     }
 
     /**

@@ -9,7 +9,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -73,18 +72,6 @@ public abstract class AbstractConnectionWizardPage extends WizardPage {
         final Label label = new Label(parent, SWT.NONE);
         label.setText(text);
         return label;
-    }
-
-    protected <T extends Control> T addLabelAndLayout(final Composite parent, final Label label, final T child) {
-        final GridData firstRowData = new GridData();
-        firstRowData.horizontalAlignment = SWT.LEFT;
-        label.setLayoutData(firstRowData);
-
-        final GridData secondRowData = new GridData();
-        secondRowData.horizontalAlignment = SWT.LEFT;
-        child.setLayoutData(secondRowData);
-
-        return child;
     }
 
     protected void setSizeInSumbols(final Text text, final int numChars) {

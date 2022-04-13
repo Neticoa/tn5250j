@@ -3,6 +3,8 @@
  */
 package com.metrixware.eclipse.wizard;
 
+import static com.metrixware.eclipse.PluginUtils.addLabelAndLayout;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;

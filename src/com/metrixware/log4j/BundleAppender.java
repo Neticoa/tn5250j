@@ -18,9 +18,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.SyslogLayout;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.osgi.framework.Bundle;
 
 import com.metrixware.eclipse.Activator;
 
@@ -30,8 +28,6 @@ import com.metrixware.eclipse.Activator;
  */
 @Plugin(name = "BundleAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class BundleAppender extends AbstractAppender {
-
-    private static ILog DELEGATE;
 
     public BundleAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout) {
         super(name, filter, layout == null ? SyslogLayout.newBuilder().build() : layout, true, new Property[0]);
@@ -44,24 +40,21 @@ public class BundleAppender extends AbstractAppender {
         return new BundleAppender(name, filter, layout);
     }
 
-    /**
-     * @param DELEGATE the log to set
-     */
-    public static void setBundle(final Bundle bundle) {
-        DELEGATE = Platform.getLog(bundle);
-    }
-
     /* (non-Javadoc)
      * @see org.apache.logging.log4j.core.Appender#append(org.apache.logging.log4j.core.LogEvent)
      */
     @Override
     public void append(final LogEvent event) {
-        if (DELEGATE == null) {
+        if (getEclipseLog() == null) {
+            return;
+        }
+
+        final Level level = event.getLevel();
+        if (!accept(level)) {
             return;
         }
 
         final String message = new String(getLayout().toByteArray(event), StandardCharsets.UTF_8);
-        final Level level = event.getLevel();
         final Throwable throwable = event.getThrown();
 
         if (level == Level.FATAL) {
@@ -79,20 +72,29 @@ public class BundleAppender extends AbstractAppender {
         }
     }
 
+    private ILog getEclipseLog() {
+        return Logging.getInstance().getEclipseLog();
+    }
+
+    private boolean accept(final Level level) {
+        final Level currentLevel = Logging.getInstance().getCurrentLogLevel();
+        return currentLevel.intLevel() >= level.intLevel();
+    }
+
     private void logDebug(final String message, final Throwable throwable) {
         logInfo(message, throwable);
     }
 
     private void logInfo(final String message, final Throwable throwable) {
-        DELEGATE.log(createStatus(IStatus.INFO, message, throwable));
+        getEclipseLog().log(createStatus(IStatus.INFO, message, throwable));
     }
 
     private void logWarn(final String message, final Throwable throwable) {
-        DELEGATE.log(createStatus(IStatus.WARNING, message, throwable));
+        getEclipseLog().log(createStatus(IStatus.WARNING, message, throwable));
     }
 
     private void logError(final String message, final Throwable throwable) {
-        DELEGATE.log(createStatus(IStatus.ERROR, message, throwable));
+        getEclipseLog().log(createStatus(IStatus.ERROR, message, throwable));
     }
 
     private void logFatal(final String message, final Throwable throwable) {

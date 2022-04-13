@@ -44,4 +44,12 @@
          </contentTypeBinding>
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.metrixware.eclipse.preferences.GlobalPreferences"
+            id="tn5250.preferences"
+            name="%category.preferences.name">
+      </page>
+   </extension>
 </plugin>

@@ -3,6 +3,8 @@
  */
 package com.metrixware.eclipse.wizard;
 
+import static com.metrixware.eclipse.PluginUtils.addLabelAndLayout;
+
 import java.io.IOException;
 
 import org.eclipse.core.resources.IContainer;
