@@ -6,7 +6,10 @@ package com.metrixware.eclipse.wizard;
 import static com.metrixware.eclipse.PluginUtils.addLabelAndLayout;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.tn5250j.SslType;
 import org.tn5250j.Terminal;
@@ -38,6 +41,8 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
     private Text timeOut;
     //IDLEOUT: Text Field
     private Text idleOut;
+
+    private Control lastFocused;
 
     public ConfigureConnectionWizardPage() {
         super("configureConnection");
@@ -82,6 +87,32 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         initIdleOut();
 
         updateEnablement();
+        listenComponentsFocus();
+    }
+
+    private void listenComponentsFocus() {
+        lastFocused = host;
+
+        final FocusListener listener = new FocusListener() {
+            @Override
+            public void focusLost(final FocusEvent e) {
+                lastFocused = (Control) e.widget;
+            }
+
+            @Override
+            public void focusGained(final FocusEvent e) {
+            }
+        };
+
+        host.addFocusListener(listener);
+        port.addFocusListener(listener);
+        sslType.addFocusListener(listener);
+        terminal.addFocusListener(listener);
+        codePage.addFocusListener(listener);
+        session.addFocusListener(listener);
+        device.addFocusListener(listener);
+        timeOut.addFocusListener(listener);
+        idleOut.addFocusListener(listener);
     }
 
     private void initIdleOut() {
@@ -151,5 +182,16 @@ public class ConfigureConnectionWizardPage extends AbstractConnectionWizardPage 
         con.setTimeOut(Integer.parseInt(timeOut.getText()));
         con.setIdleOut(Integer.parseInt(idleOut.getText()));
         return con;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            lastFocused.setFocus();
+        }
     }
 }
