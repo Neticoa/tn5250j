@@ -8,7 +8,6 @@
 	</parent>
 	<groupId>com.metrixware.emulator.tn5250</groupId>
 	<artifactId>com.metrixware.emulator.tn5250.plugin</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 	<name>TN5250 plugin</name>
 	<description>GPL V3.0 tn5250j compliant emulator as an Eclipse plugin</description>
 	<packaging>eclipse-plugin</packaging>
