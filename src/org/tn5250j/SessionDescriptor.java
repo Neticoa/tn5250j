@@ -3,8 +3,6 @@
  */
 package org.tn5250j;
 
-import com.metrixware.tn5250.connection.CodePage;
-
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *

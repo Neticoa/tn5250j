@@ -5,8 +5,6 @@ package org.tn5250j;
 
 import java.util.Map;
 
-import com.metrixware.tn5250.connection.CodePage;
-
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
