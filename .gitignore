@@ -12,4 +12,3 @@ build.*.properties
 /target/
 .settings
 *.jar
-/lib/
