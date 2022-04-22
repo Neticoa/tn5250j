@@ -93,7 +93,7 @@ public class Session5250  {
      * @see {@link #isSslSocket()}
      */
     public boolean isSslConfigured() {
-        return sesProps.getSslType() != SslType.None;
+        return sesProps.getSslType() != Tls.None;
     }
 
     public boolean isSendKeepAlive() {
@@ -166,7 +166,7 @@ public class Session5250  {
         if (sesProps.getProxy() != null) {
             vt.setProxy(sesProps.getProxy().getHost(), Integer.toString(sesProps.getProxy().getPort()));
         }
-        if (sesProps.getSslType() != SslType.None) {
+        if (sesProps.getSslType() != Tls.None) {
             vt.setSSLType(sesProps.getSslType().getType());
         }
 

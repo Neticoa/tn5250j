@@ -85,8 +85,7 @@ public class SessionConfig extends AbstractSessionConfig {
         }
     }
 
-    @Override
-    protected void loadConfigurationResource() {
+    private void loadConfigurationResource() {
         if (configurationResource == null || configurationResource.trim().isEmpty()) {
             configurationResource = "TN5250JDefaults.props";
             usingDefaults = true;

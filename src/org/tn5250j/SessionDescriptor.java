@@ -12,7 +12,7 @@ public class SessionDescriptor {
     private String sessionName;
     private boolean heartBeat;
     private boolean hostNameAsTermName;
-    private SslType sslType = SslType.None;
+    private Tls sslType = Tls.None;
     private boolean enhanced;
     private Terminal terminal;
     private String host;
@@ -71,14 +71,14 @@ public class SessionDescriptor {
     /**
      * @param sslType the SSL type.
      */
-    public void setSslType(final SslType sslType) {
+    public void setSslType(final Tls sslType) {
         this.sslType = sslType;
     }
 
     /**
      * @return the SSL type.
      */
-    public SslType getSslType() {
+    public Tls getSslType() {
         return sslType;
     }
 

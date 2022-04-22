@@ -7,18 +7,18 @@ package org.tn5250j;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public enum SslType {
+public enum Tls {
     None("NONE"),
-    SSLv2("SSLv2"),
-    SSLv3("SSLv3"),
-    TLS("TLS");
+    V1_0("v1.0"),
+    V1_1("v1.1"),
+    V1_2("v1.2");
 
     private String type;
 
     /**
      * @param displayName SSL type display name.
      */
-    SslType(final String displayName) {
+    Tls(final String displayName) {
         this.type = displayName;
     }
 

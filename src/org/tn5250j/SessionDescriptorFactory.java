@@ -27,7 +27,7 @@ public class SessionDescriptorFactory {
         if (sesProps.get(TN5250jConstants.SSL_TYPE) != null) {
             final String sslType = sesProps.get(TN5250jConstants.SSL_TYPE);
             try {
-                d.setSslType(SslType.valueOf(sslType));
+                d.setSslType(Tls.valueOf(sslType));
             } catch (final Exception e) {
             }
         }

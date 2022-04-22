@@ -131,8 +131,6 @@ public abstract class AbstractSessionConfig {
 
     public abstract void saveSessionProps();
 
-    protected abstract void loadConfigurationResource();
-
     protected void loadDefaults() throws IOException {
         final Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
         final String prefix = colorSchemaDefaults.getProperty("schemaDefault");
