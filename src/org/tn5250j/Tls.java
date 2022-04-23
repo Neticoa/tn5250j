@@ -9,9 +9,9 @@ package org.tn5250j;
  */
 public enum Tls {
     None("NONE"),
-    V1_0("v1.0"),
-    V1_1("v1.1"),
-    V1_2("v1.2");
+    V1_0("TLSv1.0"),
+    V1_1("TLSv1.1"),
+    V1_2("TLSv1.2");
 
     private String type;
 

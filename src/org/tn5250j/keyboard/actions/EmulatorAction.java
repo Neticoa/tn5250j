@@ -26,10 +26,10 @@
 package org.tn5250j.keyboard.actions;
 
 import org.tn5250j.SessionGui;
-import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMapper;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCodeCombination;
@@ -80,10 +80,7 @@ public abstract class EmulatorAction implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(final ActionEvent e) {
-        UiUtils.runInFx(() -> {
-            handle();
-            return null;
-        });
+        Platform.runLater(this::handle);
     }
 
     protected abstract void handle();
