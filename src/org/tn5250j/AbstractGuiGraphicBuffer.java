@@ -302,6 +302,8 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             cursor.setBottomOffset(getIntProperty("cursorBottOffset"));
         }
 
+        setCursorBlinking("Yes".equals(getStringProperty("cursorBlink")));
+
         screen.setResetRequired("Yes".equals(getStringProperty("resetRequired")));
         antialiased = "Yes".equals(getStringProperty("useAntialias"));
         screen.setBackspaceError("Yes".equals(getStringProperty("backspaceError")));
