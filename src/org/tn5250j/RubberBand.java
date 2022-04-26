@@ -33,7 +33,6 @@ public class RubberBand {
         selection.setMouseTransparent(true);
         selection.setFocusTraversable(false);
         selection.setFill(null); // transparent
-        // selection.setFill(Color.WHITE);
         selection.setStroke(Color.WHITE); // border
         selection.setBlendMode(BlendMode.DIFFERENCE);
         selection.setStrokeWidth(2.);
@@ -85,6 +84,9 @@ public class RubberBand {
 
             if (!selection.isVisible()) {
                 selection.setVisible(true);
+                if (!selection.isFocused()) {
+                    selection.requestFocus();
+                }
             }
         }
     }

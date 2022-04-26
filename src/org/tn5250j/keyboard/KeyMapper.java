@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
@@ -47,6 +49,8 @@ import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 
 public class KeyMapper {
+
+    private static final Logger log = LoggerFactory.getLogger(KeyMapper.class);
 
     private static HashMap<KeyStroker, String> mappedKeys;
     private static KeyStroker workStroke;
@@ -143,7 +147,7 @@ public class KeyMapper {
 
             mappedKeys.put(new KeyStroker(67, false, true, false, false, KeyStroker.KEY_LOCATION_STANDARD), "[copy]");
 
-            mappedKeys.put(new KeyStroker(86, false, false, true, false, KeyStroker.KEY_LOCATION_STANDARD), "[paste]");
+            mappedKeys.put(new KeyStroker(86, false, true, false, false, KeyStroker.KEY_LOCATION_STANDARD), "[paste]");
 
             mappedKeys.put(new KeyStroker(39, true, false, false, false, KeyStroker.KEY_LOCATION_STANDARD), "[markright]");
             mappedKeys.put(new KeyStroker(37, true, false, false, false, KeyStroker.KEY_LOCATION_STANDARD), "[markleft]");
@@ -362,17 +366,28 @@ public class KeyMapper {
             final KeyStroker ks = e.getKey();
             final String keyVal = e.getValue();
             if (keyVal.equals(which)) {
-                final List<Modifier> modifiers = new LinkedList<>();
-
                 if (!isModifier(ks.getKeyCode())) {
                     try {
+                        final List<Modifier> modifiers = new LinkedList<>();
+
+                        if (ks.isShiftDown()) {
+                            modifiers.add(KeyCombination.SHIFT_DOWN);
+                        }
+                        if (ks.isControlDown()) {
+                            modifiers.add(KeyCombination.CONTROL_DOWN);
+                        }
+                        if (ks.isAltDown()) {
+                            modifiers.add(KeyCombination.ALT_DOWN);
+                        }
+                        if (ks.isAltGrDown()) { //FIXME not sure how to handle it
+                            modifiers.add(KeyCombination.ALT_DOWN);
+                        }
+
                         return new KeyCodeCombination(ks.getKeyCode(), modifiers.toArray(new Modifier[modifiers.size()]));
                     } catch (final RuntimeException exc) {
-                        System.out.println("Key code: " + ks.getKeyCode());
+                        log.error("Failed to create key code combination for " + ks.getKeyCode());
                         throw exc;
                     }
-                } else {
-                    System.err.println("Key code " + ks.getKeyCode() + " is a modifier and can't be registered");
                 }
             }
         }
@@ -418,11 +433,6 @@ public class KeyMapper {
 
         // if we got here it was a dead key and we need to add it.
         mappedKeys.put(new KeyStroker(ke, isAltGr), which);
-
-    }
-
-    public final static HashMap<KeyStroker, String> getKeyMap() {
-        return mappedKeys;
     }
 
     /**

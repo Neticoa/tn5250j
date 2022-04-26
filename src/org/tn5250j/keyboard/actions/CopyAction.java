@@ -41,7 +41,7 @@ public class CopyAction extends EmulatorAction {
     public CopyAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 COPY.mnemonic,
-                new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN),
+                new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN),
                 keyMap);
     }
 

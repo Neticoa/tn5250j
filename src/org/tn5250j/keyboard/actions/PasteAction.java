@@ -42,7 +42,7 @@ public class PasteAction extends EmulatorAction {
     public PasteAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 PASTE.mnemonic,
-                new KeyCodeCombination(KeyCode.V, KeyCombination.ALT_DOWN),
+                new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN),
                 keyMap);
     }
 
