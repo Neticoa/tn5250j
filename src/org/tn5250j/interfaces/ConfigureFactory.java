@@ -71,13 +71,8 @@ public abstract class ConfigureFactory {
         return value == null ? def : value;
     }
 
-    public Map<String, String> getProperties(final String regKey, final String fileName,
-                                    final boolean createFile, final String header) {
-        return getProperties(regKey, fileName, false, "", false);
-    }
-
     public Map<String, String> getProperties(final String regKey, final String fileName) {
-        return getProperties(regKey, fileName, false, "", false);
+        return getProperties(regKey, fileName, false, "");
     }
 
     /**
@@ -148,6 +143,5 @@ public abstract class ConfigureFactory {
     abstract public Map<String, String> getProperties(String regKey);
 
     abstract public Map<String, String> getProperties(String regKey, String fileName,
-                                             boolean createFile, String header,
-                                             boolean reloadIfLoaded);
+                                             boolean createFile, String header);
 }

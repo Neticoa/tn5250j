@@ -52,10 +52,10 @@ public class GlobalConfigure extends ConfigureFactory {
     /**
      * A handle to the the Global Properties
      */
-    static private Map<String, String> settings = new ConcurrentHashMap<>();
+    private Map<String, String> settings = new ConcurrentHashMap<>();
 
-    static private Map<String, Map<String, String>> registry = new ConcurrentHashMap<>();
-    static private Map<String, String>  headers = new ConcurrentHashMap<>();  //LUC GORRENS
+    private Map<String, Map<String, String>> registry = new ConcurrentHashMap<>();
+    private Map<String, String>  headers = new ConcurrentHashMap<>();  //LUC GORRENS
 
     static final private String settingsFile = "tn5250jstartup.cfg";
 
@@ -64,6 +64,10 @@ public class GlobalConfigure extends ConfigureFactory {
      */
     public GlobalConfigure() {
         verifiySettingsFolder();
+        loadAll();
+    }
+
+    protected void loadAll() {
         loadSettings();
         loadSessions();
         loadMacros();
@@ -96,7 +100,7 @@ public class GlobalConfigure extends ConfigureFactory {
      */
     private void loadSessions() {
 
-        setProperties(SESSIONS, SESSIONS, "------ Sessions --------", true);
+        loadProperties(SESSIONS, SESSIONS, "------ Sessions --------", true);
     }
 
     /**
@@ -104,13 +108,13 @@ public class GlobalConfigure extends ConfigureFactory {
      */
     private void loadMacros() {
 
-        setProperties(MACROS, MACROS, "------ Macros --------", true);
+        loadProperties(MACROS, MACROS, "------ Macros --------", true);
 
     }
 
     private void loadKeyStrokes() {
 
-        setProperties(KEYMAP, KEYMAP,
+        loadProperties(KEYMAP, KEYMAP,
                 "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------",
                 true);
 
@@ -124,10 +128,7 @@ public class GlobalConfigure extends ConfigureFactory {
         if (log.isInfoEnabled()) {
             log.info("reloading settings");
         }
-        loadSettings();
-        loadSessions();
-        loadMacros();
-        loadKeyStrokes();
+        loadAll();
         if (log.isInfoEnabled()) {
             log.info("Done (reloading settings).");
         }
@@ -259,12 +260,12 @@ public class GlobalConfigure extends ConfigureFactory {
     /**
      * Set the properties for the given registry key.
      *
-     * @param regKey
-     * @param fileName
-     * @param header
-     * @param createFile
+     * @param regKey registry key.
+     * @param fileName file name.
+     * @param header header.
+     * @param createFile whether or not should create file if absent.
      */
-    private void setProperties(final String regKey, final String fileName, final String header,
+    private void loadProperties(final String regKey, final String fileName, final String header,
                               final boolean createFile) {
 
         Map<String, String> props = new ConcurrentHashMap<>();
@@ -321,10 +322,9 @@ public class GlobalConfigure extends ConfigureFactory {
 
     @Override
     public Map<String, String> getProperties(final String regKey, final String fileName,
-                                    final boolean createFile, final String header,
-                                    final boolean reloadIfLoaded) {
+                                    final boolean createFile, final String header) {
 
-        if (!registry.containsKey(regKey) || reloadIfLoaded) {
+        if (!registry.containsKey(regKey)) {
 
             Map<String, String> props = new ConcurrentHashMap<>();
             headers.put(regKey, header);
