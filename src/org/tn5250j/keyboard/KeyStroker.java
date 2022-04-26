@@ -215,12 +215,12 @@ public class KeyStroker {
     @Override
     public String toString() {
 
-        return new String(keyCode + "," +
+        return KeyStrokeHelper.getIntCode(keyCode) + "," +
                 (isShiftDown ? "true" : "false") + "," +
                 (isControlDown ? "true" : "false") + "," +
                 (isAltDown ? "true" : "false") + "," +
                 (isAltGrDown ? "true" : "false") + "," +
-                location);
+                location;
     }
 
     public String getKeyStrokeDesc() {

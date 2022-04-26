@@ -284,6 +284,15 @@ public class KeyStrokeHelper {
         return codes.get(code);
     }
 
+    public static int getIntCode(final KeyCode code) {
+        for (final Map.Entry<Integer, KeyCode> e : codes.entrySet()) {
+            if (e.getValue() == code) {
+                return e.getKey();
+            }
+        }
+        return 0;
+    }
+
     public static int getModifiersFlag(final KeyEvent e) {
         int mask = 0;
         if (e.isShiftDown())
