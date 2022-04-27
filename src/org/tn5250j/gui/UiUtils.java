@@ -3,12 +3,18 @@
  */
 package org.tn5250j.gui;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
@@ -48,6 +54,8 @@ import javafx.stage.WindowEvent;
  *
  */
 public final class UiUtils {
+    private static final Logger log = LoggerFactory.getLogger(UiUtils.class);
+
     private UiUtils() {
     }
 
@@ -157,9 +165,44 @@ public final class UiUtils {
     }
 
     public static void beep() {
-        final AudioClip audio = new AudioClip(UiUtils.class.getClassLoader().getResource(
-                "beep.wav").toExternalForm());
-        audio.play();
+        final File file = new File(System.getProperty("java.io.tmpdir") + File.separator
+                + "jyMwzuVBj8kDd4t2vhB1HBTZzg2zt16+BlRzF6v7telxkh5aRaY56LkNpiNmq+lmU5rjuTDMvgMuM48tN3THX9nCT"
+                + "-beep.wav");
+        try {
+            if (!file.exists()) {
+                copyToFile(UiUtils.class.getClassLoader().getResource("beep.wav"), file);
+            }
+
+            final AudioClip audio = new AudioClip(file.toURI().toURL().toExternalForm());
+            audio.play();
+        } catch (final IOException e) {
+            log.error("Failed to play beep", e);
+        }
+    }
+
+    /**
+     * @param resource source URL.
+     * @param file target file.
+     * @throws IOException
+     */
+    private static void copyToFile(final URL resource, final File file) throws IOException {
+        final InputStream in = resource.openStream();
+        try {
+            final OutputStream out = new FileOutputStream(file);
+            try {
+                final byte[] buff = new byte[512];
+                int len;
+                while ((len = in.read(buff)) > -1) {
+                    out.write(buff, 0, len);
+                }
+
+                out.flush();
+            } finally {
+                out.close();
+            }
+        } finally {
+            in.close();
+        }
     }
 
     public static int toRgb(final int r, final int g, final int b) {
