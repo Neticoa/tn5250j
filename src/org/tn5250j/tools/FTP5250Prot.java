@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
-import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DecimalFormat;
@@ -33,13 +31,8 @@ import javafx.scene.layout.BorderPane;
 
 public class FTP5250Prot {
 
-    private Socket ftpConnectionSocket;
-    private BufferedReader ftpInputStream;
-    private PrintStream ftpOutputStream;
-    private InetAddress localHost;
+    private FTP5250ProtConnection connection;
     private boolean loggedIn;
-    private String lastResponse;
-    private int lastIntResponse;
     private String hostName;
     private int timeout = 50000;
     private boolean connected;
@@ -82,21 +75,16 @@ public class FTP5250Prot {
         try {
 
             hostName = host;
-            ftpConnectionSocket = new Socket(host, port);
-            ftpConnectionSocket.setSoTimeout(timeout);
-            localHost = ftpConnectionSocket.getLocalAddress();
-            ftpInputStream = new BufferedReader(new InputStreamReader(ftpConnectionSocket.getInputStream()));
-            ftpOutputStream = new PrintStream(ftpConnectionSocket.getOutputStream());
-            parseResponse();
+            connection = new FTP5250ProtConnection(host, port, timeout);
             fileSize = 0;
 
-            if (lastIntResponse == 220) {
+            if (connection.getLastIntResponse() == 220) {
                 connected = true;
-                return true;
             } else {
                 connected = false;
-                return false;
             }
+
+            return connected;
         } catch (final Exception _ex) {
             return false;
         }
@@ -107,15 +95,10 @@ public class FTP5250Prot {
      * Send quit command to ftp server and close connections
      */
     public void disconnect() {
-        try {
-            if (isConnected()) {
-                executeCommand("QUIT");
-                ftpOutputStream.close();
-                ftpInputStream.close();
-                ftpConnectionSocket.close();
-                connected = false;
-            }
-        } catch (final Exception _ex) {
+        if (isConnected()) {
+            final FTP5250ProtConnection con = connection;
+            AsyncServices.runTask(con::disconnect);
+            connected = false;
         }
     }
 
@@ -210,7 +193,7 @@ public class FTP5250Prot {
      */
     public boolean login(final String user, final String passWord) {
 
-        if (ftpOutputStream == null) {
+        if (connection == null) {
             printFTPInfo("Not connected to any server!");
             return false;
         }
@@ -250,17 +233,19 @@ public class FTP5250Prot {
 
         try {
 
-            Socket passSocket;
-
             // This will create a passive socket and execute the NLST command
-            passSocket = createPassiveSocket("NLST");
+            final Socket passSocket = createPassiveSocket("NLST");
+            try {
 
-            final BufferedReader br = new BufferedReader(new InputStreamReader(passSocket.getInputStream()));
-            String file;
-            while ((file = br.readLine()) != null) {
-                System.out.println(file);
+                final BufferedReader br = new BufferedReader(new InputStreamReader(passSocket.getInputStream()));
+                String file;
+                while ((file = br.readLine()) != null) {
+                    System.out.println(file);
+                }
+            } finally {
+                passSocket.close();
             }
-            passSocket.close();
+
             parseResponse();
         } catch (final Exception _ex) {
 
@@ -277,7 +262,7 @@ public class FTP5250Prot {
         executeCommand("SYST");
 
         // check whether this is an OS/400 system or not
-        if (lastResponse.toUpperCase().indexOf("OS/400") >= 0) return true;
+        if (connection.getLastResponse().toUpperCase().indexOf("OS/400") >= 0) return true;
         return false;
     }
 
@@ -368,6 +353,7 @@ public class FTP5250Prot {
 
         executeCommand("PWD");
 
+        final String lastResponse = connection.getLastResponse();
         final int i = lastResponse.indexOf("\"");
         final int j = lastResponse.lastIndexOf("\"");
         if (i != -1 && j != -1)
@@ -394,7 +380,7 @@ public class FTP5250Prot {
                 //    from the ftpConnection socket.
 
 //            byte abyte0[] = InetAddress.getLocalHost().getAddress();
-                final byte abyte0[] = localHost.getAddress();
+                final byte abyte0[] = connection.getAddress();
                 ss = new ServerSocket(0);
                 ss.setSoTimeout(timeout);
                 final StringBuffer pb = new StringBuffer("PORT ");
@@ -409,6 +395,7 @@ public class FTP5250Prot {
                 executeCommand(pb.toString());
                 executeCommand(cmd);
 
+                final String lastResponse = connection.getLastResponse();
                 if (lastResponse.startsWith("5") || lastResponse.startsWith("4")) {
                     return null;
                 }
@@ -463,9 +450,9 @@ public class FTP5250Prot {
                 executeCommand("RCMD", "dspffd FILE(" + file + ") OUTPUT(*OUTFILE) " +
                         "OUTFILE(QTEMP/FFD) ");
 
-                if (lastResponse.startsWith("2")) {
+                if (connection.getLastResponse().startsWith("2")) {
                     if (loadFFD(internal)) {
-                        if (lastResponse.startsWith("2")) {
+                        if (connection.getLastResponse().startsWith("2")) {
                             if (getMbrInfo(file, member)) {
                                 fireInfoEvent();
                             }
@@ -648,12 +635,12 @@ public class FTP5250Prot {
                 " OUTPUT(*OUTFILE) " +
                 "OUTFILE(QTEMP/FML) ");
 
-        if (!lastResponse.startsWith("2"))
+        if (!connection.getLastResponse().startsWith("2"))
             return false;
 
         if (getMbrSize(member))
 
-            if (!lastResponse.startsWith("2"))
+            if (!connection.getLastResponse().startsWith("2"))
                 return false;
 
         return true;
@@ -667,7 +654,7 @@ public class FTP5250Prot {
 
         boolean flag = true;
 
-        if (ftpOutputStream == null) {
+        if (connection == null) {
             printFTPInfo("Not connected to any server!");
             return false;
         }
@@ -731,10 +718,6 @@ public class FTP5250Prot {
         } finally {
             try {
                 socket.close();
-            } catch (final Exception _ex) {
-            }
-            try {
-                datainputstream.close();
             } catch (final Exception _ex) {
             }
         }
@@ -816,7 +799,7 @@ public class FTP5250Prot {
 
         final boolean flag = true;
 
-        if (ftpOutputStream == null) {
+        if (connection == null) {
             printFTPInfo("Not connected to any server!");
             return false;
         }
@@ -871,7 +854,6 @@ public class FTP5250Prot {
                             //            if ((c / recordLength) == 200)
                             //               aborted = true;
                         }
-                        System.out.println(c);
                         if (c == 0) {
                             status.setCurrentRecord(c);
                             fireStatusEvent();
@@ -880,9 +862,7 @@ public class FTP5250Prot {
                                 parseResponse();
                         }
                         writeFooter();
-//                  parseResponse();
                         printFTPInfo("Transfer complete!");
-
                     }
                 } catch (final InterruptedIOException iioe) {
                     printFTPInfo("Interrupted! " + iioe.getMessage());
@@ -891,10 +871,6 @@ public class FTP5250Prot {
                 } finally {
                     try {
                         socket.close();
-                    } catch (final Exception _ex) {
-                    }
-                    try {
-                        datainputstream.close();
                     } catch (final Exception _ex) {
                     }
                     try {
@@ -907,12 +883,8 @@ public class FTP5250Prot {
             }
         };
 
-        final Thread getThread = new Thread(getRun);
-        getThread.setPriority(2);
-        getThread.start();
-
+        AsyncServices.runTask(getRun);
         return flag;
-
     }
 
     /**
@@ -930,6 +902,10 @@ public class FTP5250Prot {
 
     public void setAborted() {
         aborted = true;
+    }
+
+    public void reSetAborted() {
+        aborted = false;
     }
 
     /**
@@ -955,7 +931,7 @@ public class FTP5250Prot {
      */
     private int executeCommand(final String cmd, final String params) {
 
-        if (ftpOutputStream == null) {
+        if (connection == null) {
             printFTPInfo("Not connected to any server!");
             return 0;
         }
@@ -965,74 +941,19 @@ public class FTP5250Prot {
             return 0;
         }
 
-        if (params != null)
-            ftpOutputStream.print(cmd + " " + params + "\r\n");
-        else
-            ftpOutputStream.print(cmd + "\r\n");
+        final int result = connection.executeCommand(cmd, params);
 
         if (!cmd.equals("PASS"))
             printFTPInfo("SENT: " + cmd + " " + (params != null ? params : ""));
         else
             printFTPInfo("SENT: PASS ****************");
 
-        parseResponse();
-        return lastIntResponse;
+        printFTPInfo(connection.getLastResponse());
+        return result;
     }
 
-    /**
-     * Parse the response returned from the remote host to be used for success
-     * or failure of a command
-     */
-    private String parseResponse() {
-        try {
-
-            if (ftpInputStream == null)
-                return "0000 Response Invalid";
-
-            String response = ftpInputStream.readLine();
-            String response2 = response;
-            boolean append = true;
-
-            // we loop until we get a valid numeric response
-            while (response2 == null ||
-                    response2.length() < 4 ||
-                    !Character.isDigit(response2.charAt(0)) ||
-                    !Character.isDigit(response2.charAt(1)) ||
-                    !Character.isDigit(response2.charAt(2)) ||
-                    response2.charAt(3) != ' ') {
-                if (append) {
-                    response += "\n";
-                    append = false;
-                }
-                response2 = ftpInputStream.readLine();
-                response += response2 + "\n";
-            }
-
-            // convert the numeric response to an int for testing later
-            lastIntResponse = Integer.parseInt(response.substring(0, 3));
-            // save off for printing later
-            lastResponse = response;
-            // print out the response
-            printFTPInfo(lastResponse);
-
-            return lastResponse;
-        }
-//      catch (InterruptedIOException iioe) {
-//
-//         try {
-//            ftpInputStream.close();
-//         }
-//         catch (IOException ieo) {
-//
-//         }
-//         return "0000 Response Invalid";
-//
-//      }
-        catch (final Exception exception) {
-            System.out.println(exception);
-            exception.printStackTrace();
-            return "0000 Response Invalid";
-        }
+    private void parseResponse() {
+        printFTPInfo(connection.parseResponse());
     }
 
     /**

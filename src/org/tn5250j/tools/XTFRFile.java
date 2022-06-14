@@ -159,7 +159,7 @@ public class XTFRFile extends GenericTn5250Frame {
         contentPane.setCenter(initXTFRInfo(null));
 
         stage.setOnHiding(e -> {
-            if (ftpProtocol != null && ftpProtocol.isConnected()) {
+            if (ftpProtocol != null) {
                 ftpProtocol.disconnect();
             }
         });
@@ -987,6 +987,7 @@ public class XTFRFile extends GenericTn5250Frame {
             if (dialog != null) {
                 return;
             }
+            ftpProtocol.reSetAborted();
 
             setButtonText("Cancel");
 
