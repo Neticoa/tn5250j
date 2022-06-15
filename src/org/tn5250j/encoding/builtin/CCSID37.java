@@ -31,7 +31,6 @@ package org.tn5250j.encoding.builtin;
 
 /**
  * @author master_jaf
- * @see http://www-01.ibm.com/software/globalization/ccsid/ccsid37.jsp
  */
 public final class CCSID37 extends CodepageConverterAdapter {
 
@@ -78,10 +77,12 @@ public final class CCSID37 extends CodepageConverterAdapter {
             '\u00D9', '\u00DA', '\u009F',};
 
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public String getDescription() {
         return DESCR;
     }

@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class NotClosableDialogPane extends DialogPane {

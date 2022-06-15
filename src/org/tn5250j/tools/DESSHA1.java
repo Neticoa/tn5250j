@@ -29,6 +29,7 @@ package org.tn5250j.tools;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DESSHA1 implements Serializable {
 
@@ -43,13 +44,12 @@ public class DESSHA1 implements Serializable {
 
     /**
      * Creates a new <code>MessageDigest</code> instance.
-     * @throws InstantiationException
      */
-    public DESSHA1() throws InstantiationException {
+    public DESSHA1() {
         try {
             md = MessageDigest.getInstance("SHA");
-        } catch (java.security.NoSuchAlgorithmException e) {
-            throw new InstantiationException("No such algorithm: SHA");
+        } catch (final NoSuchAlgorithmException e) {
+            throw new RuntimeException("No such algorithm: SHA");
         }
     }
 
@@ -61,7 +61,7 @@ public class DESSHA1 implements Serializable {
      * @param key passkey, such as password or handshake
      * @return <code>String</code> with the hash in hex string form
      */
-    public String digest(String identifier, String key) {
+    public String digest(final String identifier, final String key) {
         if (identifier != null)
             md.update(identifier.getBytes());
         if (key != null)
@@ -76,12 +76,12 @@ public class DESSHA1 implements Serializable {
      * internally by <code>digest()</code>. Data is returned in
      * the format specified by the Jabber protocol.
      *
-     * @param data
+     * @param data byte data.
      * @return String of our hex bytes
      */
-    public static String bytesToHex(byte[] data) {
+    public static String bytesToHex(final byte[] data) {
 
-        StringBuffer retval = new StringBuffer();
+        final StringBuffer retval = new StringBuffer();
 
         for (int i = 0; i < data.length; i++) {
             retval.append(HEX[(data[i] >> 4) & 0x0F]);

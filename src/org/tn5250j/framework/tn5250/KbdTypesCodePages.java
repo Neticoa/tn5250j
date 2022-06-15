@@ -1,9 +1,9 @@
 package org.tn5250j.framework.tn5250;
 
 /**
- * IBM i 7.1 Information Center > Programmierung > i5/OS globalization > Globalization reference information > Keyboard reference information
+ * IBM i 7.1 Information Center &gt; Programmierung &gt; i5/OS globalization &gt; Globalization reference information
+ *  &gt; Keyboard reference information
  *
- * @see <a href="http://publib.boulder.ibm.com/infocenter/iseries/v7r1m0/index.jsp?topic=/nls/rbagsnatlangkeybrdtype.htm">National language keyboard types and SBCS code pages</a>
  */
 public enum KbdTypesCodePages {
 
@@ -87,14 +87,7 @@ public enum KbdTypesCodePages {
     public final String codepage;
     public final String ccsid;
 
-    /**
-     * @param description
-     * @param kbdType
-     * @param charset
-     * @param codepage
-     * @param ccsid
-     */
-    private KbdTypesCodePages(String description, String kbdType, String charset, String codepage, String ccsid) {
+    private KbdTypesCodePages(final String description, final String kbdType, final String charset, final String codepage, final String ccsid) {
         this.description = description;
         this.kbdType = kbdType;
         this.charset = charset;

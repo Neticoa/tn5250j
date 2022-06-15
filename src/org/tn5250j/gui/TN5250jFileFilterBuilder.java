@@ -32,8 +32,6 @@ public class TN5250jFileFilterBuilder {
     /**
      * Creates a file filter. If no filters are added, then all
      * files are accepted.
-     *
-     * @see #addExtension
      */
     public TN5250jFileFilterBuilder() {
         super();
@@ -43,7 +41,7 @@ public class TN5250jFileFilterBuilder {
      * Creates a file filter that accepts files with the given extension.
      * Example: new TN5250jFileFilter("jpg");
      *
-     * @see #addExtension
+     * @param extension file name extension.
      */
     public TN5250jFileFilterBuilder(final String extension) {
         this(extension, null);
@@ -56,7 +54,8 @@ public class TN5250jFileFilterBuilder {
      * Note that the "." before the extension is not needed. If
      * provided, it will be ignored.
      *
-     * @see #addExtension
+     * @param extension file name extension.
+     * @param description file type description.
      */
     public TN5250jFileFilterBuilder(final String extension, final String description) {
         this();
@@ -73,7 +72,7 @@ public class TN5250jFileFilterBuilder {
      * Note that the "." before the extension is not needed adn
      * will be ignored.
      *
-     * @see #addExtension
+     * @param filters array of extensions to filter.
      */
     public TN5250jFileFilterBuilder(final String[] filters) {
         this(filters, null);
@@ -85,7 +84,8 @@ public class TN5250jFileFilterBuilder {
      *
      * Note that the "." before the extension is not needed and will be ignored.
      *
-     * @see #addExtension
+     * @param filters array of extensions to filter.
+     * @param description file type description.
      */
     public TN5250jFileFilterBuilder(final String[] filters, final String description) {
         this();
@@ -98,10 +98,8 @@ public class TN5250jFileFilterBuilder {
     }
 
     /**
-     * Return the extension portion of the file's name .
-     *
-     * @see #getExtension
-     * @see FileFilter#accept
+     * @param f file to get extension.
+     * @return the extension portion of the file's name .
      */
     public String getExtension(final File f) {
         if (f != null) {
@@ -132,6 +130,7 @@ public class TN5250jFileFilterBuilder {
      *   filter.addExtension("tif");
      *
      * Note that the "." before the extension is not needed and will be ignored.
+     * @param extension file name extension.
      */
     public void addExtension(final String extension) {
         filters.add(extension.toLowerCase());
@@ -140,13 +139,13 @@ public class TN5250jFileFilterBuilder {
 
 
     /**
-     * Returns the human readable description of this filter. For
-     * example: "JPEG and GIF Image Files (*.jpg, *.gif)"
-     *
      * @see setDescription
      * @see setExtensionListInDescription
      * @see isExtensionListInDescription
-     * @see FileFilter#getDescription
+     * @see javafx.stage.FileChooser.ExtensionFilter#getDescription
+     *
+     * @return the human readable description of this filter. For
+     * example: "JPEG and GIF Image Files (*.jpg, *.gif)"
      */
     public String getDescription() {
         if (fullDescription == null) {
@@ -173,6 +172,8 @@ public class TN5250jFileFilterBuilder {
      * @see setDescription
      * @see setExtensionListInDescription
      * @see isExtensionListInDescription
+     *
+     * @param description file type description.
      */
     public void setDescription(final String description) {
         this.description = description;
@@ -189,6 +190,8 @@ public class TN5250jFileFilterBuilder {
      * @see getDescription
      * @see setDescription
      * @see isExtensionListInDescription
+     *
+     * @param b whether or not should add extension list into description.
      */
     public void setExtensionListInDescription(final boolean b) {
         useExtensionsInDescription = b;
@@ -205,6 +208,8 @@ public class TN5250jFileFilterBuilder {
      * @see getDescription
      * @see setDescription
      * @see setExtensionListInDescription
+     *
+     * @return true if should add extension list into description.
      */
     public boolean isExtensionListInDescription() {
         return useExtensionsInDescription;
@@ -213,6 +218,8 @@ public class TN5250jFileFilterBuilder {
     /**
      * Set the extension to be used for this type if one is not provided
      *    This will append the first key of the filter contained in the list
+     * @param f file to add its extension to filter.
+     * @return extension.
      */
     public String setExtension(final File f) {
 

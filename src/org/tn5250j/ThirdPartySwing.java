@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public @interface ThirdPartySwing {

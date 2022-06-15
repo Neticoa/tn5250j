@@ -14,26 +14,29 @@ package org.tn5250j.gui;
 =====================================================================
 */
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Vector;
 
-public class ColumnComparator implements Comparator {
+public class ColumnComparator implements Comparator<Object> {
     protected int index;
     protected boolean ascending;
 
-    public ColumnComparator(int index, boolean ascending) {
+    public ColumnComparator(final int index, final boolean ascending) {
         this.index = index;
         this.ascending = ascending;
     }
 
-    public int compare(Object one, Object two) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public int compare(final Object one, final Object two) {
         if (one instanceof Vector && two instanceof Vector) {
-            Vector vOne = (Vector) one;
-            Vector vTwo = (Vector) two;
-            Object oOne = vOne.elementAt(index);
-            Object oTwo = vTwo.elementAt(index);
+            final Vector<?> vOne = (Vector<?>) one;
+            final Vector<?> vTwo = (Vector<?>) two;
+            final Object oOne = vOne.elementAt(index);
+            final Object oTwo = vTwo.elementAt(index);
             if (oOne instanceof Comparable && oTwo instanceof Comparable) {
-                Comparable cOne = (Comparable) oOne;
-                Comparable cTwo = (Comparable) oTwo;
+                final Comparable<Object> cOne = (Comparable<Object>) oOne;
+                final Comparable<Object> cTwo = (Comparable<Object>) oTwo;
                 if (ascending) {
                     return cOne.compareTo(cTwo);
                 } else {

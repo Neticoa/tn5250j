@@ -34,6 +34,11 @@ import java.io.OutputStream;
 public interface Encoder {
     /**
      * Encode the specified component on the specified stream
+     *
+     * @param component component to encode.
+     * @param stream output stream.
+     * @throws IOException input/output exception.
+     * @throws EncoderException encoding exception.
      */
     public void encode(Object component, OutputStream stream) throws IOException, EncoderException;
 

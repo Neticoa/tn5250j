@@ -69,6 +69,10 @@ public class FTP5250Prot {
 
     /**
      * Set up ftp sockets and connect to an as400
+     *
+     * @param host FTP host.
+     * @param port FTP port.
+     * @return true if successfully connected.
      */
     public boolean connect(final String host, final int port) {
 
@@ -103,7 +107,7 @@ public class FTP5250Prot {
     }
 
     /**
-     * returns whether or not the system is connected to an AS400 or not
+     * @return whether or not the system is connected to an AS400 or not
      */
     public boolean isConnected() {
 
@@ -190,8 +194,9 @@ public class FTP5250Prot {
      *
      * @param user  The user name
      * @param password  The password of the user
+     * @return true if successfully logged in.
      */
-    public boolean login(final String user, final String passWord) {
+    public boolean login(final String user, final String password) {
 
         if (connection == null) {
             printFTPInfo("Not connected to any server!");
@@ -204,7 +209,7 @@ public class FTP5250Prot {
         executeCommand("USER", user);
 
         // send password to server
-        final int resp = executeCommand("PASS", passWord);
+        final int resp = executeCommand("PASS", password);
 
         if (resp == 230) {
             loggedIn = true;
@@ -267,8 +272,8 @@ public class FTP5250Prot {
     }
 
     /**
-     * Returns whether a field is selected for output or not
-     *
+     * @param which field key.
+     * @return whether a field is selected for output or not
      */
     public boolean isFieldSelected(final int which) {
 
@@ -304,7 +309,7 @@ public class FTP5250Prot {
     }
 
     /**
-     * Returns whether there are any fields selected or not
+     * @return whether there are any fields selected or not
      */
     public boolean isFieldsSelected() {
 
@@ -319,6 +324,9 @@ public class FTP5250Prot {
 
     /**
      * Convenience method to select or unselect a field for output
+     *
+     * @param which field key.
+     * @param value field value.
      */
     public void setFieldSelected(final int which, final boolean value) {
 
@@ -329,6 +337,8 @@ public class FTP5250Prot {
 
     /**
      * Convenience method to return the name of a field
+     * @param which field key.
+     * @return field value.
      */
     public String getFieldName(final int which) {
 
@@ -338,7 +348,7 @@ public class FTP5250Prot {
     }
 
     /**
-     * Returns the number of fields in the File Field Definition array of fields
+     * @return the number of fields in the File Field Definition array of fields
      * returned from the DSPFFD command
      */
     public int getNumberOfFields() {
@@ -421,6 +431,10 @@ public class FTP5250Prot {
     /**
      * Retrieves the File Field Definitions and Member information for the remote
      *    file to be transferred
+     *
+     * @param tFile file.
+     * @param useInternal use internal.
+     * @return true if successfully retrieves file info.
      */
     protected boolean getFileInfo(final String tFile, final boolean useInternal) {
 
@@ -597,7 +611,7 @@ public class FTP5250Prot {
     }
 
     /**
-     * @param allowsNullFields
+     * @param allowsNullFields list of allowed null fields.
      */
     protected static void showNullFieldsWarning(final List<String> allowsNullFields) {
         final Alert alert = new Alert(AlertType.WARNING, "", ButtonType.OK);
@@ -627,6 +641,10 @@ public class FTP5250Prot {
 
     /**
      * Executes the command to obtain the member information of the remote file
+     *
+     * @param file file.
+     * @param member member.
+     * @return true if successfully gets member info.
      */
     protected boolean getMbrInfo(final String file, final String member) {
 
@@ -730,6 +748,8 @@ public class FTP5250Prot {
     /**
      * Convenience method to return the file name and member that is being
      *    transferred
+     *  @param tFile file name.
+     *  @return full file name from members info.
      */
     public String getFullFileName(final String tFile) {
 
@@ -775,6 +795,8 @@ public class FTP5250Prot {
     /**
      * Convenience method to return the file size of the file and member that is
      * being transferred
+     *
+     * @return file size.
      */
     public int getFileSize() {
 
@@ -786,18 +808,18 @@ public class FTP5250Prot {
      *
      *    Not used just a test method for me
      */
-    protected boolean printHelp() {
-
+    protected void printHelp() {
         executeCommand("HELP");
-        return true;
     }
 
     /**
      * Transfer the file information to an output file
+     *
+     * @param remoteFile remove file.
+     * @param localFile local file.
+     * @return true if successfully starts file transfer.
      */
     protected boolean getFile(final String remoteFile, final String localFile) {
-
-        final boolean flag = true;
 
         if (connection == null) {
             printFTPInfo("Not connected to any server!");
@@ -884,7 +906,7 @@ public class FTP5250Prot {
         };
 
         AsyncServices.runTask(getRun);
-        return flag;
+        return true;
     }
 
     /**

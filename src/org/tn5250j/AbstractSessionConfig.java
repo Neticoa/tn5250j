@@ -111,8 +111,8 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
      * @deprecated see {@link SessionConfiguration}
+     * @return properties as string map.
      */
     @Deprecated
     public Map<String, String> getProperties() {
@@ -167,8 +167,9 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
      * @deprecated see {@link SessionConfiguration}
+     * @param prop property name.
+     * @return string property with given name.
      */
     @Deprecated
     public String getStringProperty(final String prop) {
@@ -181,8 +182,9 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
      * @deprecated see {@link SessionConfiguration}
+     * @param prop property name.
+     * @return integer property.
      */
     @Deprecated
     public int getIntegerProperty(final String prop) {
@@ -199,8 +201,9 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
      * @deprecated see {@link SessionConfiguration}
+     * @param prop property name.
+     * @return color property.
      */
     @Deprecated
     public Color getColorProperty(final String prop) {
@@ -212,6 +215,10 @@ public abstract class AbstractSessionConfig {
 
     }
 
+    /**
+     * @param key property key.
+     * @return rectangle property.
+     */
     public Rectangle2D getRectangleProperty(final String key) {
         int x = 0;
         int y = 0;
@@ -234,6 +241,10 @@ public abstract class AbstractSessionConfig {
         return new Rectangle2D(x, y, width, height);
     }
 
+    /**
+     * @param key property key.
+     * @param rect rectangle property value.
+     */
     public void setRectangleProperty(final String key, final Rectangle2D rect) {
 
         final String rectStr = round(rect.getMinX()) + "," +
@@ -248,7 +259,8 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
+     * @param prop property key.
+     * @return float property value.
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
@@ -257,8 +269,10 @@ public abstract class AbstractSessionConfig {
     }
 
     /**
-     * @return
      * @deprecated see {@link SessionConfiguration}
+     * @param propertyName property name.
+     * @param defaultValue default value.
+     * @return float property value.
      */
     @Deprecated
     public float getFloatProperty(final String propertyName, final float defaultValue) {
@@ -287,10 +301,19 @@ public abstract class AbstractSessionConfig {
         return keys;
     }
 
+    /**
+     * @param key property key.
+     * @param value property value.
+     * @return pervious value stored by given key.
+     */
     public Object setProperty(final String key, final String value) {
         return sesProps.put(key, value);
     }
 
+    /**
+     * @param key property key.
+     * @return removed value.
+     */
     public Object removeProperty(final String key) {
         return sesProps.remove(key);
     }
@@ -313,10 +336,16 @@ public abstract class AbstractSessionConfig {
         sessionCfglisteners.remove(listener);
     }
 
+    /**
+     * @return session configuration.
+     */
     public SessionConfiguration getConfig() {
         return sessionConfiguration;
     }
 
+    /**
+     * @param keyMnemonics key mnemonics.
+     */
     public void setKeypadMnemonicsAndFireChangeEvent(final KeyMnemonic[] keyMnemonics) {
         final String newValue = keyMnemonicSerializer.serialize(keyMnemonics);
         firePropertyChange(this, CONFIG_KEYPAD_MNEMONICS, getStringProperty(CONFIG_KEYPAD_MNEMONICS), newValue);

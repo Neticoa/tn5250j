@@ -41,7 +41,8 @@ public class Rect {
     }
 
     /**
-     * @param rect
+     * Copies bounds from rectangle.
+     * @param rect rectangle.
      */
     public void setBounds(final Rect rect) {
         setBounds(rect.x, rect.y, rect.width, rect.height);

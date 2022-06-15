@@ -95,7 +95,7 @@ public interface Screen5250Facade {
      * Convenience method to set the field object passed as the currect working
      * screen field
      *
-     * @param screenField
+     * @param screenField screen field.
      * @return true or false whether it was sucessful
      */
     boolean gotoField(final ScreenField screenField);
@@ -118,7 +118,7 @@ public interface Screen5250Facade {
      * If the position change is over the last row and column of the screen then
      * cursor is moved to first position of the screen.
      *
-     * @param i
+     * @param i new position.
      */
     void changePos(int i);
 
@@ -138,7 +138,6 @@ public interface Screen5250Facade {
      * enumeration. See also {@link KeyMnemonic}
      *
      * @param text The string of characters to be sent
-     * @see #sendAid
      */
     void sendKeys(String text);
 
@@ -159,7 +158,7 @@ public interface Screen5250Facade {
     /**
      * Activate the cursor on screen
      *
-     * @param activate
+     * @param activate set active or not.
      */
     void setCursorActive(final boolean activate);
 
@@ -235,9 +234,9 @@ public interface Screen5250Facade {
      * roll. Byte 3: Bits 0-7 Line number defining the bottom line of the area
      * that will participate in the roll.
      *
-     * @param direction
-     * @param topLine
-     * @param bottomLine
+     * @param direction direction.
+     * @param topLine top line.
+     * @param bottomLine bottom line.
      */
     void rollScreen(final int direction, final int topLine, final int bottomLine);
 
@@ -329,15 +328,15 @@ public interface Screen5250Facade {
      * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
      * that use the 1,1 offset
      *
-     * @param row
-     * @param col
+     * @param row row.
+     * @param col column.
      */
     void setCursor(final int row, final int col);
 
     /**
      * Set the error line number to that of number passed.
      *
-     * @param line
+     * @param line error line number.
      */
     void setErrorLine(int line);
 
@@ -387,11 +386,11 @@ public interface Screen5250Facade {
     * or not. If it is then the chgToField parameter will change the current
     * field to this field where the position indicates
     *
-    * @param pos
-    * @param chgToField
+    * @param pos position.
+    * @param chgToField change field to new position.
     * @return true or false
     */
-    boolean isInField(int x, boolean b);
+    boolean isInField(int pos, boolean chgToField);
 
     void setDirty(int pos);
 
@@ -401,7 +400,7 @@ public interface Screen5250Facade {
             final int whichGui, final boolean isAttr);
 
     void writeWindowTitle(int pos, final int depth, final int width,
-            final byte orientation, final int monoAttr, final int colorAttr, final StringBuffer title);
+            final byte orientation, final int colorAttr, final StringBuffer title);
 
     /**
      * Creates a scroll bar on the screen using the parameters provided.
@@ -409,11 +408,11 @@ public interface Screen5250Facade {
      *
      * @param flag -
      *            type to draw - vertical or horizontal
-     * @param totalRowScrollable
-     * @param totalColScrollable
-     * @param sliderRowPos
-     * @param sliderColPos
-     * @param sbSize
+     * @param totalRowScrollable total rows scrollable.
+     * @param totalColScrollable total collumns scrollable.
+     * @param sliderRowPos slider row position.
+     * @param sliderColPos slider column position.
+     * @param sbSize buffer size.
      */
     void createScrollBar(final int flag, final int totalRowScrollable,
             final int totalColScrollable, final int sliderRowPos, final int sliderColPos,
@@ -434,10 +433,10 @@ public interface Screen5250Facade {
     void toggleGUIInterface();
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @param content
-     * @param special
+     * @param content text content.
+     * @param special whether or not is special text.
      */
     void pasteText(final String content, final boolean special);
 
@@ -467,9 +466,9 @@ public interface Screen5250Facade {
      *  extra position for the terminating null character.
      *  <p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param plane
+     * @param buffer character buffer
+     * @param bufferLength buffer length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
      */
 
@@ -486,7 +485,8 @@ public interface Screen5250Facade {
      * will leave them here for now until we work out the interaction.  This
      * should be up to the gui frontend in my opinion.
      *
-     * @param pos
+     * @param pos new cursor position.
+     * @return true if successfully moved.
      */
     boolean moveCursor(int pos);
 
@@ -497,28 +497,28 @@ public interface Screen5250Facade {
      *
      * @param listener  The iOhioSessionListener to be removed
      */
-    void removeOIAListener(ScreenOIAListener guiGraBuf);
+    void removeOIAListener(ScreenOIAListener listener);
 
     /**
      * Remove a ScreenListener from the listener list.
      *
      * @param listener  The ScreenListener to be removed
      */
-    void removeScreenListener(ScreenListener guiGraBuf);
+    void removeScreenListener(ScreenListener listener);
 
     /**
      * Add a ScreenOIAListener to the listener list.
      *
      * @param listener  The ScreenOIAListener to be added
      */
-    void addOIAListener(ScreenOIAListener guiGraBuf);
+    void addOIAListener(ScreenOIAListener listener);
 
     /**
      * Add a ScreenListener to the listener list.
      *
      * @param listener  The ScreenListener to be added
      */
-    void addScreenListener(ScreenListener guiGraBuf);
+    void addScreenListener(ScreenListener listener);
 
     void setOiaScriptActive(boolean b);
     /**
@@ -528,23 +528,27 @@ public interface Screen5250Facade {
     void repaintScreen();
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @param position
-     * @return
+     * @param position text field position.
+     * @return text field.
      */
     String copyTextField(final int position);
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @see {@link #pasteText(String, boolean)}
-     * @see {@link #copyTextField(int)}
+     * @see #pasteText(String, boolean)
+     * @see #copyTextField(int)
+     *
+     * @param workR work rectangle.
+     * @return text of given work rectangle.
      */
     String copyText(final Rect workR);
 
     /**
      * @param formatOption formatting option to use
+     * @param area screen area.
      * @return vector string of numberic values
      */
     List<Double> sumThem(final boolean formatOption, final Rectangle2D area);
@@ -579,13 +583,13 @@ public interface Screen5250Facade {
      * the number of characters copied.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param startRow
-     * @param startCol
-     * @param endRow
-     * @param endCol
-     * @param plane
+     * @param buffer buffer.
+     * @param bufferLength buffer length.
+     * @param startRow start row.
+     * @param startCol start column.
+     * @param endRow end row.
+     * @param endCol end column.
+     * @param plane plane.
      * @return The number characters copied to the buffer
      */
     int GetScreenRect(final char buffer[], final int bufferLength,

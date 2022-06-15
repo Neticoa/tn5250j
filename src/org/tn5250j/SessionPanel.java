@@ -310,8 +310,7 @@ public class SessionPanel extends BorderPane implements SessionGui {
 
     /**
      * This routine allows areas to be bounded by using the keyboard
-     * @param ke
-     * @param last
+     * @param last last key stroke.
      */
     @Override
     public void doKeyBoundArea(final String last) {
@@ -677,17 +676,16 @@ public class SessionPanel extends BorderPane implements SessionGui {
     }
 
     /**
-     * @todo: Change to be mnemonic key.
-     * <p>
      * This toggles the ruler line.
      */
+    //TODO Change to be mnemonic key.
     @Override
     public void crossHair() {
         cursor.shift();
     }
 
     /**
-     * Copy & Paste start code
+     * Copy &amp; Paste start code
      */
     @Override
     public final void actionCopy() {
@@ -849,7 +847,7 @@ public class SessionPanel extends BorderPane implements SessionGui {
     }
 
     /**
-     * @return
+     * @return session name.
      * @see org.tn5250j.Session5250#getSessionName()
      */
     @Override

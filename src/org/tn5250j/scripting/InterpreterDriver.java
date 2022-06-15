@@ -17,30 +17,32 @@ public interface InterpreterDriver {
     /**
      * Execute a script string.
      *
+     * @param gui session GUI.
      * @param script a string to be interpreted
-     * @throws throw a InterpreterDriver.InterpreterException
+     * @throws InterpreterException InterpreterException throw a InterpreterDriver.InterpreterException
      *               which wraps the exception throw by underlying
      *               interpreter
      */
-    public void executeScript(SessionGui session, String script)
+    public void executeScript(SessionGui gui, String script)
             throws InterpreterDriver.InterpreterException;
 
     /**
      * Execute a script file.
      *
-     * @param script a name of file to be interpreted
-     * @throws throw a InterpreterDriver.InterpreterException
+     * @param gui session GUI.
+     * @param scriptFile a name of file to be interpreted
+     * @throws InterpreterException InterpreterException throw a InterpreterDriver.InterpreterException
      *               which wraps the exception throw by underlying
      *               interpreter
      */
-    public void executeScriptFile(SessionGui session, String scriptFile)
+    public void executeScriptFile(SessionGui gui, String scriptFile)
             throws InterpreterDriver.InterpreterException;
 
     /**
      * Execute a script file.
      *
-     * @param script a name of file to be interpreted
-     * @throws throw a InterpreterDriver.InterpreterException
+     * @param scriptFile a name of file to be interpreted
+     * @throws InterpreterException throw a InterpreterDriver.InterpreterException
      *               which wraps the exception throw by underlying
      *               interpreter
      */
@@ -74,7 +76,7 @@ public interface InterpreterDriver {
          *
          * @param ex the underlying exception thrown by the interpreter
          */
-        public InterpreterException(Exception ex) {
+        public InterpreterException(final Exception ex) {
             _underlyingException = ex;
         }
 
@@ -83,6 +85,7 @@ public interface InterpreterDriver {
          *
          * @return string representing the object
          */
+        @Override
         public String toString() {
             return "InterpreterException: underlying exception: "
                     + _underlyingException;

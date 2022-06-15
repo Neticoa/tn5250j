@@ -14,7 +14,7 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class SessionGuiFactory {

@@ -686,7 +686,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
      *
      * If there is no area bounded then the full screen area is returned.
      *
-     * @param bounds
+     * @param workR working rectangle.
+     * @return logical working rectangle.
      */
     public Rect getBoundingArea(final Rectangle2D workR) {
         // get starting row and column

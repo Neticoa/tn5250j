@@ -15,7 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class CursorService {

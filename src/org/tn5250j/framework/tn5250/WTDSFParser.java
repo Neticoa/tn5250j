@@ -189,8 +189,7 @@ public class WTDSFParser {
 //                           System.out.println("   restrict cursor " + cr);
 //                           System.out.println(" Depth = " + rows + " Width = " + cols);
 //                           screen52.createWindow(rows,cols,1,true,32,58,
-                                createWindow(rows, cols, 1, true, 32, 58,
-                                        '.',
+                                createWindow(rows, cols, 1, true, 58, '.',
                                         '.',
                                         '.',
                                         ':',
@@ -298,8 +297,7 @@ public class WTDSFParser {
 //                                                         " lr = " + lr
 //                                                         );
 //                                 screen52.createWindow(rows,cols,type,gui,mAttr,cAttr,
-                                        createWindow(rows, cols, type, gui, mAttr, cAttr,
-                                                ul,
+                                        createWindow(rows, cols, type, gui, cAttr, ul,
                                                 upper,
                                                 ur,
                                                 left,
@@ -333,8 +331,7 @@ public class WTDSFParser {
                                         if (!windowDefined) {
 //                                    screen52.createWindow(rows,cols,1,true,32,58,
                                             guiStructs.add(new Window(segment, screen52.getLastPos()));
-                                            createWindow(rows, cols, 1, true, 32, 58,
-                                                    '.',
+                                            createWindow(rows, cols, 1, true, 58, '.',
                                                     '.',
                                                     '.',
                                                     ':',
@@ -370,7 +367,6 @@ public class WTDSFParser {
                                                 rows,
                                                 cols,
                                                 orientation,
-                                                mAttr,
                                                 cAttr,
                                                 hfBuffer);
                                         break;
@@ -509,24 +505,23 @@ public class WTDSFParser {
     /**
      * Creates a window on the screen
      *
-     * @param depth
-     * @param width
-     * @param type
-     * @param gui
-     * @param monoAttr
-     * @param colorAttr
-     * @param ul
-     * @param upper
-     * @param ur
-     * @param left
-     * @param right
-     * @param ll
-     * @param bottom
-     * @param lr
+     * @param depth depth.
+     * @param width width.
+     * @param type type.
+     * @param upperLeft upper left attribute.
+     * @param colorAttr color attribute.
+     * @param ul upper left.
+     * @param upper upper.
+     * @param ur upper right.
+     * @param left left.
+     * @param right right.
+     * @param ll left left.
+     * @param bottom bottom.
+     * @param lr left right.
      */
-    protected void createWindow(int depth, int width, final int type, final boolean gui,
-                                final int monoAttr, final int colorAttr, final int ul, final int upper, final int ur, final int left,
-                                final int right, final int ll, final int bottom, final int lr) {
+    protected void createWindow(int depth, int width, final int type, final boolean upperLeft,
+                                final int colorAttr, final int ul, final int upper, final int ur, final int left, final int right,
+                                final int ll, final int bottom, final int lr) {
 
         int lastPos = screen52.getLastPos();
         final int numCols = screen52.getColumns();
@@ -543,7 +538,7 @@ public class WTDSFParser {
         screen52.setScreenCharAndAttr(initChar, initAttr, true);
 
         // set upper left
-        if (gui) {
+        if (upperLeft) {
             screen52.setScreenCharAndAttr((char) ul, colorAttr, UPPER_LEFT, false);
         } else {
             screen52.setScreenCharAndAttr((char) ul, colorAttr, false);
@@ -551,7 +546,7 @@ public class WTDSFParser {
 
         // draw top row
         while (w-- >= 0) {
-            if (gui) {
+            if (upperLeft) {
                 screen52.setScreenCharAndAttr((char) upper, colorAttr, UPPER, false);
             } else {
                 screen52.setScreenCharAndAttr((char) upper, colorAttr, false);
@@ -559,7 +554,7 @@ public class WTDSFParser {
         }
 
         // set upper right
-        if (gui) {
+        if (upperLeft) {
             screen52.setScreenCharAndAttr((char) ur, colorAttr, UPPER_RIGHT, false);
         } else {
             screen52.setScreenCharAndAttr((char) ur, colorAttr, false);
@@ -578,7 +573,7 @@ public class WTDSFParser {
             // set leading attribute byte
             screen52.setScreenCharAndAttr(initChar, initAttr, true);
             // set left
-            if (gui) {
+            if (upperLeft) {
                 screen52.setScreenCharAndAttr((char) left, colorAttr, GUI_LEFT, false);
             } else {
                 screen52.setScreenCharAndAttr((char) left, colorAttr, false);
@@ -595,7 +590,7 @@ public class WTDSFParser {
             screen52.setScreenCharAndAttr(initChar, initAttr, NO_GUI, true);
 
             // set right
-            if (gui) {
+            if (upperLeft) {
                 screen52.setScreenCharAndAttr((char) right, colorAttr, GUI_RIGHT, false);
 
             } else {
@@ -611,7 +606,7 @@ public class WTDSFParser {
 
         // set leading attribute byte
         screen52.setScreenCharAndAttr(initChar, initAttr, true);
-        if (gui) {
+        if (upperLeft) {
             screen52.setScreenCharAndAttr((char) ll, colorAttr, LOWER_LEFT, false);
 
         } else {
@@ -622,7 +617,7 @@ public class WTDSFParser {
 
         // draw bottom row
         while (w-- >= 0) {
-            if (gui) {
+            if (upperLeft) {
                 screen52.setScreenCharAndAttr((char) bottom, colorAttr, BOTTOM, false);
             } else {
                 screen52.setScreenCharAndAttr((char) bottom, colorAttr, false);
@@ -631,7 +626,7 @@ public class WTDSFParser {
         }
 
         // set lower right
-        if (gui) {
+        if (upperLeft) {
             screen52.setScreenCharAndAttr((char) lr, colorAttr, LOWER_RIGHT, false);
         } else {
             screen52.setScreenCharAndAttr((char) lr, colorAttr, false);

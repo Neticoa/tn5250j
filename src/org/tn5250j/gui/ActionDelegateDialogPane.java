@@ -12,7 +12,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class ActionDelegateDialogPane<T> extends DialogPane {

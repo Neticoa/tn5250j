@@ -6,7 +6,7 @@ package org.tn5250j.connectdialog;
 import javafx.scene.control.ListCell;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 class MnemonicListViewItem extends ListCell<MnemonicItem> {

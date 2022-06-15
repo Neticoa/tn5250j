@@ -26,6 +26,7 @@
 package org.tn5250j.tools.encoder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -50,6 +51,8 @@ public class EncodeComponent {
      * @param component component to encode
      * @param encoding type of encoding to use (Currently GIF or PNG)
      * @param output stream to which to write the encoding
+     * @throws IOException input/output exception.
+     * @throws EncoderException encoding exception.
      */
     public static void encode(final Encoding encoding, final Object component, final OutputStream output) throws IOException, EncoderException {
         final Encoder encoder = encoding.getEncoder();
@@ -66,9 +69,11 @@ public class EncodeComponent {
      * @param encoding type of encoding to use (GIF, PNG, JPEG, EPS, PS, PDF,
      * or PCL)
      * @param file file to which to write the encoding
+     * @throws IOException input/output exception.
+     * @throws EncoderException encoding exception.
      */
     public static void encode(final Encoding encoding, final Object component, final File file) throws IOException, EncoderException {
-        final OutputStream os = new java.io.FileOutputStream(file);
+        final OutputStream os = new FileOutputStream(file);
         try {
             encode(encoding, component, os);
         } finally {
@@ -89,6 +94,11 @@ public class EncodeComponent {
 
         /**
          * Constructs and new image encoder.
+         *
+         * @param short_name short name.
+         * @param long_name long name.
+         * @param encoder_class encoder class.
+         * @param failure_message failure message.
          */
         public Encoding(final String short_name, final String long_name,
                         final String encoder_class, final String failure_message) {
@@ -99,21 +109,21 @@ public class EncodeComponent {
         }
 
         /**
-         * Return the short brief name of the supported encoding type
+         * @return the short brief name of the supported encoding type
          */
         public String getShortName() {
             return shortName;
         }
 
         /**
-         * Return the long name of the supported encoding type
+         * @return the long name of the supported encoding type
          */
         public String getLongName() {
             return longName;
         }
 
         /**
-         * Returns a string representation bassed on the long and short name of the
+         * @return a string representation bassed on the long and short name of the
          * Encoder.
          */
         @Override
@@ -122,7 +132,7 @@ public class EncodeComponent {
         }
 
         /**
-         * Message to return about possible reasons for encoder load
+         * @return Message about possible reasons for encoder load
          * failure (i.e. getEncoder() returns null)
          */
         public String getFailureMessage() {

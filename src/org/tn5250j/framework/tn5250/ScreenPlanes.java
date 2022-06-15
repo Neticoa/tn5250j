@@ -25,9 +25,57 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import static org.tn5250j.TN5250jConstants.*;
-
-import java.util.Properties;
+import static org.tn5250j.TN5250jConstants.ATTR_32;
+import static org.tn5250j.TN5250jConstants.ATTR_33;
+import static org.tn5250j.TN5250jConstants.ATTR_34;
+import static org.tn5250j.TN5250jConstants.ATTR_35;
+import static org.tn5250j.TN5250jConstants.ATTR_36;
+import static org.tn5250j.TN5250jConstants.ATTR_37;
+import static org.tn5250j.TN5250jConstants.ATTR_38;
+import static org.tn5250j.TN5250jConstants.ATTR_40;
+import static org.tn5250j.TN5250jConstants.ATTR_41;
+import static org.tn5250j.TN5250jConstants.ATTR_44;
+import static org.tn5250j.TN5250jConstants.ATTR_45;
+import static org.tn5250j.TN5250jConstants.ATTR_48;
+import static org.tn5250j.TN5250jConstants.ATTR_49;
+import static org.tn5250j.TN5250jConstants.ATTR_50;
+import static org.tn5250j.TN5250jConstants.ATTR_51;
+import static org.tn5250j.TN5250jConstants.ATTR_52;
+import static org.tn5250j.TN5250jConstants.ATTR_53;
+import static org.tn5250j.TN5250jConstants.ATTR_54;
+import static org.tn5250j.TN5250jConstants.ATTR_56;
+import static org.tn5250j.TN5250jConstants.ATTR_57;
+import static org.tn5250j.TN5250jConstants.ATTR_58;
+import static org.tn5250j.TN5250jConstants.ATTR_59;
+import static org.tn5250j.TN5250jConstants.ATTR_60;
+import static org.tn5250j.TN5250jConstants.ATTR_61;
+import static org.tn5250j.TN5250jConstants.ATTR_62;
+import static org.tn5250j.TN5250jConstants.BUTTON_LEFT;
+import static org.tn5250j.TN5250jConstants.BUTTON_LEFT_DN;
+import static org.tn5250j.TN5250jConstants.BUTTON_LEFT_EB;
+import static org.tn5250j.TN5250jConstants.BUTTON_LEFT_UP;
+import static org.tn5250j.TN5250jConstants.BUTTON_MIDDLE;
+import static org.tn5250j.TN5250jConstants.BUTTON_MIDDLE_DN;
+import static org.tn5250j.TN5250jConstants.BUTTON_MIDDLE_EB;
+import static org.tn5250j.TN5250jConstants.BUTTON_MIDDLE_UP;
+import static org.tn5250j.TN5250jConstants.BUTTON_RIGHT;
+import static org.tn5250j.TN5250jConstants.BUTTON_RIGHT_DN;
+import static org.tn5250j.TN5250jConstants.BUTTON_RIGHT_EB;
+import static org.tn5250j.TN5250jConstants.BUTTON_RIGHT_UP;
+import static org.tn5250j.TN5250jConstants.COLOR_BG_BLACK;
+import static org.tn5250j.TN5250jConstants.COLOR_FG_GREEN;
+import static org.tn5250j.TN5250jConstants.COLOR_FG_YELLOW;
+import static org.tn5250j.TN5250jConstants.EXTENDED_5250_COL_SEP;
+import static org.tn5250j.TN5250jConstants.EXTENDED_5250_NON_DSP;
+import static org.tn5250j.TN5250jConstants.EXTENDED_5250_UNDERLINE;
+import static org.tn5250j.TN5250jConstants.NO_GUI;
+import static org.tn5250j.TN5250jConstants.PLANE_ATTR;
+import static org.tn5250j.TN5250jConstants.PLANE_COLOR;
+import static org.tn5250j.TN5250jConstants.PLANE_EXTENDED;
+import static org.tn5250j.TN5250jConstants.PLANE_EXTENDED_GRAPHIC;
+import static org.tn5250j.TN5250jConstants.PLANE_FIELD;
+import static org.tn5250j.TN5250jConstants.PLANE_IS_ATTR_PLACE;
+import static org.tn5250j.TN5250jConstants.PLANE_TEXT;
 
 import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.connectdialog.ExternalProgram;
@@ -60,13 +108,13 @@ public class ScreenPlanes {
     private char[] errorLineIsAttr;
     private char[] errorLineGui;
 
-    public ScreenPlanes(Screen5250Facade s5250, int size) {
+    public ScreenPlanes(final Screen5250Facade s5250, final int size) {
 
         scr = s5250;
         setSize(size);
     }
 
-    protected void setSize(int newSize) {
+    protected void setSize(final int newSize) {
 
         screenSize = newSize;
 
@@ -101,7 +149,7 @@ public class ScreenPlanes {
         initalizePlanes();
     }
 
-    protected void setErrorLine(int line) {
+    protected void setErrorLine(final int line) {
 
         // * NOTE * for developers I have changed the send qry to pass different
         //    parameters to the host so check setsize for setting error line as well.
@@ -132,7 +180,7 @@ public class ScreenPlanes {
             errorLineIsAttr = new char[numCols];
             errorLineGui = new char[numCols];
 
-            int r = scr.getPos(errorLineNum - 1, 0);
+            final int r = scr.getPos(errorLineNum - 1, 0);
 
             for (int x = 0; x < numCols; x++) {
                 errorLine[x] = screen[r + x];
@@ -151,7 +199,7 @@ public class ScreenPlanes {
     protected void restoreErrorLine() {
 
         if (errorLine != null) {
-            int r = scr.getPos(errorLineNum - 1, 0);
+            final int r = scr.getPos(errorLineNum - 1, 0);
 
             for (int x = 0; x < numCols - 1; x++) {
                 setScreenCharAndAttr(r + x, errorLine[x], errorLineAttr[x],
@@ -170,7 +218,7 @@ public class ScreenPlanes {
         return errorLine == null ? false : true;
     }
 
-    protected void setScreenCharAndAttr(int pos, char c, int attr, boolean isAttr) {
+    protected void setScreenCharAndAttr(final int pos, final char c, final int attr, final boolean isAttr) {
 
         screen[pos] = c;
         screenAttr[pos] = (char) attr;
@@ -180,7 +228,7 @@ public class ScreenPlanes {
 
     }
 
-    protected void setScreenAttr(int pos, int attr, boolean isAttr) {
+    protected void setScreenAttr(final int pos, final int attr, final boolean isAttr) {
 
         screenAttr[pos] = (char) attr;
         screenIsAttr[pos] = isAttr ? (char) 1 : (char) 0;
@@ -189,7 +237,7 @@ public class ScreenPlanes {
 
     }
 
-    protected void setScreenAttr(int pos, int attr) {
+    protected void setScreenAttr(final int pos, final int attr) {
 
         screenAttr[pos] = (char) attr;
         //screenGUI[pos] = initChar;
@@ -197,13 +245,13 @@ public class ScreenPlanes {
 
     }
 
-    protected void setScreenFieldAttr(int pos, int attr) {
+    protected void setScreenFieldAttr(final int pos, final int attr) {
 
         screenField[pos] = (char) attr;
 
     }
 
-    protected final void setChar(int pos, char c) {
+    protected final void setChar(final int pos, final char c) {
         screenIsChanged[pos] = screen[pos] == c ? '0' : '1';
         screen[pos] = c;
         if (screenIsAttr[pos] == 1)
@@ -211,25 +259,25 @@ public class ScreenPlanes {
 
     }
 
-    protected final char getChar(int pos) {
+    protected final char getChar(final int pos) {
         return screen[pos];
     }
 
-    protected final int getCharAttr(int pos) {
+    protected final int getCharAttr(final int pos) {
         return screenAttr[pos];
     }
 
-    protected final boolean isAttributePlace(int pos) {
+    protected final boolean isAttributePlace(final int pos) {
         return screenIsAttr[pos] == 1 ? true : false;
     }
 
-    public final void setUseGUI(int pos, int which) {
+    public final void setUseGUI(final int pos, final int which) {
 
         screenIsChanged[pos] = screenGUI[pos] == which ? '0' : '1';
         screenGUI[pos] = (char) which;
     }
 
-    private void disperseAttribute(int pos, int attr) {
+    private void disperseAttribute(final int pos, final int attr) {
 
         char c = 0;
         char cs = 0;
@@ -390,7 +438,7 @@ public class ScreenPlanes {
 
     protected void initalizePlanes() {
 
-        char c = (COLOR_BG_BLACK << 8 & 0xff00) |
+        final char c = (COLOR_BG_BLACK << 8 & 0xff00) |
                 (COLOR_FG_GREEN & 0xff);
 
         for (int y = 0; y < screenSize; y++) {
@@ -416,16 +464,16 @@ public class ScreenPlanes {
         System.arraycopy(initArray, 0, screenField, 0, screenSize);
     }
 
-    protected final int getWhichGUI(int pos) {
+    protected final int getWhichGUI(final int pos) {
 
         return screenGUI[pos];
     }
 
-    protected final boolean isChanged(int pos) {
+    protected final boolean isChanged(final int pos) {
         return screenIsChanged[pos] == 0 ? false : true;
     }
 
-    protected final boolean isUseGui(int pos) {
+    protected final boolean isUseGui(final int pos) {
         return screenGUI[pos] == NO_GUI ? false : true;
     }
 
@@ -437,11 +485,11 @@ public class ScreenPlanes {
      * @param plane From which plane to obtain the data
      * @return Character array containing the data requested
      */
-    protected synchronized char[] getPlaneData(int from, int to, int plane) {
+    protected synchronized char[] getPlaneData(final int from, final int to, final int plane) {
 
-        int len = (to - from);
+        final int len = (to - from);
 
-        char[] planeChars = new char[len + 1];
+        final char[] planeChars = new char[len + 1];
 
         switch (plane) {
             case PLANE_TEXT:
@@ -479,7 +527,7 @@ public class ScreenPlanes {
      * @param pos The position to be converted
      * @return The row which corresponds to the position given
      */
-    private int convertPosToRow(int pos) {
+    private int convertPosToRow(final int pos) {
         return (pos / numCols) + 1;
     }
 
@@ -489,7 +537,7 @@ public class ScreenPlanes {
      * @param pos The position to be converted
      * @return The column which corresponds to the position given
      */
-    private int convertPosToColumn(int pos) {
+    private int convertPosToColumn(final int pos) {
         return (pos % numCols) + 1;
     }
 
@@ -501,10 +549,9 @@ public class ScreenPlanes {
      * @param col - The column of the coordinate
      * @return The linear position which corresponds to the coordinate given.
      */
-    private int convertRowColToPos(int row, int col) {
+    private int convertRowColToPos(final int row, final int col) {
         return (row - 1) * numCols + col - 1;
     }
-
 
     /**
      * <p>
@@ -522,12 +569,12 @@ public class ScreenPlanes {
      *  extra position for the terminating null character.
      *  <p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
      */
-    public synchronized int GetScreen(char buffer[], int bufferLength, int plane) {
+    public synchronized int GetScreen(final char buffer[], final int bufferLength, final int plane) {
         return GetScreen(buffer, bufferLength, 0, screenSize, plane);
     }
 
@@ -547,16 +594,15 @@ public class ScreenPlanes {
      * the buffer must include one extra position for the terminating null character.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param from
-     * @param length
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param from from position.
+     * @param length data length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
-     * @throws OhioException
      */
-    public synchronized int GetScreen(char buffer[], int bufferLength, int from,
-                                      int length, int plane) {
+    public synchronized int GetScreen(final char buffer[], final int bufferLength, final int from,
+                                      final int length, final int plane) {
         //      if(buffer == null)
         //         throw new OhioException(sessionVT.getSessionConfiguration(),
         //                     OhioScreen.class.getName(), "osohio.screen.ohio00300", 1);
@@ -568,7 +614,7 @@ public class ScreenPlanes {
             min = screenSize - from;
         }
 
-        char[] pd = getPlaneData(from, from + min, plane);
+        final char[] pd = getPlaneData(from, from + min, plane);
         if (pd != null) {
             System.arraycopy(pd, 0, buffer, 0, min);
             return pd.length;
@@ -594,17 +640,16 @@ public class ScreenPlanes {
      *  character.
      *  </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param row
-     * @param col
-     * @param length
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param row row.
+     * @param col column.
+     * @param length data length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer.
-     * @throws OhioException
      */
-    public synchronized int GetScreen(char buffer[], int bufferLength, int row,
-                                      int col, int length, int plane)
+    public synchronized int GetScreen(final char buffer[], final int bufferLength, final int row,
+                                      final int col, final int length, final int plane)
     //                                       throws OhioException {
     {
         // Call GetScreen function after converting row and column to
@@ -635,26 +680,25 @@ public class ScreenPlanes {
      * the number of characters copied.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param startPos
-     * @param endPos
-     * @param plane
+     * @param buffer buffer.
+     * @param bufferLength buffer length.
+     * @param startPos start position.
+     * @param endPos end position.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
-     * @throws OhioException
      */
-    protected int GetScreenRect(char buffer[], int bufferLength,
-                                int startPos, int endPos, int plane)
+    protected int GetScreenRect(final char buffer[], final int bufferLength,
+                                final int startPos, final int endPos, final int plane)
     //                                             throws OhioException {
     {
         // We will use the row,col routine here because it is easier to use
         // row colum than it is for position since I wrote the other first and
         // am to lazy to implement it here
         // Maybe it would be faster to do it the other way?
-        int startRow = convertPosToRow(startPos);
-        int startCol = convertPosToColumn(startPos);
-        int endRow = convertPosToRow(endPos);
-        int endCol = convertPosToColumn(endPos);
+        final int startRow = convertPosToRow(startPos);
+        final int startCol = convertPosToColumn(startPos);
+        final int endRow = convertPosToRow(endPos);
+        final int endCol = convertPosToColumn(endPos);
         return GetScreenRect(buffer, bufferLength, startRow, startCol,
                 endRow, endCol, plane);
 
@@ -682,19 +726,18 @@ public class ScreenPlanes {
      * the number of characters copied.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param startRow
-     * @param startCol
-     * @param endRow
-     * @param endCol
-     * @param plane
+     * @param buffer buffer.
+     * @param bufferLength buffer length.
+     * @param startRow start row.
+     * @param startCol start column.
+     * @param endRow end row.
+     * @param endCol end column.
+     * @param plane plane.
      * @return The number characters copied to the buffer
-     * @throws OhioException
      */
-    protected int GetScreenRect(char buffer[], int bufferLength,
+    protected int GetScreenRect(final char buffer[], final int bufferLength,
                                 int startRow, int startCol,
-                                int endRow, int endCol, int plane)
+                                int endRow, int endCol, final int plane)
     //                                             throws OhioException {
     {
         // number of bytes obtained
@@ -703,19 +746,19 @@ public class ScreenPlanes {
         // lets check the row range.  If they are reversed then we need to
         // place them in the correct order.
         if (startRow > endRow) {
-            int r = startRow;
+            final int r = startRow;
             startRow = endRow;
             endRow = r;
         }
         // lets check the column range.  If they are reversed then we need to
         // place them in the correct order.
         if (startCol > endCol) {
-            int c = startCol;
+            final int c = startCol;
             startCol = endCol;
             endCol = c;
         }
-        int numCols = (endCol - startCol) + 1;
-        int numRows = (endRow - startRow) + 1;
+        final int numCols = (endCol - startCol) + 1;
+        final int numRows = (endRow - startRow) + 1;
 
         // lets make sure it is within the bounds of the character array passed
         //  if not the return as zero bytes where read as per documentation.
@@ -724,7 +767,7 @@ public class ScreenPlanes {
             // make sure it is one larger.  I guess for other languanges to
             // reference like in C which is terminated by a zero byte at the end
             // of strings.
-            char cb[] = new char[numCols + 1];
+            final char cb[] = new char[numCols + 1];
             int charOffset = 0;
             int bytes = 0;
 
@@ -747,12 +790,12 @@ public class ScreenPlanes {
 
     protected boolean checkHotSpots() {
 
-        Screen5250Facade s = scr;
-        int lenScreen = scr.getScreenLength();
+        final Screen5250Facade s = scr;
+        final int lenScreen = scr.getScreenLength();
         boolean hs = false;
         boolean retHS = false;
-        StringBuffer hsMore = s.getHSMore();
-        StringBuffer hsBottom = s.getHSBottom();
+        final StringBuffer hsMore = s.getHSMore();
+        final StringBuffer hsBottom = s.getHSBottom();
 
         for (int x = 0; x < lenScreen; x++) {
 
@@ -782,7 +825,7 @@ public class ScreenPlanes {
                         screenGUI[x] = BUTTON_LEFT;
 
                         int ns = 0;
-                        int row = x / numCols;
+                        final int row = x / numCols;
                         while (ns < 2 && ++x / numCols == row) {
                             if (screen[x] <= ' ')
                                 ns++;
@@ -817,7 +860,7 @@ public class ScreenPlanes {
 
                     int stop = x;
                     int ns = 0;
-                    int row = stop / numCols;
+                    final int row = stop / numCols;
 
                     while (++stop / numCols == row &&
                             (screen[stop] >= ' ' ||
@@ -874,7 +917,7 @@ public class ScreenPlanes {
 
                     int stop = x;
                     int ns = 0;
-                    int row = stop / numCols;
+                    final int row = stop / numCols;
 
                     while (++stop / numCols == row &&
                             screen[stop] >= ' ') {
@@ -1063,8 +1106,8 @@ public class ScreenPlanes {
                     screenGUI[x] == NO_GUI &&
                     (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
             ) {
-                for (ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
-                    String program = p.getName();
+                for (final ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
+                    final String program = p.getName();
                     String key = "";
                     if (x + program.length() >= screen.length) break;
                     for (int j = 0; j <= program.length(); j++) {
@@ -1090,12 +1133,12 @@ public class ScreenPlanes {
         return retHS;
     }
 
-    private int isOption(char[] screen,
-                         int x,
-                         int lenScreen,
-                         int numPref,
-                         int numSuff,
-                         char suff) {
+    private int isOption(final char[] screen,
+                         final int x,
+                         final int lenScreen,
+                         final int numPref,
+                         final int numSuff,
+                         final char suff) {
         boolean hs = true;
         int sp = x;
         int os = 0;

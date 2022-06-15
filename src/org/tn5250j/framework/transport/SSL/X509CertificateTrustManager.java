@@ -39,9 +39,9 @@ import org.tn5250j.gui.UiUtils;
  * can be made without requiring the server to have a certificate signed by a
  * CA (Verisign, Thawte, etc.).
  *
- * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
- * @deprecated. no longer used.
+ * @author Stephen M. Kennedy &lt;skennedy@tenthpowertech.com&gt;
  */
+@Deprecated
 public class X509CertificateTrustManager implements X509TrustManager {
 
     KeyStore ks = null;

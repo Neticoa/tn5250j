@@ -28,7 +28,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Simple data model representing rows within the {@link SessionsTableModel}.
+ * Simple data model representing rows within the table.
  */
 public class SessionsDataModel {
     private final SimpleStringProperty name = new SimpleStringProperty(this, "name");

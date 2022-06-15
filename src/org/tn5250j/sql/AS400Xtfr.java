@@ -49,11 +49,9 @@ import org.tn5250j.tools.filters.OutputFilterInterface;
 
 public class AS400Xtfr {
 
-    private boolean loggedIn;
     private String hostName;
-    private int timeout = 50000;
     private boolean connected;
-    private ArrayList ffd;
+    private ArrayList<FileFieldDef> ffd;
     private tnvt vt;
     private Vector<FTPStatusListener> listeners;
     private FTPStatusEvent status;
@@ -65,28 +63,30 @@ public class AS400Xtfr {
     private String pass;
     private Connection connection;
 
-    public AS400Xtfr(tnvt v) {
+    public AS400Xtfr(final tnvt v) {
         vt = v;
         status = new FTPStatusEvent(this);
         // obtain the decimal separator for the machine locale
-        DecimalFormat formatter =
+        final DecimalFormat formatter =
                 (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
         decChar = formatter.getDecimalFormatSymbols().getDecimalSeparator();
     }
 
-    public void setOutputFilter(OutputFilterInterface o) {
+    public void setOutputFilter(final OutputFilterInterface o) {
         ofi = o;
     }
 
-    public void setDecimalChar(char dec) {
+    public void setDecimalChar(final char dec) {
         decChar = dec;
     }
 
     /**
      * Set up ftp sockets and connect to an as400
+     * @param host FTP host.
+     * @return true if successfully connected, false otherwise.
      */
-    public boolean connect(String host) {
+    public boolean connect(final String host) {
 
         connection = null;
         hostName = host.toUpperCase();
@@ -94,7 +94,7 @@ public class AS400Xtfr {
         try {
             printFTPInfo("Connecting to " + hostName);
 
-            Driver driver2 = (Driver) Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
+            final Driver driver2 = (Driver) Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
             DriverManager.registerDriver(driver2);
 
             // Get a connection to the database.  Since we do not
@@ -115,10 +115,10 @@ public class AS400Xtfr {
             fireInfoEvent();
             printFTPInfo("Connected to " + hostName);
             return true;
-        } catch (NoClassDefFoundError ncdf) {
+        } catch (final NoClassDefFoundError ncdf) {
             printFTPInfo("Error: JDBC Driver not found.  Please check classpath.");
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
 //         JOptionPane.showMessageDialog(this,
 //                           "Error: " + e.getMessage() + "\n\n" +
 //                           "There was an error connecting to host "
@@ -155,7 +155,7 @@ public class AS400Xtfr {
     }
 
     /**
-     * returns whether or not the system is connected to an AS400 or not
+     * @return whether or not the system is connected to an AS400 or not
      */
     public boolean isConnected() {
 
@@ -167,7 +167,7 @@ public class AS400Xtfr {
      *
      * @param listener  The FTPStatusListener to be added
      */
-    public synchronized void addFTPStatusListener(FTPStatusListener listener) {
+    public synchronized void addFTPStatusListener(final FTPStatusListener listener) {
 
         if (listeners == null) {
             listeners = new java.util.Vector<FTPStatusListener>(3);
@@ -183,9 +183,9 @@ public class AS400Xtfr {
     private void fireStatusEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.statusReceived(status);
             }
@@ -199,9 +199,9 @@ public class AS400Xtfr {
     private void fireCommandEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.commandStatusReceived(status);
             }
@@ -215,9 +215,9 @@ public class AS400Xtfr {
     private void fireInfoEvent() {
 
         if (listeners != null) {
-            int size = listeners.size();
+            final int size = listeners.size();
             for (int i = 0; i < size; i++) {
-                FTPStatusListener target =
+                final FTPStatusListener target =
                         listeners.elementAt(i);
                 target.fileInfoReceived(status);
             }
@@ -229,7 +229,7 @@ public class AS400Xtfr {
      *
      * @param listener  The FTPStatusListener to be removed
      */
-    public synchronized void removeFTPStatusListener(FTPStatusListener listener) {
+    public synchronized void removeFTPStatusListener(final FTPStatusListener listener) {
         if (listeners == null) {
             return;
         }
@@ -242,25 +242,25 @@ public class AS400Xtfr {
      *
      * @param user  The user name
      * @param password  The password of the user
+     * @return true if successfully logged in, false otherwise.
      */
-    public boolean login(String user, String passWord) {
+    public boolean login(final String user, final String password) {
 
         aborted = false;
-        loggedIn = true;
 
         this.user = user;
-        this.pass = passWord;
+        this.pass = password;
 
         return true;
     }
 
     /**
-     * Returns whether a field is selected for output or not
-     *
+     * @param which field key.
+     * @return whether a field is selected for output or not
      */
-    public boolean isFieldSelected(int which) {
+    public boolean isFieldSelected(final int which) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         return ffD.isWriteField();
 
     }
@@ -272,7 +272,7 @@ public class AS400Xtfr {
 
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             f.setWriteField(true);
         }
 
@@ -285,20 +285,20 @@ public class AS400Xtfr {
     protected void selectNone() {
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             f.setWriteField(false);
         }
 
     }
 
     /**
-     * Returns whether there are any fields selected or not
+     * @return whether there are any fields selected or not
      */
     public boolean isFieldsSelected() {
 
         FileFieldDef f;
         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef) ffd.get(x);
+            f = ffd.get(x);
             if (f.isWriteField())
                 return true;
         }
@@ -307,26 +307,31 @@ public class AS400Xtfr {
 
     /**
      * Convenience method to select or unselect a field for output
+     *
+     * @param which field key.
+     * @param value field value.
      */
-    public void setFieldSelected(int which, boolean value) {
+    public void setFieldSelected(final int which, final boolean value) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         ffD.setWriteField(value);
 
     }
 
     /**
      * Convenience method to return the name of a field
+     * @param which field key.
+     * @return field key.
      */
-    public String getFieldName(int which) {
+    public String getFieldName(final int which) {
 
-        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        final FileFieldDef ffD = ffd.get(which);
         return ffD.getFieldName();
 
     }
 
     /**
-     * Returns the number of fields in the File Field Definition array of fields
+     * @return the number of fields in the File Field Definition array of fields
      * returned from the DSPFFD command
      */
     public int getNumberOfFields() {
@@ -336,11 +341,15 @@ public class AS400Xtfr {
 
     /**
      * Transfer the file information to an output file
+     *
+     * @param remoteFile remove file.
+     * @param localFile local file.
+     * @param statement statement.
+     * @param useInternal user internal flag.
+     * @return true if successfully launch get file operation, false otherwise.
      */
-    public boolean getFile(String remoteFile, String localFile, String statement,
-                           boolean useInternal) {
-
-        boolean flag = true;
+    public boolean getFile(final String remoteFile, final String localFile, final String statement,
+                           final boolean useInternal) {
 
         if (connection == null) {
             printFTPInfo("Not connected to any server!");
@@ -349,27 +358,26 @@ public class AS400Xtfr {
 
         final String localFileF = localFile;
         final String query = statement;
-        final boolean internal = useInternal;
 
-
-        Runnable getRun = new Runnable() {
+        final Runnable getRun = new Runnable() {
 
             // set the thread to run.
+            @Override
             public void run() {
                 try {
 
-                    DatabaseMetaData dmd = connection.getMetaData();
+                    final DatabaseMetaData dmd = connection.getMetaData();
 
                     // Execute the query.
-                    Statement select = connection.createStatement();
+                    final Statement select = connection.createStatement();
 
-                    ResultSet rs = select.executeQuery(query);
-                    ResultSetMetaData rsmd = rs.getMetaData();
+                    final ResultSet rs = select.executeQuery(query);
+                    final ResultSetMetaData rsmd = rs.getMetaData();
 
-                    int numCols = rsmd.getColumnCount();
+                    final int numCols = rsmd.getColumnCount();
 
 
-                    ResultSet rsd = dmd.getColumns(null, "VISIONR", "CXREF", null);
+                    final ResultSet rsd = dmd.getColumns(null, "VISIONR", "CXREF", null);
 
                     while (rsd.next()) {
 
@@ -381,7 +389,7 @@ public class AS400Xtfr {
                         ffd = null;
                     }
 
-                    ffd = new ArrayList();
+                    ffd = new ArrayList<>();
 
                     printFTPInfo("Number of columns: " + rsmd.getColumnCount());
 
@@ -397,9 +405,9 @@ public class AS400Xtfr {
                                 " tn " + rsmd.getTableName(x) +
                                 " sn " + rsmd.getSchemaName(x));
 
-                        FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
+                        final FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
 
-                        if (internal)
+                        if (useInternal)
                             // WHFLDI  Field name internal
                             ffDesc.setFieldName(rsmd.getColumnName(x));
                         else
@@ -441,11 +449,11 @@ public class AS400Xtfr {
                     int processed = 0;
                     // Iterate throught the rows in the result set and output
                     // the columns for each row.
-                    StringBuffer rb = new StringBuffer();
+                    final StringBuffer rb = new StringBuffer();
 
                     while (rs.next() && !aborted) {
                         for (int x = 1; x <= numCols; x++) {
-                            ((FileFieldDef) ffd.get(x - 1)).setFieldData(rs.getString(x));
+                            ffd.get(x - 1).setFieldData(rs.getString(x));
                         }
                         status.setCurrentRecord(processed++);
                         status.setFileLength(processed + 1);
@@ -461,13 +469,13 @@ public class AS400Xtfr {
                     status.setFileLength(processed);
                     fireStatusEvent();
                     writeFooter();
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     printFTPInfo("SQL Exception ! " + sqle.getMessage());
                 }
 //               catch(InterruptedException iioe) {
 //                  printFTPInfo("Interrupted! " + iioe.getMessage());
 //               }
-                catch (FileNotFoundException fnfe) {
+                catch (final FileNotFoundException fnfe) {
                     printFTPInfo("File Not found Exception ! " + fnfe.getMessage());
                 }
 
@@ -481,7 +489,7 @@ public class AS400Xtfr {
                     try {
                         if (connection != null)
                             connection.close();
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         // Ignore.
                     }
 
@@ -500,7 +508,7 @@ public class AS400Xtfr {
         getThread = new Thread(getRun);
         getThread.start();
 
-        return flag;
+        return true;
 
     }
 
@@ -665,7 +673,7 @@ public class AS400Xtfr {
     /**
      * Print ftp command events and responses
      */
-    private void printFTPInfo(String msgText) {
+    private void printFTPInfo(final String msgText) {
 
         status.setMessage(msgText);
         fireCommandEvent();
@@ -675,7 +683,7 @@ public class AS400Xtfr {
     /**
      * Write the html header of the output file
      */
-    private void writeHeader(String fileName) throws
+    private void writeHeader(final String fileName) throws
             FileNotFoundException {
 
         ofi.createFileInstance(fileName);

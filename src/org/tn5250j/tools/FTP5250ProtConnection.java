@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class FTP5250ProtConnection {
@@ -27,7 +27,7 @@ public class FTP5250ProtConnection {
      * @param host host
      * @param port port
      * @param timeout connection time out.
-     * @throws IOException
+     * @throws IOException in case of failed to create connection.
      *
      */
     public FTP5250ProtConnection(final String host, final int port, final int timeout) throws IOException {
@@ -76,6 +76,8 @@ public class FTP5250ProtConnection {
     /**
      * Parse the response returned from the remote host to be used for success
      * or failure of a command
+     *
+     * @return parsed response.
      */
     public String parseResponse() {
         try {

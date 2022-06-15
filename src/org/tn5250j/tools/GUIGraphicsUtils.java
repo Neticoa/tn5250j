@@ -1137,6 +1137,7 @@ public class GUIGraphicsUtils {
     /**
      * Checks to see if the font name exists within our environment
      *
+     * @param fontString font name.
      * @return whether the font passed exists or not.
      */
     public static boolean isFontNameExists(final String fontString) {

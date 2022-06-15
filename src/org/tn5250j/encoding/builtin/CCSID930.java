@@ -62,8 +62,7 @@ public final class CCSID930 implements ICodepageConverter {
     }
 
     @Override
-    public ICodepageConverter init() {
-        return null;
+    public void init() {
     }
 
     public String getEncoding() {

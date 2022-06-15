@@ -176,10 +176,10 @@ public final class tnvt implements Runnable {
     private WTDSFParser sfParser;
 
     /**
-     * @param session
-     * @param screen52
-     * @param type
-     * @param support132
+     * @param session session.
+     * @param screen52 screen GUI facade.
+     * @param type enhance or not.
+     * @param support132 support 123.
      */
     public tnvt(final Session5250 session, final Screen5250Facade screen52, final boolean type, final boolean support132) {
 
@@ -231,7 +231,7 @@ public final class tnvt implements Runnable {
 
     /**
      * @return true when SSL is used and socket is connected.
-     * @see {@link #isConnected()}
+     * @see #isConnected()
      */
     public boolean isSslSocket() {
         if (this.connected && this.sock != null && this.sock instanceof SSLSocket) {
@@ -554,8 +554,8 @@ public final class tnvt implements Runnable {
 
     /**
      * Help request -
-     * <p>
-     * <p>
+     * <br>
+     * <br>
      * See notes inside method
      */
     public final void sendHelpRequest() {
@@ -580,8 +580,8 @@ public final class tnvt implements Runnable {
 
     /**
      * Attention Key -
-     * <p>
-     * <p>
+     * <br>
+     * <br>
      * See notes inside method
      */
     public final void sendAttentionKey() {
@@ -608,7 +608,7 @@ public final class tnvt implements Runnable {
     /**
      * Opens a dialog and asks the user before sending a request
      *
-     * @see {@link #systemRequest(String)}
+     * @see #systemRequest(String)
      */
     public final void systemRequest() {
         final String sysreq = this.controller.showSystemRequest();
@@ -617,7 +617,7 @@ public final class tnvt implements Runnable {
 
     /**
      * @param sr - system request option
-     * @see {@link #systemRequest(String)}
+     * @see #systemRequest(String)
      */
     public final void systemRequest(final char sr) {
         systemRequest(Character.toString(sr));
@@ -1255,9 +1255,9 @@ public final class tnvt implements Runnable {
     }
 
     /**
-     * @throws IOException
+     * Restores the screen.
      */
-    public final void restoreScreen() throws IOException {
+    public final void restoreScreen() {
         final int which = 0;
 
         try {
@@ -1538,7 +1538,6 @@ public final class tnvt implements Runnable {
         } catch (final Exception exc) {
             log.warn("incoming " + exc.getMessage());
         }
-        ;
     }
 
     /**
@@ -1547,11 +1546,11 @@ public final class tnvt implements Runnable {
      * You can find a description of the types of responses to be sent back by
      * looking at section 12.4 of the 5250 Functions Reference manual
      *
-     * @param cat
-     * @param modifier
-     * @param uByte1
-     * @param uByte2
-     * @param from
+     * @param cat error category.
+     * @param modifier modifier.
+     * @param uByte1 byte 1
+     * @param uByte2 byte 2
+     * @param from souce
      */
     protected void sendNegResponse(final int cat, final int modifier, final int uByte1,
                                    final int uByte2, final String from) {

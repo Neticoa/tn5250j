@@ -202,10 +202,10 @@ public class Screen5250 implements Screen5250Facade {
     }
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @see {@link #pasteText(String, boolean)}
-     * @see {@link #copyTextField(int)}
+     * @see #pasteText(String, boolean)
+     * @see #copyTextField(int)
      */
     @Override
     public final String copyText(final Rect workR) {
@@ -240,10 +240,10 @@ public class Screen5250 implements Screen5250Facade {
     }
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @param content
-     * @param special
+     * @param content text content.
+     * @param special is special character text.
      */
     @Override
     public final void pasteText(final String content, final boolean special) {
@@ -329,10 +329,10 @@ public class Screen5250 implements Screen5250Facade {
     }
 
     /**
-     * Copy & Paste support
+     * Copy &amp; Paste support
      *
-     * @param position
-     * @return
+     * @param position position of text
+     * @return text from position.
      */
     @Override
     public final String copyTextField(final int position) {
@@ -425,7 +425,7 @@ public class Screen5250 implements Screen5250Facade {
      * will leave them here for now until we work out the interaction.  This
      * should be up to the gui frontend in my opinion.
      *
-     * @param pos
+     * @param pos new cursor position.
      */
     @Override
     public boolean moveCursor(int pos) {
@@ -570,7 +570,7 @@ public class Screen5250 implements Screen5250Facade {
     /**
      * Activate the cursor on screen
      *
-     * @param activate
+     * @param activate whether or not the cursor should be active.
      */
     @Override
     public void setCursorActive(final boolean activate) {
@@ -738,37 +738,37 @@ public class Screen5250 implements Screen5250Facade {
      *
      * @see #sendKeys
      * @see TN5250jConstants#AID_CLEAR
-     * @see #AID_ENTER
-     * @see #AID_HELP
-     * @see #AID_ROLL_UP
-     * @see #AID_ROLL_DOWN
-     * @see #AID_ROLL_LEFT
-     * @see #AID_ROLL_RIGHT
-     * @see #AID_PRINT
-     * @see #AID_PF1
-     * @see #AID_PF2
-     * @see #AID_PF3
-     * @see #AID_PF4
-     * @see #AID_PF5
-     * @see #AID_PF6
-     * @see #AID_PF7
-     * @see #AID_PF8
-     * @see #AID_PF9
-     * @see #AID_PF10
-     * @see #AID_PF11
-     * @see #AID_PF12
-     * @see #AID_PF13
-     * @see #AID_PF14
-     * @see #AID_PF15
-     * @see #AID_PF16
-     * @see #AID_PF17
-     * @see #AID_PF18
-     * @see #AID_PF19
-     * @see #AID_PF20
-     * @see #AID_PF21
-     * @see #AID_PF22
-     * @see #AID_PF23
-     * @see #AID_PF24
+     * @see TN5250jConstants#AID_ENTER
+     * @see TN5250jConstants#AID_HELP
+     * @see TN5250jConstants#AID_ROLL_UP
+     * @see TN5250jConstants#AID_ROLL_DOWN
+     * @see TN5250jConstants#AID_ROLL_LEFT
+     * @see TN5250jConstants#AID_ROLL_RIGHT
+     * @see TN5250jConstants#AID_PRINT
+     * @see TN5250jConstants#AID_PF1
+     * @see TN5250jConstants#AID_PF2
+     * @see TN5250jConstants#AID_PF3
+     * @see TN5250jConstants#AID_PF4
+     * @see TN5250jConstants#AID_PF5
+     * @see TN5250jConstants#AID_PF6
+     * @see TN5250jConstants#AID_PF7
+     * @see TN5250jConstants#AID_PF8
+     * @see TN5250jConstants#AID_PF9
+     * @see TN5250jConstants#AID_PF10
+     * @see TN5250jConstants#AID_PF11
+     * @see TN5250jConstants#AID_PF12
+     * @see TN5250jConstants#AID_PF13
+     * @see TN5250jConstants#AID_PF14
+     * @see TN5250jConstants#AID_PF15
+     * @see TN5250jConstants#AID_PF16
+     * @see TN5250jConstants#AID_PF17
+     * @see TN5250jConstants#AID_PF18
+     * @see TN5250jConstants#AID_PF19
+     * @see TN5250jConstants#AID_PF20
+     * @see TN5250jConstants#AID_PF21
+     * @see TN5250jConstants#AID_PF22
+     * @see TN5250jConstants#AID_PF23
+     * @see TN5250jConstants#AID_PF24
      */
     public void sendAid(final int aidKey) {
 
@@ -1765,9 +1765,9 @@ public class Screen5250 implements Screen5250Facade {
     /**
      * This routine is 0 based offset. So to get row 20,1 then pass row 19,0
      *
-     * @param row
-     * @param col
-     * @return
+     * @param row row number.
+     * @param col column number.
+     * @return caret position.
      */
     @Override
     public int getPos(final int row, final int col) {
@@ -1929,8 +1929,8 @@ public class Screen5250 implements Screen5250Facade {
      * or not. If it is then the chgToField parameter will change the current
      * field to this field where the position indicates
      *
-     * @param pos
-     * @param chgToField
+     * @param pos position.
+     * @param chgToField whether or not should change current position.
      * @return true or false
      */
     @Override
@@ -1945,7 +1945,7 @@ public class Screen5250 implements Screen5250Facade {
      * or not. If it is then the field at this position becomes the current
      * working field
      *
-     * @param pos
+     * @param pos position.
      * @return true or false
      */
     public boolean isInField(final int pos) {
@@ -1958,8 +1958,8 @@ public class Screen5250 implements Screen5250Facade {
      * passed is in a field or not. If it is then the field at this position
      * becomes the current working field.
      *
-     * @param row
-     * @param col
+     * @param row row.
+     * @param col column.
      * @return true or false
      */
     public boolean isInField(final int row, final int col) {
@@ -1974,9 +1974,9 @@ public class Screen5250 implements Screen5250Facade {
      * change the current field to this field where the row and column
      * indicates.
      *
-     * @param row
-     * @param col
-     * @param chgToField
+     * @param row row.
+     * @param col column.
+     * @param chgToField change current position.
      * @return true or false
      */
     public boolean isInField(final int row, final int col, final boolean chgToField) {
@@ -2164,9 +2164,9 @@ public class Screen5250 implements Screen5250Facade {
      *  extra position for the terminating null character.
      *  <p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
      */
     @Override
@@ -2190,11 +2190,11 @@ public class Screen5250 implements Screen5250Facade {
      * the buffer must include one extra position for the terminating null character.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param from
-     * @param length
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param from from position.
+     * @param length data length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
      */
     public synchronized int GetScreen(final char buffer[], final int bufferLength, final int from, final int length, final int plane) {
@@ -2218,12 +2218,12 @@ public class Screen5250 implements Screen5250Facade {
      *  character.
      *  </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param row
-     * @param col
-     * @param length
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param row row.
+     * @param col column.
+     * @param length data length.
+     * @param plane plane.
      * @return The number of characters copied to the buffer.
      */
     public synchronized int GetScreen(final char buffer[], final int bufferLength, final int row, final int col, final int length, final int plane) {
@@ -2254,11 +2254,11 @@ public class Screen5250 implements Screen5250Facade {
      * the number of characters copied.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param startPos
-     * @param endPos
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param startPos start position.
+     * @param endPos end position.
+     * @param plane plane.
      * @return The number of characters copied to the buffer
      */
     public synchronized int GetScreenRect(final char buffer[], final int bufferLength, final int startPos, final int endPos, final int plane) {
@@ -2288,13 +2288,13 @@ public class Screen5250 implements Screen5250Facade {
      * the number of characters copied.
      * </p>
      *
-     * @param buffer
-     * @param bufferLength
-     * @param startRow
-     * @param startCol
-     * @param endRow
-     * @param endCol
-     * @param plane
+     * @param buffer character buffer.
+     * @param bufferLength buffer length.
+     * @param startRow start row.
+     * @param startCol start column.
+     * @param endRow end row.
+     * @param endCol end column.
+     * @param plane plane.
      * @return The number characters copied to the buffer
      */
     @Override
@@ -2348,8 +2348,8 @@ public class Screen5250 implements Screen5250Facade {
      * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
      * that use the 1,1 offset
      *
-     * @param row
-     * @param col
+     * @param row row.
+     * @param col column.
      */
     @Override
     public void setCursor(final int row, final int col) {
@@ -2392,7 +2392,7 @@ public class Screen5250 implements Screen5250Facade {
      * Convenience method to set the field object passed as the currect working
      * screen field
      *
-     * @param screenField
+     * @param screenField screen field.
      * @return true or false whether it was sucessful
      */
     @Override
@@ -2490,24 +2490,23 @@ public class Screen5250 implements Screen5250Facade {
     /**
      * Creates a window on the screen
      *
-     * @param depth
-     * @param width
-     * @param type
-     * @param gui
-     * @param monoAttr
-     * @param colorAttr
-     * @param ul
-     * @param upper
-     * @param ur
-     * @param left
-     * @param right
-     * @param ll
-     * @param bottom
-     * @param lr
+     * @param depth depth.
+     * @param width width.
+     * @param type type..
+     * @param gui if true set planes use GUI.
+     * @param colorAttr color attribute.
+     * @param ul upper left.
+     * @param upper upper.
+     * @param ur upper rigth.
+     * @param left left.
+     * @param right right.
+     * @param ll left left.
+     * @param bottom bottom.
+     * @param lr left right.
      */
     protected void createWindow(int depth, int width, final int type, final boolean gui,
-                                final int monoAttr, final int colorAttr, final int ul, final int upper, final int ur, final int left,
-                                final int right, final int ll, final int bottom, final int lr) {
+                                final int colorAttr, final int ul, final int upper, final int ur, final int left, final int right,
+                                final int ll, final int bottom, final int lr) {
 
         final int c = getCol(lastPos);
         int w = 0;
@@ -2658,11 +2657,11 @@ public class Screen5250 implements Screen5250Facade {
      *
      * @param flag -
      *            type to draw - vertical or horizontal
-     * @param totalRowScrollable
-     * @param totalColScrollable
-     * @param sliderRowPos
-     * @param sliderColPos
-     * @param sbSize
+     * @param totalRowScrollable total number of rows scrollable.
+     * @param totalColScrollable total number of columns scrollable.
+     * @param sliderRowPos slider row position.
+     * @param sliderColPos slider column position.
+     * @param sbSize buffer size.
      */
     @Override
     public void createScrollBar(final int flag, final int totalRowScrollable,
@@ -2706,17 +2705,16 @@ public class Screen5250 implements Screen5250Facade {
     /**
      * Write the title of the window that is on the screen
      *
-     * @param pos
-     * @param depth
-     * @param width
-     * @param orientation
-     * @param monoAttr
-     * @param colorAttr
-     * @param title
+     * @param pos position.
+     * @param depth depth.
+     * @param width width.
+     * @param orientation orientation.
+     * @param colorAttr color attribute.
+     * @param title title.
      */
     @Override
     public void writeWindowTitle(int pos, final int depth, final int width,
-                                    final byte orientation, final int monoAttr, final int colorAttr, final StringBuffer title) {
+                                    final byte orientation, final int colorAttr, final StringBuffer title) {
 
         final int len = title.length();
 
@@ -2762,9 +2760,9 @@ public class Screen5250 implements Screen5250Facade {
      * roll. Byte 3: Bits 0-7 Line number defining the bottom line of the area
      * that will participate in the roll.
      *
-     * @param direction
-     * @param topLine
-     * @param bottomLine
+     * @param direction roll direction.
+     * @param topLine top line.
+     * @param bottomLine bottom line.
      */
     @Override
     public void rollScreen(final int direction, final int topLine, final int bottomLine) {
@@ -3165,12 +3163,12 @@ public class Screen5250 implements Screen5250Facade {
      * If the position change is over the last row and column of the screen then
      * cursor is moved to first position of the screen.
      *
-     * @param i
+     * @param num num characters to add to last position.
      */
     @Override
-    public void changePos(final int i) {
+    public void changePos(final int num) {
 
-        lastPos += i;
+        lastPos += num;
         if (lastPos < 0)
             lastPos = lenScreen + lastPos;
         if (lastPos > lenScreen - 1)
@@ -3225,7 +3223,7 @@ public class Screen5250 implements Screen5250Facade {
     /**
      * Set the error line number to that of number passed.
      *
-     * @param line
+     * @param line error line number.
      */
     @Override
     public void setErrorLine(final int line) {

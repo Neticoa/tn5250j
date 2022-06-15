@@ -35,7 +35,7 @@ public class Stream5250 {
     public int pos;
     public byte buffer[];
 
-    public Stream5250(byte abyte0[]) {
+    public Stream5250(final byte abyte0[]) {
         buffer = abyte0;
         // size without end of record 0xFF 0xEF
         streamSize = (abyte0[0] & 0xff) << 8 | abyte0[1] & 0xff;
@@ -56,9 +56,9 @@ public class Stream5250 {
      * This method takes a byte array and initializes the object information
      *    to be used.
      *
-     * @param abyte0
+     * @param abyte0 byte buffer.
      */
-    public void initialize(byte abyte0[]) {
+    public void initialize(final byte abyte0[]) {
 
         buffer = abyte0;
         // size without end of record 0xFF 0xEF
@@ -74,8 +74,9 @@ public class Stream5250 {
     }
 
     /**
-     * @throws IllegalStateException
-     * @return
+     * Move position to next byte and returns it.
+     * @throws IllegalStateException in case of invalid position.
+     * @return next byte.
      */
     public final byte getNextByte() {
         if (buffer == null || pos > buffer.length)
@@ -102,7 +103,7 @@ public class Stream5250 {
         return pos;
     }
 
-    public final byte getByteOffset(int off)
+    public final byte getByteOffset(final int off)
             throws Exception {
 
         if (buffer == null || (pos + off) > buffer.length)
@@ -132,14 +133,14 @@ public class Stream5250 {
      * the length of the segment.
      *
      * @return a new byte array containing the bytes of the segment.
-     * @throws Exception
+     * @throws Exception in case of invalid position.
      */
     public final byte[] getSegment() throws Exception {
 
         // The first two bytes contain the length of the segment.
-        int length = ((buffer[pos] & 0xff) << 8 | (buffer[pos + 1] & 0xff));
+        final int length = ((buffer[pos] & 0xff) << 8 | (buffer[pos + 1] & 0xff));
         // allocate space for it.
-        byte[] segment = new byte[length];
+        final byte[] segment = new byte[length];
 
         getSegment(segment, length, true);
 
@@ -155,9 +156,9 @@ public class Stream5250 {
      * @param length - length of segment to return
      * @param adjustPos - adjust the position of the buffer to the end of the seg
      *                      ment
-     * @throws Exception
+     * @throws Exception in case of invalid position.
      */
-    public final void getSegment(byte[] segment, int length, boolean adjustPos)
+    public final void getSegment(final byte[] segment, final int length, final boolean adjustPos)
             throws Exception {
 
         // If the length is larger than what is available throw an exception

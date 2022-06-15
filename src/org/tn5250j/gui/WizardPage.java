@@ -142,6 +142,7 @@ public class WizardPage extends BorderPane {
     /**
      * Overrides normal getContentPane to provide specially
      * managed area
+     * @return content pane of given wizard.
      */
     public BorderPane getContentPane() {
         return contentPane;

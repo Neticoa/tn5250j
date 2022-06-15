@@ -50,7 +50,7 @@ import org.tn5250j.gui.UiUtils;
  * instances.
  * </p>
  *
- * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
+ * @author Stephen M. Kennedy &lt;skennedy@tenthpowertech.com&gt;
  */
 public class SSLImplementation implements SSLInterface, X509TrustManager {
 

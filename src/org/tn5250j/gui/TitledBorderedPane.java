@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class TitledBorderedPane extends StackPane {

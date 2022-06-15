@@ -73,7 +73,7 @@ public class SystemRequestDialog {
      * Shows the dialog and returns the given input
      * or null if the operation was canceled.
      *
-     * @return
+     * @return input or null if the operation was canceled
      */
     public String show() {
         final ButtonType result = dialog.showAndWait().orElse(null);

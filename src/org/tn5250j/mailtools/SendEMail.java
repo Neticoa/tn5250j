@@ -176,6 +176,8 @@ public class SendEMail {
 
     /**
      * This method processes the send request from the compose form
+     * @return true if successfully send, false otherwise
+     * @throws Exception if failed to send.
      */
     public boolean send() throws Exception {
 

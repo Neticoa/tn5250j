@@ -18,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class ExternalProgramDialogController implements Initializable {

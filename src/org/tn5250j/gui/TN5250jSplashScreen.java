@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class TN5250jSplashScreen {
