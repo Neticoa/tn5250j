@@ -9,6 +9,12 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
+	<scm>
+		<connection>scm:git:https://github.com/Neticoa/tn5250j.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/Neticoa/tn5250j.git</developerConnection>
+		<url>https://github.com/Neticoa/tn5250j.git</url>
+		<tag>HEAD</tag>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>javax.activation</groupId>
