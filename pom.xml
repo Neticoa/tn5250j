@@ -9,6 +9,22 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>mis-releases</id>
+			<name>MIS Releases</name>
+			<url>https://nexus.metrixware.com/repository/mis-releases/</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>mis-snapshots</id>
+			<name>MIS Snapshots</name>
+			<url>https://nexus.metrixware.com/repository/mis-snapshots/</url>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement>
 	<scm>
 		<connection>scm:git:https://github.com/Neticoa/tn5250j.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/Neticoa/tn5250j.git</developerConnection>
