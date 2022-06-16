@@ -17,7 +17,7 @@ import org.tn5250j.gui.TN5250jFileFilterBuilder;
  *
  *     JFileChooser chooser = new JFileChooser();
  *     XTFRFileFilter filter = new XTFRFileFilter(
- *                   new String{"gif", "jpg"}, "JPEG & GIF Images")
+ *                   new String{"gif", "jpg"}, "JPEG &amp; GIF Images")
  *     chooser.addChoosableFileFilter(filter);
  *     chooser.showOpenDialog(this);
  *
@@ -42,6 +42,7 @@ public class XTFRFileFilterBuilder extends TN5250jFileFilterBuilder {
      * Creates a file filter that accepts files with the given extension.
      * Example: new XTFRFileFilter("jpg");
      *
+     * @param extension file name extension.
      * @see #addExtension
      */
     public XTFRFileFilterBuilder(final String extension) {
@@ -55,6 +56,8 @@ public class XTFRFileFilterBuilder extends TN5250jFileFilterBuilder {
      * Note that the "." before the extension is not needed. If
      * provided, it will be ignored.
      *
+     * @param extension file name extension.
+     * @param description format description.
      * @see #addExtension
      */
     public XTFRFileFilterBuilder(final String extension, final String description) {
@@ -68,6 +71,7 @@ public class XTFRFileFilterBuilder extends TN5250jFileFilterBuilder {
      * Note that the "." before the extension is not needed adn
      * will be ignored.
      *
+     * @param filters extensions for filtering.
      * @see #addExtension
      */
     public XTFRFileFilterBuilder(final String[] filters) {
@@ -80,6 +84,8 @@ public class XTFRFileFilterBuilder extends TN5250jFileFilterBuilder {
      *
      * Note that the "." before the extension is not needed and will be ignored.
      *
+     * @param filters extensions for filtering.
+     * @param description format description.
      * @see #addExtension
      */
     public XTFRFileFilterBuilder(final String[] filters, final String description) {

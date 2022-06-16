@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tn5250j.SessionGui;
+import org.tn5250j.scripting.InterpreterDriver.InterpreterException;
 
 /**
  * Class for managing interpreter drivers.
@@ -53,10 +54,12 @@ public class InterpreterDriverManager {
      * Execute a script string
      * Execute the string supplied according to the langauge specified
      *
+     * @param gui session GUI.
      * @param script   script to be executed
      * @param language language for interpreting the script string
+     * @throws InterpreterException in case of interpreter error.
      */
-    public static void executeScript(final SessionGui session, final String script, final String language)
+    public static void executeScript(final SessionGui gui, final String script, final String language)
             throws InterpreterDriver.InterpreterException {
         final InterpreterDriver driver
                 = _languageDriverMap.get(language);
@@ -66,7 +69,7 @@ public class InterpreterDriverManager {
             return;
         }
 
-        driver.executeScript(session, script);
+        driver.executeScript(gui, script);
     }
 
     /**
@@ -74,9 +77,11 @@ public class InterpreterDriverManager {
      * The interpreter driver supporting the language for this file
      * is deduced from file name extension
      *
+     * @param gui session GUI.
      * @param scriptFile file name containing script
+     * @throws InterpreterException in case of interpreter error.
      */
-    public static void executeScriptFile(final SessionGui session, final String scriptFile)
+    public static void executeScriptFile(final SessionGui gui, final String scriptFile)
             throws InterpreterDriver.InterpreterException {
         final String extension
                 = scriptFile.substring(scriptFile
@@ -88,7 +93,7 @@ public class InterpreterDriverManager {
                     + extension);
             return;
         }
-        driver.executeScriptFile(session, scriptFile);
+        driver.executeScriptFile(gui, scriptFile);
     }
 
     /**
@@ -97,6 +102,7 @@ public class InterpreterDriverManager {
      * is deduced from file name extension
      *
      * @param scriptFile file name containing script
+     * @throws InterpreterException in case of interpreter error.
      */
     public static void executeScriptFile(final String scriptFile)
             throws InterpreterDriver.InterpreterException {
@@ -118,6 +124,7 @@ public class InterpreterDriverManager {
      * Check if there is a driver that supports the language.
      *
      * @param scriptFile file name containing script
+     * @return if script supported.
      */
     public static boolean isScriptSupported(final String scriptFile) {
         final String extension

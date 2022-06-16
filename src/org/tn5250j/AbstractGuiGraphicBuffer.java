@@ -381,11 +381,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
     /**
      * Update the configuration settings
-     * @param pce
+     * @param e configuration event.
      */
     @Override
-    public void onConfigChanged(final SessionConfigEvent pce) {
-        this.propertyChange(pce);
+    public void onConfigChanged(final SessionConfigEvent e) {
+        this.propertyChange(e);
     }
 
     @Override
@@ -552,9 +552,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     /**
      * This will return the screen coordinates of a row and column.
      *
-     * @param r
-     * @param c
-     * @param point
+     * @param r row.
+     * @param c column.
+     * @return point location.
      */
     public Point2D getPointFromRowCol(final int r, final int c) {
 
@@ -573,17 +573,12 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     }
 
     /**
-     *
-     * RubberBanding start code
-     *
-     */
-
-    /**
      * Translate the starting point of mouse movement to encompass a full
      * character
      *
-     * @param start
-     * @return Point
+     * @param px x coordinate.
+     * @param py y coordinate.
+     * @return translated coordinate.
      */
     public Point2D translateStart(final double px, final double py) {
 
@@ -597,8 +592,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
      * Translate the ending point of mouse movement to encompass a full
      * character
      *
-     * @param end
-     * @return Point
+     * @param px x coordinate.
+     * @param py y coordinate.
+     * @return translated coordinate.
      */
     public Point2D translateEnd(final double px, final double py) {
 
@@ -624,7 +620,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
      *
      * If there is no area bounded then the full screen area is returned.
      *
-     * @param bounds
+     * @return bounding area.
      */
     public Rectangle2D getBoundingArea() {
 
@@ -818,6 +814,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
     }
 
+    /**
+     * @param row row.
+     * @param col column.
+     * @return cursor rectangle.
+     */
     public final Rectangle2D modelToView(final int row, final int col) {
         // right now row and column is 1,1 offset based.  This will need
         //   to be changed to 0,0 offset based by subtracting 1 from them

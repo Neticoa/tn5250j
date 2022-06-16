@@ -60,7 +60,7 @@ public class ConfirmTabCloseDialog {
      * Shows the dialog and returns the true if the close was confirmed
      * or false if the operation was canceled.
      *
-     * @return
+     * @return true if OK button pressed, false otherwise.
      */
     public boolean show() {
         return dialog.showAndWait().orElse(null) == ButtonType.OK;

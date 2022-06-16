@@ -120,6 +120,8 @@ public class Wizard {
      * @see #previous
      * @see #finish
      * @see #cancel
+     *
+     * @return true if successfully switched to next page.
      */
     public boolean next() {
         final List<WizardPage> pages = getWizardPages();
@@ -172,6 +174,8 @@ public class Wizard {
      * @see #next
      * @see #finish
      * @see #cancel
+     *
+     * @return true if successfully switched to previous page.
      */
     public boolean previous() {
         final List<WizardPage> pages = getWizardPages();
@@ -221,6 +225,8 @@ public class Wizard {
      * @see #next
      * @see #previous
      * @see #cancel
+
+     * @return true if successfully finished.
      */
     public boolean finish() {
         final WizardPage comp = getCurrentPage();
@@ -243,6 +249,8 @@ public class Wizard {
      * @see #next
      * @see #previous
      * @see #finish
+     *
+     * @return true if successfully canceled.
      */
     public boolean cancel() {
         final WizardPage comp = getCurrentPage();
@@ -287,6 +295,7 @@ public class Wizard {
 
     /**
      * Retrieves the current visible page.
+     * @return current wizard page.
      */
     protected WizardPage getCurrentPage() {
         return currentPage;
@@ -294,6 +303,7 @@ public class Wizard {
 
     /**
      * Adds a new <code>WizardListener</code> to the list.
+     * @param l wizard listener.
      */
     public void addWizardListener(final WizardListener l) {
         listeners.add(l);
@@ -301,6 +311,7 @@ public class Wizard {
 
     /**
      * Removes a <code>ValidateListener</code> from the list.
+     * @param l wizard listener.
      */
     public void removeWizardListener(final WizardListener l) {
         listeners.remove(l);

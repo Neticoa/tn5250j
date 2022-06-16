@@ -38,13 +38,13 @@ public enum ColumnSeparator {
     /**
      * searches the enumeration for the given name, case insensitive
      *
-     * @param name
+     * @param name enumeration name ignore case.
      * @return the corresponding enum value OR default value, if name not matches
      */
-    public static ColumnSeparator getFromName(String name) {
-        ColumnSeparator result = DEFAULT;
+    public static ColumnSeparator getFromName(final String name) {
+        final ColumnSeparator result = DEFAULT;
         if (name == null) return result;
-        for (ColumnSeparator sep : ColumnSeparator.values()) {
+        for (final ColumnSeparator sep : ColumnSeparator.values()) {
             if (name.equalsIgnoreCase(sep.toString())) {
                 return sep;
             }

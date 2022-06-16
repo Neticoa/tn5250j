@@ -85,26 +85,26 @@ public class SendEMailDialog {
 
     /**
      * Constructor to send the screen information
-     * @param session
-     * @param sendScreen
+     * @param gui session GUI.
      */
-    public SendEMailDialog(final SessionGui session) {
-        this(session, true);
+    public SendEMailDialog(final SessionGui gui) {
+        this(gui, true);
     }
 
     /**
      * Constructor to send the screen information
-     * @param session
+     * @param gui session GUI.
+     * @param sendScreen indicates whether or not the screen should be send.
      */
-    public SendEMailDialog(final SessionGui session, final boolean sendScreen) {
+    public SendEMailDialog(final SessionGui gui, final boolean sendScreen) {
         super();
 
-        this.parent = session.getWindow();
+        this.parent = gui.getWindow();
         if (!isEMailAvailable()) {
             UiUtils.showError(LangTool.getString("messages.noEmailAPI"), "Error");
         } else {
 
-            this.session = session;
+            this.session = gui;
             this.sendScreen = sendScreen;
 
             final GridPane content = setupMailPanel("tn5250j.txt");
@@ -300,16 +300,17 @@ public class SendEMailDialog {
 
     /**
      * Constructor to send a file
-     * @param session
+     * @param gui session GUI.
+     * @param fileName file name.
      */
-    public SendEMailDialog(final SessionGui session, final String fileName) {
-        this.parent = session.getWindow();
+    public SendEMailDialog(final SessionGui gui, final String fileName) {
+        this.parent = gui.getWindow();
 
         if (!isEMailAvailable()) {
             UiUtils.showError(LangTool.getString("messages.noEmailAPI"), "Error");
         } else {
 
-            this.session = session;
+            this.session = gui;
 
             final GridPane content = setupMailPanel(fileName);
 

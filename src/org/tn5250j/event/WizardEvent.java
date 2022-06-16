@@ -44,14 +44,14 @@ public class WizardEvent extends java.util.EventObject {
     }
 
     /**
-     * Returns whether the page is the last page.
+     * @return whether the page is the last page.
      */
     public boolean isLastPage() {
         return isLastPage;
     }
 
     /**
-     * Returns whether the event should be allowed to finish processing.
+     * @return whether the event should be allowed to finish processing.
      */
     public boolean getAllowChange() {
         return allowChange;
@@ -59,13 +59,14 @@ public class WizardEvent extends java.util.EventObject {
 
     /**
      * Sets whether the event should be allowed to finish processing.
+     * @param v allow change flag.
      */
     public void setAllowChange(final boolean v) {
         allowChange = v;
     }
 
     /**
-     * Returns the next page.
+     * @return the next page.
      */
     public WizardPage getNewPage() {
         return newPage;
@@ -73,13 +74,14 @@ public class WizardEvent extends java.util.EventObject {
 
     /**
      * Sets the next page.
+     * @param p new page.
      */
     public void setNewPage(final WizardPage p) {
         newPage = p;
     }
 
     /**
-     * Returns the current page on which the <code>JCWizardEvent</code> occured.
+     * @return the current page on which the <code>JCWizardEvent</code> occured.
      */
     public WizardPage getCurrentPage() {
         return currentPage;

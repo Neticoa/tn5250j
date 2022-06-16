@@ -49,9 +49,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 
-/**
- * @see GUIViewInterface
- */
 public class Gui5250Frame extends GenericTn5250Frame implements
         SessionListener, SessionJumpListener {
 
@@ -267,10 +264,10 @@ public class Gui5250Frame extends GenericTn5250Frame implements
             if (hideTabBar && tabCount == 0) {
                 // remove first component in the main window,
                 // create first tab and put first session into first tab
-                final SessionGui firstsesgui = (SessionGui) contentPane.getCenter();
+                final Node firstsesgui = contentPane.getCenter();
                 contentPane.getChildren().remove(firstsesgui);
                 contentPane.setCenter(sessTabbedPane);
-                createTabWithSessionContent(determineTabName(firstsesgui), firstsesgui, false);
+                createTabWithSessionContent(determineTabName((SessionGui) firstsesgui), (SessionGui) firstsesgui, false);
             }
 
             createTabWithSessionContent(tabText, sesspanel, true);
@@ -365,7 +362,7 @@ public class Gui5250Frame extends GenericTn5250Frame implements
             final String devname = sesgui.getAllocDeviceName();
             if (devname != null) {
                 if (log.isDebugEnabled()) {
-                    this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname);
+                    log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname);
                 }
                 Platform.runLater(() -> {
                     tab.setText(determineTabName(sesgui));

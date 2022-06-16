@@ -6,7 +6,7 @@ package org.tn5250j.gui;
 import javafx.geometry.Point2D;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class Line2D {

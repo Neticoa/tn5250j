@@ -43,8 +43,8 @@ public class SendScreenToFile {
     private static final Logger LOG = LoggerFactory.getLogger(SendScreenToFile.class);
 
     /**
-     * @param parent
-     * @param screen
+     * @param parent parent window.
+     * @param screen screen facade.
      */
     public static final void showDialog(final Window parent, final Screen5250Facade screen) {
         final String workingDir = System.getProperty("user.dir");

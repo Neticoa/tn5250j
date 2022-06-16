@@ -35,12 +35,17 @@ public class As400Util {
 
     /**
      * Convert an as400 packed field to an integer
+     *
+     * @param cByte byte buffer.
+     * @param startOffset data offset.
+     * @param length data length.
+     * @return selected data as int.
      */
     public static final int packed2int(final byte[] cByte, final int startOffset, final int length) {
 
-        StringBuffer sb = new StringBuffer(length * 2);
+        final StringBuffer sb = new StringBuffer(length * 2);
 
-        int end = startOffset + length - 1;
+        final int end = startOffset + length - 1;
 
         // example field of buffer length 4 with decimal precision 0
         // output length is (4 * 2) -1 = 7
@@ -63,19 +68,19 @@ public class As400Util {
         // byte 4 of 4 -> 7D The D siginifies a negative number
         //
         for (int f = startOffset - 1; f < end - 1; f++) {
-            byte bzd = cByte[f];
-            int byteZ = (bzd >> 4) & 0x0f; // get the zone portion
-            int byteD = (bzd & 0x0f); // get the digit portion
+            final byte bzd = cByte[f];
+            final int byteZ = (bzd >> 4) & 0x0f; // get the zone portion
+            final int byteD = (bzd & 0x0f); // get the digit portion
 
             sb.append(byteZ); // assign the zone portion as the first digit
             sb.append(byteD); // assign the digit portion as the second digit
         }
 
         // here we obtain the last byte to determine the sign of the field
-        byte bzd = cByte[end - 1];
+        final byte bzd = cByte[end - 1];
 
-        int byteZ = (bzd >> 4) & 0x0f; // get the zone portion
-        int byteD = (bzd & 0x0f); // get the digit portion
+        final int byteZ = (bzd >> 4) & 0x0f; // get the zone portion
+        final int byteD = (bzd & 0x0f); // get the digit portion
         sb.append(byteZ); // append the zone portion as the
         // the last digit of the number
         // convert to integer

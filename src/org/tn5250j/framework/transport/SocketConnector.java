@@ -44,7 +44,6 @@ public class SocketConnector {
      * Set the type of SSL connection to use.  Specify null or an empty string
      * to use a plain socket.
      * @param type The SSL connection type
-     * @see org.tn5250j.framework.transport.SSLConstants
      */
     public void setSSLType(final String type) {
         sslType = type;
@@ -55,11 +54,11 @@ public class SocketConnector {
      * socket type has not been specified <i>(by setSSLType(String))</i>, then
      * a plain socket will be created.  Otherwise, a new SSL socket of the
      * specified type will be created.
-     * @param destination
-     * @param port
+     * @param host host.
+     * @param port port.
      * @return a new client socket, or null if
      */
-    public Socket createSocket(final String destination, final int port) {
+    public Socket createSocket(final String host, final int port) {
 
         Socket socket = null;
         Exception ex = null;
@@ -69,7 +68,7 @@ public class SocketConnector {
             logger.info("Creating Plain Socket");
             try {
                 // Use Socket Constructor!!! SocketFactory for jdk 1.4
-                socket = new Socket(destination, port);
+                socket = new Socket(host, port);
             } catch (final Exception e) {
                 ex = e;
             }
@@ -91,7 +90,7 @@ public class SocketConnector {
 
             if (sslIf != null) {
                 sslIf.init(sslType);
-                socket = sslIf.createSSLSocket(destination, port);
+                socket = sslIf.createSSLSocket(host, port);
             }
         }
 

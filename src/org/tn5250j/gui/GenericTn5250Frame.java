@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class GenericTn5250Frame {
@@ -113,7 +113,7 @@ public class GenericTn5250Frame {
     }
 
     /**
-     * @param visible
+     * @param visible visibility state of frame.
      */
     public void setVisible(final boolean visible) {
         if (visible) {

@@ -6,7 +6,7 @@ package org.tn5250j;
 /**
  * IBM code pages source https://www.ibm.com/docs/en/cics-tg-zos/9.2?topic=reference-code-pages
  * https://en.wikipedia.org/wiki/Code_page
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 

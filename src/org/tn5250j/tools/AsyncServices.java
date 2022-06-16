@@ -10,7 +10,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class AsyncServices {

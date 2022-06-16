@@ -9,7 +9,7 @@ import com.ibm.as400.access.SpooledFile;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class SpooledFileBean {

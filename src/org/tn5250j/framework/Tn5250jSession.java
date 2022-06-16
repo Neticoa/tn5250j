@@ -35,21 +35,21 @@ public class Tn5250jSession {
     }
 
     /**
-     * @return
+     * @return session GUI.
      */
     public SessionGui getSession() {
         return session;
     }
 
     /**
-     * @return
+     * @return session screen.
      */
     public Screen5250Facade getSessionScreen() {
         return sessionScreen;
     }
 
     /**
-     * @return
+     * @return session TNVT terminal.
      */
     public tnvt getSessionTNVT() {
         return SessionTNVT;

@@ -46,7 +46,7 @@ public class ScreenFields {
     private boolean masterMDT;
     protected boolean currentModified;
 
-    public ScreenFields(Screen5250Facade s) {
+    public ScreenFields(final Screen5250Facade s) {
 
         screen = s;
         screenFields = new ScreenField[256];
@@ -61,7 +61,7 @@ public class ScreenFields {
 
     }
 
-    protected boolean existsAtPos(int lastPos) {
+    protected boolean existsAtPos(final int lastPos) {
 
         ScreenField sf = null;
 
@@ -121,7 +121,7 @@ public class ScreenFields {
         return currentField.isAutoEnter();
     }
 
-    public boolean withinCurrentField(int pos) {
+    public boolean withinCurrentField(final int pos) {
         return currentField.withinField(pos);
     }
 
@@ -158,7 +158,7 @@ public class ScreenFields {
      *    which the workstation operator has begun entering data.) If the
      *    requirements of the field have not been satisfied, an error occurs.
      *
-     * @return
+     * @return true if can send aid.
      *
      */
     public boolean isCanSendAid() {
@@ -183,7 +183,7 @@ public class ScreenFields {
         currentField = saveCurrent;
     }
 
-    protected void setCurrentField(ScreenField sf) {
+    protected void setCurrentField(final ScreenField sf) {
         currentField = sf;
     }
 
@@ -193,15 +193,15 @@ public class ScreenFields {
         masterMDT = true;
     }
 
-    protected void setCurrentFieldFFWs(int ffw1, int ffw2) {
+    protected void setCurrentFieldFFWs(final int ffw1, final int ffw2) {
 
         masterMDT = currentField.setFFWs(ffw1, ffw2);
 
     }
 
 
-    protected ScreenField setField(int attr, int row, int col, int len, int ffw1,
-                                   int ffw2, int fcw1, int fcw2) {
+    protected ScreenField setField(final int attr, final int row, final int col, final int len, final int ffw1,
+                                   final int ffw2, final int fcw1, final int fcw2) {
 
         ScreenField sf = null;
         screenFields[nextField] = new ScreenField(screen);
@@ -240,7 +240,7 @@ public class ScreenFields {
 
     }
 
-    public ScreenField getField(int index) {
+    public ScreenField getField(final int index) {
 
         return screenFields[index];
     }
@@ -276,7 +276,7 @@ public class ScreenFields {
         return sizeFields;
     }
 
-    protected boolean isInField(int pos) {
+    protected boolean isInField(final int pos) {
         return isInField(pos, true);
     }
 
@@ -284,7 +284,7 @@ public class ScreenFields {
         return isInField(screen.getLastPos(), true);
     }
 
-    protected boolean isInField(int pos, boolean chgToField) {
+    protected boolean isInField(final int pos, final boolean chgToField) {
 
         ScreenField sf;
 
@@ -309,35 +309,16 @@ public class ScreenFields {
      * Searches the collection for the target string and returns the iOhioField
      * object containing that string.  The string must be totally contained
      * within the field to be considered a match.
-     *
-     * @param targetString The target string.
      * @param startPos The row and column where to start the search. The position
      *                 is inclusive (for example, row 1, col 1 means that
      *                 position 1,1 will be used as the starting location and
      *                 1,1 will be included in the search).
-     * @param length The length from startPos to include in the search.
-     * @param dir An OHIO_DIRECTION value:
+     * @param startPos start position.
      *
-     * <table BORDER COLS=3 WIDTH="50%" >
-     * <tr><th>Constant </th><th>Value</th>
-     *                            <th>Description</th></tr>
-     * <tr><td>OS_OHIO_DIRECTION_FORWARD </td><td>0</td>
-     *                            <td>Forward (beginning towards end)</td></tr>
-     * <tr><td>OS_OHIO_DIRECTION_BACKWARD </td><td>1</td>
-     *                            <td>Backward (end towards beginning)</td></tr>
-     * </table>
-     *       Constant Value Description
-     *       ignoreCase - Indicates whether the search is case sensitive.
-     *       True means that case will be ignored. False means the search will
-     *       be case sensitive.
      * @return If found, an iOhioField object containing the target string. If
      *         not found, returns a null.
      */
-    public ScreenField findByString(String targetString,
-                                    int startPos,
-                                    int length,
-                                    int dir,
-                                    boolean ignoreCase) {
+    public ScreenField findByString(final int startPos) {
 
         // first lets check if the string exists in the screen space
 //      iOhioPosition pos = screen.findString(targetString, startPos, length,
@@ -363,7 +344,7 @@ public class ScreenFields {
      * @return If found, a ScreenField object containing the target position.
      *         If not found, returns a null.
      */
-    public ScreenField findByPosition(int targetPosition) {
+    public ScreenField findByPosition(final int targetPosition) {
 
         ScreenField sf = null;
 
@@ -390,14 +371,14 @@ public class ScreenFields {
      * @return If found, a ScreenField object containing the target position.
      *         If not found, returns a null.
      */
-    public ScreenField findByPosition(int row, int col) {
+    public ScreenField findByPosition(final int row, final int col) {
 
         return findByPosition(screen.getPos(row, col));
     }
 
     public ScreenField[] getFields() {
 
-        ScreenField[] fields = new ScreenField[sizeFields];
+        final ScreenField[] fields = new ScreenField[sizeFields];
         for (int x = 0; x < sizeFields; x++) {
 
             fields[x] = screenFields[x];
@@ -434,7 +415,7 @@ public class ScreenFields {
         int lastPos = screen.getLastPos();
 
         if (currentField == null && (sizeFields != 0) && !isInField(lastPos, true)) {
-            int pos = lastPos;
+            final int pos = lastPos;
             screen.setCursorOff();
             screen.advancePos();
             lastPos = screen.getLastPos();
@@ -457,8 +438,8 @@ public class ScreenFields {
 
                 // lets get the current position so we can test if we have looped
                 //    the screen and not found a valid field.
-                int pos = lastPos;
-                int savPos = lastPos;
+                final int pos = lastPos;
+                final int savPos = lastPos;
                 boolean done = false;
                 do {
                     screen.advancePos();
@@ -485,7 +466,7 @@ public class ScreenFields {
 
             } else {
                 int f = 0;
-                int cp = sf.getCursorProgression();
+                final int cp = sf.getCursorProgression();
 
                 if (cp == 0) {
                     do {
@@ -538,8 +519,8 @@ public class ScreenFields {
             if (sizeFields > 0) {
                 // lets get the current position so we can test if we have looped
                 //    the screen and not found a valid field.
-                int pos = lastPos;
-                int savPos = lastPos;
+                final int pos = lastPos;
+                final int savPos = lastPos;
                 boolean done = false;
 
                 do {
@@ -570,7 +551,7 @@ public class ScreenFields {
                 } else {
 
                     int f = 0;
-                    int cp = sf.getFieldId();
+                    final int cp = sf.getFieldId();
                     ScreenField sf1 = null;
                     boolean found = false;
                     while (!found && f < sizeFields) {
@@ -606,7 +587,7 @@ public class ScreenFields {
         }
     }
 
-    protected void readFormatTable(ByteArrayOutputStream baosp, int readType, ICodePage codePage) {
+    protected void readFormatTable(final ByteArrayOutputStream baosp, final int readType, final ICodePage codePage) {
 
         ScreenField sf;
         boolean isSigned = false;
@@ -614,7 +595,7 @@ public class ScreenFields {
 
         if (masterMDT) {
 
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             for (int x = 0; x < sizeFields; x++) {
                 isSigned = false;
 
@@ -653,7 +634,7 @@ public class ScreenFields {
                         sb.setLength(sb.length() - 1);
                     }
 
-                    int len3 = sb.length();
+                    final int len3 = sb.length();
 
                     if (len3 > 0 || (readType == CMD_READ_MDT_FIELDS ||
                             readType == CMD_READ_MDT_IMMEDIATE_ALT)) {

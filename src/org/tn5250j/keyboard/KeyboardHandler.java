@@ -53,7 +53,7 @@ public abstract class KeyboardHandler implements KeyChangeListener {
 
     /**
      * Creates a new keyboard handler.
-     * @param session The session that will be sent the keys
+     * @param gui The GUI of session that will be sent the keys
      */
     public KeyboardHandler(final SessionGui gui) {
 
@@ -138,6 +138,8 @@ public abstract class KeyboardHandler implements KeyChangeListener {
     /**
      * Utility method, calls one of <code>keyPressed()</code>,
      * <code>keyReleased()</code>, or <code>keyTyped()</code>.
+     *
+     * @param evt key event.
      */
     public abstract void processKeyEvent(final KeyEvent evt);
 }

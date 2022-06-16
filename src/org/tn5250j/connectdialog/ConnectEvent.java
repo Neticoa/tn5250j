@@ -7,7 +7,7 @@ import javafx.event.Event;
 import javafx.event.EventType;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class ConnectEvent extends Event {

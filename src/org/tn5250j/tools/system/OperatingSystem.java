@@ -44,7 +44,7 @@ public class OperatingSystem {
     //{{{ isWindows() method
 
     /**
-     * Returns if we're running Windows 95/98/ME/NT/2000/XP.
+     * @return true if we're running Windows 95/98/ME/NT/2000/XP.
      */
     public static final boolean isWindows() {
         return os == WINDOWS_9x || os == WINDOWS_NT;
@@ -53,7 +53,7 @@ public class OperatingSystem {
     //{{{ isUnix() method
 
     /**
-     * Returns if we're running Unix (this includes MacOS X).
+     * @return true if we're running Unix (this includes MacOS X).
      */
     public static final boolean isUnix() {
         return os == UNIX || os == MAC_OS_X || os == LINUX;
@@ -62,7 +62,7 @@ public class OperatingSystem {
     //{{{ isMacOS() method
 
     /**
-     * Returns if we're running MacOS X.
+     * @return true if we're running MacOS X.
      */
     public static final boolean isMacOS() {
         return os == MAC_OS_X;
@@ -71,7 +71,7 @@ public class OperatingSystem {
     //{{{ isJava14() method
 
     /**
-     * Returns if Java 2 version 1.4 is in use.
+     * @return true if Java 2 version 1.4 is in use.
      */
     public static final boolean hasJava14() {
         return java14;
@@ -137,7 +137,7 @@ public class OperatingSystem {
                 if (windows) {
                     // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
                     cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
-                    final Process p = Runtime.getRuntime().exec(cmd);
+                    Runtime.getRuntime().exec(cmd);
                 } else {
                     // Under Unix, Netscape has to be running for the "-remote"
                     // command to work. So, we try sending the command and
@@ -170,7 +170,7 @@ public class OperatingSystem {
     }
 
     /**
-     * @param url
+     * @param url program location.
      * @return true when found external program and has been launched; false when not found external program.
      */
     private static boolean launchExternalProgram(final String url) {
@@ -205,7 +205,7 @@ public class OperatingSystem {
         try {
             LOG.info("Executing command='" + command + "'");
 
-            final Process p = Runtime.getRuntime().exec(command);
+            Runtime.getRuntime().exec(command);
             exitCode = 0;
             // wait for exit code -- if it's 0, command worked,
 //         exitCode = p.waitFor();

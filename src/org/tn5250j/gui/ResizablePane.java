@@ -6,7 +6,7 @@ package org.tn5250j.gui;
 import javafx.scene.layout.Pane;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class ResizablePane extends Pane {

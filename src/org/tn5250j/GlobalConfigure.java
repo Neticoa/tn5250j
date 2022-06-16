@@ -224,8 +224,9 @@ public class GlobalConfigure extends ConfigureFactory {
      * Save the settings in the registry using the key passed with a header
      * in the output.
      *
-     * @param regKey
-     * @param header
+     * @param regKey registry key.
+     * @param fileName file name.
+     * @param header header of properties file.
      */
     @Override
     public void saveSettings(final String regKey, final String fileName, final String header) {
@@ -312,8 +313,8 @@ public class GlobalConfigure extends ConfigureFactory {
     /**
      * Returns the properties associated with a given registry key.
      *
-     * @param regKey
-     * @return
+     * @param regKey registry key.
+     * @return properties as string map.
      */
     @Override
     public Map<String, String> getProperties(final String regKey) {
@@ -378,8 +379,8 @@ public class GlobalConfigure extends ConfigureFactory {
     /**
      * Returns the setting from the given key of the global properties.
      *
-     * @param key
-     * @return
+     * @param key property key.
+     * @return property value.
      */
     @Override
     public String getProperty(final String key) {
@@ -389,7 +390,7 @@ public class GlobalConfigure extends ConfigureFactory {
     /**
      * Private helper to return the settings directory
      *
-     * @return
+     * @return settings directory.
      */
     private String settingsDirectory() {
         //System.out.println(settings.getProperty("emulator.settingsDirectory"));

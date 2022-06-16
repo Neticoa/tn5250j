@@ -149,8 +149,8 @@ public class Macronizer {
      * This method is a destructive where if the macro already exists it will be
      *   overwritten.
      *
-     * @param name
-     * @param keyStrokes
+     * @param name macro name.
+     * @param keyStrokes key strokes.
      */
     public final static void setMacro(final String name, final String keyStrokes) {
 

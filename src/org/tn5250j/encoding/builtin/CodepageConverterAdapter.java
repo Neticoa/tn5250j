@@ -38,14 +38,12 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
     private char[] codepage = null;
     private int[] reverse_codepage = null;
 
-    /* (non-Javadoc)
-     * @see org.tn5250j.cp.ICodepageConverter#init()
-     */
-    public ICodepageConverter init() {
+    @Override
+    public void init() {
         codepage = getCodePage();
 
         int size = 0;
-        for (char c : codepage) {
+        for (final char c : codepage) {
             size = Math.max(size, c);
         }
         assert (size + 1) < 1024 * 1024; // some kind of maximum size limiter.
@@ -54,13 +52,13 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
         for (int i = 0; i < codepage.length; i++) {
             reverse_codepage[codepage[i]] = i;
         }
-        return this;
     }
 
     /* (non-Javadoc)
      * @see org.tn5250j.cp.ICodepageConverter#uni2ebcdic(char)
      */
-    public byte uni2ebcdic(char index) {
+    @Override
+    public byte uni2ebcdic(final char index) {
         assert index < reverse_codepage.length;
         return (byte) reverse_codepage[index];
     }
@@ -68,6 +66,7 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
     /* (non-Javadoc)
      * @see org.tn5250j.cp.ICodepageConverter#ebcdic2uni(int)
      */
+    @Override
     public char ebcdic2uni(int index) {
         index = index & 0xFF;
         assert index < 256;

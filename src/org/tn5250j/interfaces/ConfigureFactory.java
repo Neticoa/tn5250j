@@ -62,9 +62,9 @@ public abstract class ConfigureFactory {
      * Returns the setting from the given key of the global properties or the
      * default passed if the property does not exist.
      *
-     * @param key
-     * @param def
-     * @return
+     * @param key property key.
+     * @param def default value.
+     * @return property value.
      */
     public String getProperty(final String key, final String def) {
         final String value = getProperty(key);
@@ -79,7 +79,7 @@ public abstract class ConfigureFactory {
      * Save the setting in the registry using the key passed in with no header
      * output.
      *
-     * @param regKey
+     * @param regKey registry key.
      */
     public void saveSettings(final String regKey) {
         saveSettings(regKey, "");
@@ -89,8 +89,8 @@ public abstract class ConfigureFactory {
      * Save the settings in the registry using the key passed with a header
      * in the output.
      *
-     * @param regKey
-     * @param header
+     * @param regKey registry key.
+     * @param header file properties header.
      */
     public void saveSettings(final String regKey, final String header) {
         saveSettings(regKey, regKey, header);
@@ -105,7 +105,7 @@ public abstract class ConfigureFactory {
     /**
      * @param in input stream.
      * @param result target properties map.
-     * @throws IOException
+     * @throws IOException if failed to save properties.
      */
     public static void loadProperties(final InputStream in, final Map<String, String> result)
             throws IOException {
@@ -121,7 +121,7 @@ public abstract class ConfigureFactory {
      * @param map map to save.
      * @param header property header.
      * @param out output stream.
-     * @throws IOException
+     * @throws IOException if failed to save properties.
      */
     public static void storeProperties(final Map<String, String> map,
             final String header, final OutputStream out) throws IOException {

@@ -134,12 +134,12 @@ public class PNGEncoder extends AbstractImageEncoder {
     }
 
     /**
-     * @param outarray
-     * @param pixelarray
-     * @param width
-     * @param height
-     * @return
-     * @throws EncoderException
+     * @param outarray target array.
+     * @param pixelarray pixel array.
+     * @param width width.
+     * @param height height.
+     * @return total number compressed.
+     * @throws EncoderException encoding exception
      */
     public int compress(final byte[] outarray, final int[] pixelarray, final int width, final int height) throws EncoderException {
         final byte[] inarray = new byte[(pixelarray.length * 3) + height];
@@ -160,12 +160,12 @@ public class PNGEncoder extends AbstractImageEncoder {
     }
 
     /**
-     * @param outarray
-     * @param pixelarray
-     * @param width
-     * @param height
-     * @return
-     * @throws EncoderException
+     * @param outarray target array.
+     * @param pixelarray pixel array.
+     * @param width width.
+     * @param height height.
+     * @return total number compressed.
+     * @throws EncoderException encoding exception.
      */
     public int compress(final byte[] outarray, final byte[] pixelarray, final int width, final int height) throws EncoderException {
         final byte[] inarray = new byte[pixelarray.length + height];
@@ -179,10 +179,10 @@ public class PNGEncoder extends AbstractImageEncoder {
     }
 
     /**
-     * @param outarray
-     * @param inarray
-     * @return
-     * @throws EncoderException
+     * @param outarray output array.
+     * @param inarray input array.
+     * @return total number compressed.
+     * @throws EncoderException encoding exception.
      */
     private int compressInternal(final byte[] outarray, final byte[] inarray) throws EncoderException {
         final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);

@@ -38,7 +38,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class ConnectionsPaneController implements Initializable {

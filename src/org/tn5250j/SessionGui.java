@@ -22,7 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Window;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public interface SessionGui {

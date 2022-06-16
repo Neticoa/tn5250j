@@ -78,7 +78,6 @@ public class Session5250  {
 
     /**
      * @return true when SSL is used and socket is connected.
-     * @see {@link tnvt#isSslSocket()}
      */
     public boolean isSslSocket() {
         if (this.vt != null) {
@@ -90,7 +89,6 @@ public class Session5250  {
 
     /**
      * @return true when SSL is configured but not necessary in use
-     * @see {@link #isSslSocket()}
      */
     public boolean isSslConfigured() {
         return sesProps.getSslType() != Tls.None;
@@ -204,11 +202,6 @@ public class Session5250  {
      * Enables or disables scanning.
      *
      * @param scan enables scanning when true; disables otherwise.
-     * @see tnvt#setCommandScanning(boolean);
-     * @see tnvt#isCommandScanning();
-     * @see tnvt#scan();
-     * @see tnvt#parseCommand();
-     * @see scanned(String,String)
      */
     public void setScanningEnabled(final boolean scan) {
         this.scan = scan;
@@ -223,11 +216,6 @@ public class Session5250  {
      * Checks whether scanning is enabled.
      *
      * @return true if command scanning is enabled; false otherwise.
-     * @see tnvt#setCommandScanning(boolean);
-     * @see tnvt#isCommandScanning();
-     * @see tnvt#scan();
-     * @see tnvt#parseCommand();
-     * @see scanned(String,String)
      */
     public boolean isScanningEnabled() {
         if (this.vt != null)
@@ -247,11 +235,6 @@ public class Session5250  {
      *
      * @param command   discovered in the 5250 stream.
      * @param remainder are all the other characters on the screen.
-     * @see tnvt#setCommandScanning(boolean);
-     * @see tnvt#isCommandScanning();
-     * @see tnvt#scan();
-     * @see tnvt#parseCommand();
-     * @see scanned(String,String)
      */
     public final void fireScanned(final String command, final String remainder) {
         for (final ScanListener listener : this.scanListeners) {
@@ -260,14 +243,14 @@ public class Session5250  {
     }
 
     /**
-     * @param listener
+     * @param listener scan listener.
      */
     public final void addScanListener(final ScanListener listener) {
         scanListeners.add(listener);
     }
 
     /**
-     * @param listener
+     * @param listener scan listener.
      */
     public final void removeScanListener(final ScanListener listener) {
         scanListeners.remove(listener);

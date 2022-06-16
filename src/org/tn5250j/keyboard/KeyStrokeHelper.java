@@ -14,7 +14,7 @@ import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class KeyStrokeHelper {
@@ -402,8 +402,9 @@ public class KeyStrokeHelper {
         case WINDOWS:
         case CONTEXT_MENU:
             return true;
+            default:
+                return false;
       }
-      return false;
     }
 
     static char keyCharToEmbedKeyChar(final char ch) {

@@ -50,7 +50,7 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /**
- * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public final class UiUtils {
