@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright(c) 2022 Metrixware Systemobjects SAS.
  */
 package org.tn5250j.connectdialog;
 
@@ -137,14 +137,11 @@ public class LoggingPaneController implements Initializable {
 
     private void logLevelChanged(final ObservableValue<? extends Number> observable,
             final Number oldValue, final Number newValue) {
-        final boolean oldIsOff = oldValue != null && oldValue.intValue() == TN5250jLogger.OFF;
         final boolean newIsOff = newValue != null && newValue.intValue() == TN5250jLogger.OFF;
 
-        if (oldIsOff) {
-            intConsole.setDisable(false);
-            intFile.setDisable(false);
-            intBoth.setDisable(false);
-        }
+        intConsole.setDisable(newIsOff);
+        intFile.setDisable(newIsOff);
+        intBoth.setDisable(newIsOff);
     }
 
     private void initLogLevelButton(final RadioButton btn, final ToggleGroup group, final String title,

@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright(c) 2022 Metrixware Systemobjects SAS.
  */
 package org.tn5250j;
 
@@ -9,7 +9,6 @@ package org.tn5250j;
  * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
-
 public enum CodePage {
     ARABIC("CP864"),
     AUSTRIA("CP1141"),
@@ -71,7 +70,7 @@ public enum CodePage {
     public String getEncoding() {
         return encoding;
     }
-    
+
     @Override
     public String toString() {
     	return this.name() + "-" + encoding;

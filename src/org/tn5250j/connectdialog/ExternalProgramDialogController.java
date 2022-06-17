@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright(c) 2022 Metrixware Systemobjects SAS.
  */
 package org.tn5250j.connectdialog;
 
@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.tn5250j.ExternalProgramConfig;
-import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.FXML;

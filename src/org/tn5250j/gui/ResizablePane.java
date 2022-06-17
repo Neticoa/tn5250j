@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright(c) 2022 Metrixware Systemobjects SAS.
  */
 package org.tn5250j.gui;
 

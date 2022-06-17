@@ -1,3 +1,6 @@
+/*
+ * Copyright(c) 2022 Metrixware Systemobjects SAS.
+ */
 package org.tn5250j.spoolfile;
 
 import java.io.File;
@@ -50,6 +53,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 
 /**
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
 public class SpoolExportWizard extends GenericTn5250Frame implements WizardListener {
