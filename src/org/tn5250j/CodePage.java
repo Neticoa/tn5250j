@@ -33,6 +33,7 @@ public enum CodePage {
     ITALY("CP1144"),
     JAPAN_ENGLISH("CP939"),
     JAPAN_KATAKANA("CP930"),
+    JAPAN_JIS2004("CP1399"),
     KOREA("CP949"),
     LATIN_AMERICA("CP1145"),
     LATVIA("CP921"),

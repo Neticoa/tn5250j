@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
             "Cp1123", "Cp1124", "Cp1140", "Cp1141", "Cp1142", "Cp1143",
             "Cp1144", "Cp1145", "Cp1146", "Cp1147", "Cp1148", "Cp1149",
             "Cp1252", "Cp1250", "Cp1251", "Cp1253", "Cp1254", "Cp1255",
-            "Cp1256", "Cp1257", "Cp1258", "Cp1381", "Cp1383", "Cp33722"};
+            "Cp1256", "Cp1257", "Cp1258", "Cp1381", "Cp1383", "Cp1399", "Cp33722"};
 
     private static final String CONVERTER_NAME = "com.ibm.as400.access.CharConverter";
     private static final String TOBYTES_NAME = "stringToByteArray";
