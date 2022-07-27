@@ -1,0 +1,117 @@
+290 	IBM-290 	JAPANESE EBCDIC
+300 	IBM-300 	JAPAN DB EBCDIC
+301 	IBM-301 	Données PC : Japan DB 
+897 	IBM-897		Données PC : Japan SB
+930 	IBM-930		x-IBM930
+		Cp930		Hôte Katakana : SBCS étendu
+					Hôte Kanji : DBCS, caractères définis par l'utilisateur 4370 inclus
+					Hôte Katakana : SBCS étendu
+					Hôte Kanji : DBCS, caractères définis par l'utilisateur 1880 inclus
+932 	IBM-932		Données PC : Japan Mix
+1027 	IBM-1027	JAPAN LATIN EBCD
+1041 	IBM-1041	Données PC : Japon
+
+
+Table 1. Japanese, Client CCSIDs
+CLINTCP		CCSID		CPGID			IANA character set name			Comments
+932 		00932 	
+																		PC data: SBCS
+																		PC data: DBCS including 1880 user-defined characters
+
+942 		00942 	
+																		PC data: Extended SBCS
+																		PC data: DBCS including 1880 user-defined characters
+
+943 		00943 	
+
+
+	
+										shift-jis
+										x-sjis
+	
+
+
+954			00954						euc-jp 
+EUCJP
+																		G0: JIS X201 Roman
+																		G1: JIS X208-1990
+																		G1: JIS X201 Katakana
+																		G1: JIS X212
+
+5050 		05050 	
+																		G0: JIS X201 Roman
+																		G1: JIS X208-1990
+																		G1: JIS X201 Katakana
+																		G1: JIS X212
+-------------------------------------------------------------------------------------------------------------
+
+Table 2. Japanese, Server CCSIDs
+SRVERCP
+	
+CCSID
+	
+CPGID
+	
+IANA character set name
+	
+Comments
+930 	00930 	
+
+    00290
+    00300
+    00290
+    00300
+
+		
+
+    Katakana Host: extended SBCS
+    Kanji Host: DBCS including 4370 user-defined characters
+    Katakana Host: extended SBCS
+    Kanji Host: DBCS including 1880 user-defined characters
+
+931 	00931 	
+
+    00037
+    00300
+
+		
+
+    Latin Host: SBCS
+    Kanji Host: DBCS including 4370 user-defined characters
+
+939 	00939 	
+
+    01027
+    00300
+    01027
+    00300
+
+		
+
+    Latin Host: extended SBCS
+    Kanji Host: DBCS including 4370 user-defined characters
+    Latin Host: extended SBCS
+    Kanji Host: DBCS including 1880 user-defined characters
+
+1390 	01390 	
+
+    00290
+    00300
+
+		
+
+    Katakana Host: extended SBCS; with euro
+    Kanji Host: DBCS including 6205 user-defined characters
+
+1399 	01399 	
+
+    01027
+    00300
+
+		
+
+    Latin Host: extended SBCS; with euro
+    Kanji Host: DBCS including 4370 user-defined characters; with euro
+
+
+
