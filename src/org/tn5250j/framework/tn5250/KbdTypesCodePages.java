@@ -39,12 +39,16 @@ public enum KbdTypesCodePages {
     IRB("Farsi (Iran)", "IRB", "1219", "1097", "1097"),
     ITB("Italian", "ITB", "697", "280", "280"),
     ITI("Italian MNCS", "ITI", "697", "500", "500"),
-    JEB("Japanese-English", "JEB", "697", "281", "65535"),
+    JEB("Japanese-English", "JEB", "939", "939", "939"),
     JEI("Japanese- English MNCS", "JEI", "697", "500", "500"),
-    JKB("Japanese Kanji and Katakana", "JKB", "1172", "290", "5026"),
+    JKB("Japanese Kanji and Katakana", "JKB", "930", "930", "930"),
     //	JUB("Japanese Kanji and US English","JUB","697","37","See note 3."),
     KAB("Japanese Katakana", "KAB", "332", "290", "290"),
     JPB("Japanese Latin Extended", "JPB", "1172", "1027", "1027"),
+    JIS2004("Extended Japanese Latin-Kanji Host Mixed for JIS X0213 including 6205 UDC,"
+            + " Extended SBCS (includes SBCS & DBCS euro)",
+            "JAPAN MIX EBCDIC", "1399", "1399", "1399"),
+
     KOB("Korean", "KOB", "1173", "833", "833"),
     ROB("Latin 2", "ROB", "959", "870", "870"),
     MKB("Macedonian", "MKB", "1150", "1025", "1025"),

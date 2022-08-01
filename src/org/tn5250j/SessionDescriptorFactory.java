@@ -97,8 +97,10 @@ public class SessionDescriptorFactory {
     private static Terminal calculateCompatibleTerminal(final Map<String, String> sesProps) {
         Terminal terminal = Terminal.IBM_5292_2;
 
-        if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE) && sesProps.get(
-                TN5250jConstants.SESSION_SCREEN_SIZE).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR)) {
+        if (sesProps.containsKey(TN5250jConstants.SESSION_TERMINAL)) { //new style
+            terminal = Terminal.valueOf(sesProps.get(TN5250jConstants.SESSION_TERMINAL));
+        } else if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE) && sesProps.get(
+                TN5250jConstants.SESSION_SCREEN_SIZE).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR)) { //old style
             terminal = Terminal.IBM_3477_FC;
         }
 

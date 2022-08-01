@@ -92,6 +92,7 @@ import org.slf4j.LoggerFactory;
 import org.tn5250j.ConnectUser;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.Terminal;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
@@ -154,7 +155,6 @@ public final class tnvt implements Runnable {
     private String session = "";
     private int port = 23;
     private boolean connected = false;
-    private boolean support132 = true;
     private ByteArrayOutputStream baosp = null;
     private ByteArrayOutputStream baosrsp = null;
     private int devSeq = -1;
@@ -174,14 +174,15 @@ public final class tnvt implements Runnable {
     private boolean firstScreen;
     private String sslType;
     private WTDSFParser sfParser;
+    private Terminal terminal;
 
     /**
      * @param session session.
      * @param screen52 screen GUI facade.
      * @param type enhance or not.
-     * @param support132 support 123.
+     * @param terminal terminal type.
      */
-    public tnvt(final Session5250 session, final Screen5250Facade screen52, final boolean type, final boolean support132) {
+    public tnvt(final Session5250 session, final Screen5250Facade screen52, final boolean type, final Terminal terminal) {
 
         controller = session;
         if (log.isInfoEnabled()) {
@@ -189,7 +190,7 @@ public final class tnvt implements Runnable {
         }
 
         enhanced = type;
-        this.support132 = support132;
+        this.terminal = terminal;
         setCodePage("37");
         this.screen52 = screen52;
         dataIncluded = new boolean[24];
@@ -2408,10 +2409,7 @@ public final class tnvt implements Runnable {
                             baosp.write(SB);
                             baosp.write(TERMINAL_TYPE);
                             baosp.write(QUAL_IS);
-                            if (!support132)
-                                baosp.write("IBM-3179-2".getBytes());
-                            else
-                                baosp.write("IBM-3477-FC".getBytes());
+                            baosp.write(terminal.getType().getBytes());
                             baosp.write(IAC);
                             baosp.write(SE);
                             writeByte(baosp.toByteArray());

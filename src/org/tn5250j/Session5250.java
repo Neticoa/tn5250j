@@ -158,7 +158,7 @@ public class Session5250  {
 
     public void connect() {
 
-        final tnvt vt = new tnvt(this, screen, sesProps.isEnhanced(), sesProps.getTerminal().getColumns() == 132);
+        final tnvt vt = new tnvt(this, screen, sesProps.isEnhanced(), sesProps.getTerminal());
         setVT(vt);
 
         if (sesProps.getProxy() != null) {
@@ -168,7 +168,7 @@ public class Session5250  {
             vt.setSSLType(sesProps.getSslType().getType());
         }
 
-        vt.setCodePage(sesProps.getCodePage().getEncoding());
+        vt.setCodePage(sesProps.getCodePage().getCodePage());
         if (sesProps.getDeviceName() != null) {
             vt.setDeviceName(sesProps.getDeviceName());
         }
