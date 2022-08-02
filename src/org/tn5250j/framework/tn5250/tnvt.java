@@ -24,7 +24,6 @@
 package org.tn5250j.framework.tn5250;
 
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static org.tn5250j.TN5250jConstants.AID_HELP;
 import static org.tn5250j.TN5250jConstants.AID_PRINT;
 import static org.tn5250j.TN5250jConstants.CMD_CLEAR_FORMAT_TABLE;
@@ -155,8 +154,8 @@ public final class tnvt implements Runnable {
     private String session = "";
     private int port = 23;
     private boolean connected = false;
-    private ByteArrayOutputStream baosp = null;
-    private ByteArrayOutputStream baosrsp = null;
+    private Buffer baosp = null;
+    private Buffer baosrsp = null;
     private int devSeq = -1;
     private String devName;
     private String devNameUsed;
@@ -197,8 +196,8 @@ public final class tnvt implements Runnable {
 
         user = session.getConnectionProperties().getConnectUser();
 
-        baosp = new ByteArrayOutputStream();
-        baosrsp = new ByteArrayOutputStream();
+        baosp = new Buffer();
+        baosrsp = new Buffer();
     }
 
     public String getHostName() {
@@ -382,8 +381,8 @@ public final class tnvt implements Runnable {
         return true;
     }
 
-    private final ByteArrayOutputStream appendByteStream(final byte abyte0[]) {
-        final ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
+    private final Buffer appendByteStream(final byte abyte0[]) {
+        final Buffer bytearrayoutputstream = new Buffer();
         for (int i = 0; i < abyte0.length; i++) {
             bytearrayoutputstream.write(abyte0[i]);
             if (abyte0[i] == -1)
@@ -446,9 +445,9 @@ public final class tnvt implements Runnable {
         } catch (final IOException ioe) {
 
             log.warn(ioe.getMessage());
+        } finally {
             baosp.reset();
         }
-        baosp.reset();
 
     }
 
@@ -485,10 +484,10 @@ public final class tnvt implements Runnable {
         } catch (final IOException ioe) {
 
             log.warn(ioe.getMessage());
-            baosp.reset();
             return false;
+        } finally {
+            baosp.reset();
         }
-        baosp.reset();
         return true;
 
     }
@@ -575,8 +574,9 @@ public final class tnvt implements Runnable {
         } catch (final IOException ioe) {
 
             log.warn(ioe.getMessage());
+        } finally {
+            baosp.reset();
         }
-        baosp.reset();
     }
 
     /**
@@ -638,7 +638,7 @@ public final class tnvt implements Runnable {
                 dsq.clear();
             }
             for (int i = 0, l = sr.length(); i < l; i++) {
-                baosp.write(codePage.uni2ebcdic(sr.charAt(i)));
+                baosp.write(codePage.char2bytes(sr.charAt(i)));
             }
             bytes = baosp.toByteArray();
         }
@@ -647,8 +647,9 @@ public final class tnvt implements Runnable {
             writeGDS(4, 0, bytes);
         } catch (final IOException ioe) {
             log.info(ioe.getMessage());
+        } finally {
+            baosp.reset();
         }
-        baosp.reset();
     }
 
     /**
@@ -721,8 +722,9 @@ public final class tnvt implements Runnable {
         } catch (final IOException ioe) {
 
             log.warn(ioe.getMessage());
+        } finally {
+            baosp.reset();
         }
-        baosp.reset();
     }
 
     public final void toggleDebug() {
@@ -1099,29 +1101,26 @@ public final class tnvt implements Runnable {
     }
 
     private final void readScreen() throws IOException {
-
-        final int rows = screen52.getRows();
-        final int cols = screen52.getColumns();
-        final byte screenArray[] = new byte[rows * cols];
-        fillScreenArray(screenArray);
+        final byte screenArray[] = screenAreaToBytes();
         writeGDS(0, 0, screenArray);
     }
 
-    private final void fillScreenArray(final byte[] sa) {
+    private final byte[] screenAreaToBytes() throws IOException {
+        final int len = screen52.getRows() * screen52.getColumns();
+        final Buffer out = new Buffer();
 
         int lastAttr = 32;
-        int sac = 0;
 
-        for (int i = 0; i < sa.length; i++) { // save the screen data
+        for (int i = 0; i < len; i++) { // save the screen data
 
             if (screen52.isPlanesAttributePlace(i)) {
                 lastAttr = screen52.getPlanesCharAttr(i);
-                sa[sac++] = (byte) lastAttr;
+                out.write((byte) lastAttr);
             } else {
                 if (screen52.getPlanesCharAttr(i) != lastAttr) {
                     lastAttr = screen52.getPlanesCharAttr(i);
-                    sac = max(--sac, 0);
-                    sa[sac++] = (byte) lastAttr;
+                    out.reset(max(out.size() - 1, 0));
+                    out.write((byte) lastAttr);
                 }
                 //LDC: Check to see if it is an displayable character. If not,
                 //  do not convert the character.
@@ -1129,20 +1128,22 @@ public final class tnvt implements Runnable {
                 //sa[sac++] =
                 // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
                 final char ch = screen52.getPlanesChar(i);
-                byte byteCh = (byte) ch;
-                if (isDataUnicode(ch))
-                    byteCh = codePage.uni2ebcdic(ch);
-                sa[min(sac++, sa.length - 1)] = byteCh;
+                if (isDataUnicode(ch)) {
+                    out.write(codePage.char2bytes(ch));
+                } else {
+                    out.write((byte) ch);
+                }
             }
         }
+
+        return out.toByteArray();
     }
 
     private byte[] createRegenerationBuffer(final int len) throws IOException {
 
         int la = 32;
-        int sac = 0;
 
-        byte[] sa = new byte[len];
+        final Buffer out = new Buffer();
 
         try {
             final boolean guiExists = sfParser != null && sfParser.isGuisExists();
@@ -1151,24 +1152,19 @@ public final class tnvt implements Runnable {
                 if (guiExists) {
                     final byte[] guiSeg = sfParser.getSegmentAtPos(i);
                     if (guiSeg != null) {
-                        final byte[] gsa = new byte[sa.length + guiSeg.length + 2];
-                        System.arraycopy(sa, 0, gsa, 0, sa.length);
-                        System.arraycopy(guiSeg, 0, gsa, sac + 2, guiSeg.length);
-                        sa = new byte[gsa.length];
-                        System.arraycopy(gsa, 0, sa, 0, gsa.length);
-                        sa[sac++] = (byte) 0x04;
-                        sa[sac++] = (byte) 0x11;
-                        sac += guiSeg.length;
+                        out.write((byte) 0x04);
+                        out.write((byte) 0x11);
+                        out.write(guiSeg);
                     }
                 }
                 if (screen52.isPlanesAttributePlace(i)) {
                     la = screen52.getPlanesCharAttr(i);
-                    sa[sac++] = (byte) la;
+                    out.write((byte) la);
                 } else {
                     if (screen52.getPlanesCharAttr(i) != la) {
                         la = screen52.getPlanesCharAttr(i);
-                        sac = max(--sac, 0);
-                        sa[sac++] = (byte) la;
+                        out.reset(max(out.size() - 1, 0));
+                        out.write((byte) la);
                     }
                     //LDC: Check to see if it is an displayable character. If not,
                     //  do not convert the character.
@@ -1176,16 +1172,18 @@ public final class tnvt implements Runnable {
                     //sa[sac++] =
                     // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
                     final char ch = screen52.getPlanesChar(i);
-                    byte byteCh = (byte) ch;
-                    if (isDataUnicode(ch))
-                        byteCh = codePage.uni2ebcdic(ch);
-                    sa[min(sac++, len - 1)] = byteCh;
+                    if (isDataUnicode(ch)) {
+                        out.write(codePage.char2bytes(ch));
+                    } else {
+                        out.write((byte) ch);
+                    }
                 }
             }
         } catch (final Exception e) {
             log.warn("Error, while filling the screen array. TN5250j will continue to operate, but screen may be displayed wrong.", e);
         }
-        return sa;
+
+        return out.toByteArray();
     }
 
     public final void saveScreen() throws IOException {
@@ -1593,9 +1591,9 @@ public final class tnvt implements Runnable {
         } catch (final IOException ioe) {
 
             log.warn(ioe.getMessage());
+        } finally {
+            baosp.reset();
         }
-
-        baosp.reset();
     }
 
     private boolean writeToDisplay(final boolean controlsExist) {

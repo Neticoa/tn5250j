@@ -3,7 +3,6 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import org.tn5250j.encoding.ICodePage;
@@ -231,7 +230,7 @@ public interface Screen5250Facade {
 
     void setOiaKeyBoardLocked(boolean b);
 
-    void readFormatTable(ByteArrayOutputStream baosp, int readType, ICodePage codePage);
+    void readFormatTable(Buffer baosp, int readType, ICodePage codePage);
 
     boolean isStatusErrorCode();
 

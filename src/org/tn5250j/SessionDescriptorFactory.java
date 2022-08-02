@@ -80,7 +80,9 @@ public class SessionDescriptorFactory {
      */
     private static CodePage findCodePage(final String codePageProperty) {
         for (final CodePage cp : CodePage.values()) {
-            if (cp.getEncoding().equals(codePageProperty)) {
+            final String codePage = cp.getCodePage();
+            if (codePage.equals(codePageProperty) || codePageProperty.equalsIgnoreCase("Cp"
+                    + codePage)) {
                 return cp;
             }
         }

@@ -257,6 +257,7 @@ public class EditSessionDialogController implements Initializable {
         newJVM.setDisable(isNew);
         noEmbed.setDisable(isNew);
         deamon.setDisable(isNew);
+        String codepage = null;
 
         systemNameTextChanged();
 
@@ -278,6 +279,10 @@ public class EditSessionDialogController implements Initializable {
             UiUtils.setLabel(ok, "conf.optEdit");
 
             final String[] args = parseArgs(properties.get(name));
+
+            if (!"-p".equals(args[0])) { //if host presented
+                systemId.setText(args[0]);
+            }
 
             if (isSpecified("-p", args)) {
                 port.setText(getParm("-p", args));
@@ -302,16 +307,15 @@ public class EditSessionDialogController implements Initializable {
             }
 
             if (isSpecified("-cp", args)) {
-                final String codepage = getParm("-cp", args);
+                codepage = getParm("-cp", args);
 
                 jtb.setSelected(true);
                 for (final String acp : CharMappings.getAvailableCodePages()) {
                     if (acp.equals(codepage)) {
                         jtb.setSelected(false);
+                        break;
                     }
                 }
-
-                setSelectedItem(cpb, codepage);
             }
 
             ec.setSelected(isSpecified("-e", args));
@@ -352,6 +356,9 @@ public class EditSessionDialogController implements Initializable {
 
         sdnSelectionChanged();
         doCPStateChanged();
+        if (codepage != null) {
+            setSelectedItem(cpb, codepage);
+        }
     }
 
     /**

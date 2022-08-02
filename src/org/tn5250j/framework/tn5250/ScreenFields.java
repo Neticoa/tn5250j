@@ -29,8 +29,6 @@ import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
-import java.io.ByteArrayOutputStream;
-
 import org.tn5250j.encoding.ICodePage;
 
 public class ScreenFields {
@@ -587,7 +585,7 @@ public class ScreenFields {
         }
     }
 
-    protected void readFormatTable(final ByteArrayOutputStream baosp, final int readType, final ICodePage codePage) {
+    protected void readFormatTable(final Buffer baosp, final int readType, final ICodePage codePage) {
 
         ScreenField sf;
         boolean isSigned = false;
@@ -676,12 +674,12 @@ public class ScreenFields {
                                         if (c == 0x1C)
                                             baosp.write(c);
                                         else
-                                            baosp.write(codePage.uni2ebcdic(' '));
+                                            baosp.write(codePage.char2bytes(' '));
                                 } else {
                                     if (isSigned && k == len3 - 1) {
                                         baosp.write(0xd0 | (0x0f & c));
                                     } else
-                                        baosp.write(codePage.uni2ebcdic(c));
+                                        baosp.write(codePage.char2bytes(c));
 
                                 }
                             }

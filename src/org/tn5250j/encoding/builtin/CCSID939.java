@@ -3,24 +3,17 @@
  */
 package org.tn5250j.encoding.builtin;
 
-import com.ibm.as400.access.ConversionMaps;
-
 /**
  * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
  */
-@SuppressWarnings("unchecked")
-public final class CCSID1399 extends AbstractConvTableCodePageConverter {
+public final class CCSID939 extends AbstractConvTableCodePageConverter {
 
-    public final static String NAME = "1399";
-    public final static String DESCR = "JAPAN MIX EBCDIC";
+    public final static String NAME = "939";
+    public final static String DESCR = "Japanese Latin";
 
-    static {
-        ConversionMaps.encodingCcsid_.put("Cp1399", "1399");
-    }
-
-    public CCSID1399() {
-        super("Cp1399");
+    public CCSID939() {
+        super("Cp939");
     }
 
     @Override

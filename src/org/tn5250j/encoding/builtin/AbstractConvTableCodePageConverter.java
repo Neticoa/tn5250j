@@ -26,6 +26,7 @@ package org.tn5250j.encoding.builtin;
 
 import static org.tn5250j.framework.tn5250.ByteExplainer.SHIFT_IN;
 import static org.tn5250j.framework.tn5250.ByteExplainer.SHIFT_OUT;
+import static org.tn5250j.framework.tn5250.ByteExplainer.isDataUnicode;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftOut;
 
@@ -37,6 +38,7 @@ import com.ibm.as400.access.ConvTable;
 
 /**
  * @author nitram509
+ * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  */
 public abstract class AbstractConvTableCodePageConverter implements ICodepageConverter {
 
@@ -57,9 +59,21 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
     public void init() {
     }
 
+    /* (non-Javadoc)
+     * @see org.tn5250j.encoding.ICodePage#char2bytes(char)
+     */
+    @Override
+    public byte[] char2bytes(final char index) {
+        if (isDataUnicode(index)) {
+            return convTable.stringToByteArray(new String(new char[] {index}));
+        } else {
+            return char2bytes(index);
+        }
+    }
+
     @Override
     public byte uni2ebcdic(final char index) {
-        return 0;
+        return (byte) index;
     }
 
     @Override
@@ -84,9 +98,8 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
                 return convTable.byteArrayToString(new byte[]{SHIFT_IN, lastByte.byteValue(), (byte) (index & 0xff), SHIFT_OUT}, 0, 4).charAt(0);
             }
         }
-        final char ch = convTable.byteArrayToString(new byte[]{(byte) (index & 0xff)}, 0, 1).charAt(0);
-        System.out.print(ch);
-        return ch;
+
+        return convTable.byteArrayToString(new byte[]{(byte) (index & 0xff)}, 0, 1).charAt(0);
     }
 
     @Override

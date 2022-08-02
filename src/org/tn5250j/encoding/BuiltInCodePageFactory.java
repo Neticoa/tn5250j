@@ -55,6 +55,7 @@ import org.tn5250j.encoding.builtin.CCSID870;
 import org.tn5250j.encoding.builtin.CCSID871;
 import org.tn5250j.encoding.builtin.CCSID875;
 import org.tn5250j.encoding.builtin.CCSID930;
+import org.tn5250j.encoding.builtin.CCSID939;
 import org.tn5250j.encoding.builtin.ICodepageConverter;
 
 /**
@@ -93,6 +94,7 @@ import org.tn5250j.encoding.builtin.ICodepageConverter;
         clazzes.add(CCSID871.class);
         clazzes.add(CCSID875.class);
         clazzes.add(CCSID930.class);
+        clazzes.add(CCSID939.class);
         clazzes.add(CCSID1025.class);
         clazzes.add(CCSID1026.class);
         clazzes.add(CCSID1112.class);

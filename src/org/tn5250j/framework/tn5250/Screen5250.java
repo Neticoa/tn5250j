@@ -27,7 +27,6 @@ package org.tn5250j.framework.tn5250;
 
 import static org.tn5250j.TN5250jConstants.*;
 
-import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -3558,7 +3557,7 @@ public class Screen5250 implements Screen5250Facade {
     }
 
     @Override
-    public void readFormatTable(final ByteArrayOutputStream baosp, final int readType, final ICodePage codePage) {
+    public void readFormatTable(final Buffer baosp, final int readType, final ICodePage codePage) {
         getScreenFields().readFormatTable(baosp, readType, codePage);
     }
 

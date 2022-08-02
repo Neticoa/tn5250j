@@ -17,6 +17,10 @@ public interface ICodePage {
      * @param index java character.
      * @return byte character.
      */
+    default byte[] char2bytes(final char index) {
+        return new byte[] {uni2ebcdic(index)};
+    }
+
     byte uni2ebcdic(char index);
 
     boolean isDoubleByteActive();
