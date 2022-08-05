@@ -1,0 +1,278 @@
+
+tn5250j-general@lists.sourceforge.net
+Discussion:
+[Tn5250j-general] Support for multibyte charactersets?
+Martin Reising
+19 years ago
+Permalink
+Hi,
+is there or is still planed to support multibyte characterset like chinese
+(GB2312) or taiwan (BIG5)?
+Does the design of tn5250j allow such things, or requires it a good peace of
+rewriting?
+--
+Martin Reising mailaddress see header
+natural computing GmbH http://www.natural-computing.de/
+Martener Str. 535 Phone: +49 231 6104850
+44379 Dortmund Fax: +49 231 6104840
+tn5250j
+19 years ago
+Permalink
+Post by Martin Reising
+Hi,
+Hello Martin!! Long time!! I was wondering what had happened to you.
+The emulator has definately changed since the last time we conversed,
+hopefully for the better ;-)
+Post by Martin Reising
+is there or is still planed to support multibyte characterset like chinese
+(GB2312) or taiwan (BIG5)?
+I can not say planned at the moment but it would be nice. Have had a
+couple of people offer to support it but they never materialized.
+Post by Martin Reising
+Does the design of tn5250j allow such things, or requires it a good peace of
+rewriting?
+Not knowing to much about the double byte character sets I am going to
+venture a guess here, it should not take to much of a rewrite to
+implement. There should be about three or four modules to change at the
+most to allow the displaying of these characters. Basic support I am
+talking here.
+
+Were you asking this before starting on such a venture? I have not had
+a lot of time in the past week lately to even get out a new release,
+just got back from being out of town on business, but can provide some
+guidance in the area in what I think would need to be changed if you or
+someone else where willing to take a shot. I do not have a system to
+test against for this either so that is kind of rough as well.
+Regards and good hearing from you. Don't be a stranger.
+
+Kenneth
+Martin Reising
+19 years ago
+Permalink
+Post by tn5250j
+Post by Martin Reising
+Does the design of tn5250j allow such things, or requires it a good peace
+of rewriting?
+Not knowing to much about the double byte character sets I am going to
+venture a guess here, it should not take to much of a rewrite to
+implement. There should be about three or four modules to change at the
+most to allow the displaying of these characters. Basic support I am
+talking here.
+Ok, I'll looking into the source this weekend. I've got no idee what
+multibyte requires. Any hints concerning the datastreams? And what about
+composing chinese characters?
+Post by tn5250j
+Were you asking this before starting on such a venture?
+mochasoft plans no multibyte characterset support. The tn5250 people are
+happy, if someone would implement support for multibyte characterset und XIM.
+Post by tn5250j
+.. can provide some guidance in the area in what I think would need to be
+changed if you or someone else where willing to take a shot.
+Thanks for support, but I dont know, if I'm able to implement such big thing.
+Post by tn5250j
+I do not have a system to test against for this either so that is kind of
+rough as well.
+Our customer has an testsystem with simplified chinese (GB2312). Sorry, no
+internet access.
+--
+Martin Reising mailaddress see header
+natural computing GmbH http://www.natural-computing.de/
+Martener Str. 535 Phone: +49 231 6104850
+44379 Dortmund Fax: +49 231 6104840
+tn5250j
+19 years ago
+Permalink
+...
+I will be available this weekend to answer questions if you would like.
+Hopefully getting the release out as well :-)
+
+Now for one thing that might be hard to figure out and may help us here
+is Wim and Luc allows the JT400 toolbox page codes to be used within the
+emulator. What this means is that we will not have to come up with a
+codepage for these two as we can use the toolbox for the conversion
+testing. That in my opinion is a big hurdle crossed.
+
+The modules for this are in org.tn5250j.encoding package. The module
+ToolboxCodePage.java handles the conversion between unicode and ebcdic
+and vice-a-versa.
+
+First thing that comes to mind is how the negotiations are handled. If
+the negotiating codes are the same then there should be no problem
+here. This will be the very first hurdle to be crossed if a connection
+can be negotiated or not.
+
+If we can negotiate, which IMVHO should not be a problem as the
+negotiatitions are at a very basic level of telnet and defined in the
+RFC's, then we will run into the next hurdle of parsing the character
+streams. Now here we go.
+
+The attribute bytes should be the same as well as the 5250 datastream
+commands. Again IMVHO this should not be a problem.
+
+We will have to add another flag to tnvt.java specifying if the codepage
+is double-byte or not. Then the next method to be looked at is the
+writeToDisplay method that does most of the work of parsing the main
+characters to be displayed. Here I would recommend that the enhanced
+datastream NOT be used for the first testing purposes.
+
+The next part after making sure we can distinguish DBC from SBC will
+actually be changing the screen5250.java module to handle the actual
+displaying. Here we might change the methods to add a parameter for DBC
+or add other method signatures to handle the DBC data.
+
+The only other drawback that comes to mind is that tn5250j uses
+bytestreams to read and transfer data. Not sure if this would be a
+problem though. Anybody have any ideas?
+
+This would be how I would start the process.
+
+Anybody else have any opinions on this? Words of wisdom? Advice? What
+about IBM contacts that could be used for asking questions or hell they
+could jump in here and help out. I will do the writing to these people
+if someone can tell me even where to start to contact IBM reps for this.
+Post by Martin Reising
+Post by tn5250j
+Were you asking this before starting on such a venture?
+mochasoft plans no multibyte characterset support. The tn5250 people are
+happy, if someone would implement support for multibyte characterset und XIM.
+Saw the message you sent and have actually looked at their code about a
+month back and think they will have about the same types of problems.
+Can not say for sure which would be better to start with tn5250 or
+tn5250j. Right now with using the toolbox for java we at least have a
+head start with having a usable codepage and java being "inherently"
+unicode based. tn5250 of course is very fast and that may be the
+deciding benchmark for you and your client.
+Post by Martin Reising
+Post by tn5250j
+.. can provide some guidance in the area in what I think would need to be
+changed if you or someone else where willing to take a shot.
+Thanks for support, but I dont know, if I'm able to implement such big thing.
+Hopefully what was outlined above will be a start to see if it is at
+least feasible to do. I would absolutely love to get my hands on a DBCS
+data stream to see what it does.
+
+Christian, Wim and Luc seem to be very good at the codepage problems so
+they might be able to offer some guidance here as well.
+Post by Martin Reising
+Post by tn5250j
+I do not have a system to test against for this either so that is kind of
+rough as well.
+Our customer has an testsystem with simplified chinese (GB2312). Sorry, no
+internet access.
+:-(
+
+Martin hope this helps and as I said will be available over most of the
+weekend if you do decide to take a whack at this. Write the list or me
+personally. Does your client have anybody familiar with java that might
+be able to lend a hand with this or at least explain some of the traps
+that may befall the process?
+
+Regards
+
+
+Kenneth
+tn5250j
+19 years ago
+Permalink
+Martin
+
+Did you find out anything on this?
+
+Regards
+
+Kenneth
+...
+Martin Reising
+19 years ago
+Permalink
+This post might be inappropriate. Click to display it.
+tn5250j
+19 years ago
+Permalink
+Post by Martin Reising
+Post by Martin Reising
+Martin
+Did you find out anything on this?
+Yes, I'm not familar enough with telnet, to hack tn5250j in that way in 2
+weeks.
+Of course not but was just wondering if it was doable from your point of
+view. It's a shame someone does not have test system to even see if it
+is possible or not. At least to get a base idea of what would be needed.
+Post by Martin Reising
+HOD should support multibyte charachtersets. The demo at
+http://websphere.dfw.ibm.com/whidemo/
+works only with jre 1.4.1 and codepage 037. I allways get errormessages with
+codepage 1141. To look inside HOD try
+http://websphere.dfw.ibm.com/hod/
+I would think that it would. Not sure about the 1141 codepage though.
+
+Thanks for the response Martin.
+
+Regards
+
+Kenneth
+w***@ldc.be
+19 years ago
+Permalink
+Hello Everybody,
+
+been a while now.
+
+I see there's been a question about DBCS support. If I look at it the right
+way, I think the only major issue would be in the datastream arrea. If I'm
+right these use byte arrays for shipping the data around. Some part's now
+will have to be twice as large for DBCS support. After conversion to
+Unicode, this should resolve itself as it is unicode.
+
+What d'you think?
+
+Reg'ds,
+Wim Van Leuven
+tn5250j
+19 years ago
+Permalink
+Post by w***@ldc.be
+Hello Everybody,
+been a while now.
+I see there's been a question about DBCS support. If I look at it the right
+way, I think the only major issue would be in the datastream arrea. If I'm
+right these use byte arrays for shipping the data around. Some part's now
+will have to be twice as large for DBCS support. After conversion to
+Unicode, this should resolve itself as it is unicode.
+In the connect method of tnvt module the controlling flag mentioned
+previously that would have to be added, here lets call it isDBCS, could
+be interrogated and when allocating BufferedInputStream(in, 8192) then
+could be changed to double this. The other parts themselves use a
+ByteArrayOutputStream so grow dynamically as you write and then are
+flushed after use so this should not pose a problem either as there are
+no set array sizes to be allocated or re-allocated in the program except
+for the underlying character buffers used by the Streams themselves.
+
+The concern I have is if the use of bytes will be a problem as they
+themselves are not unicode based per-sé.
+
+Others with views on this.
+Post by w***@ldc.be
+What d'you think?
+Thanks Wim.
+
+Regards
+
+Kenneth
+...
+8 Replies
+4 Views
+Permalink to this page
+Disable enhanced parsing
+
+Thread Navigation
+Martin Reising 19 years ago
+tn5250j 19 years ago
+Martin Reising 19 years ago
+tn5250j 19 years ago
+tn5250j 19 years ago
+Martin Reising 19 years ago
+tn5250j 19 years ago
+w***@ldc.be 19 years ago
+tn5250j 19 years ago
+about - legalese
