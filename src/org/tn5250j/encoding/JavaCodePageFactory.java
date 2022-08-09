@@ -31,12 +31,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
+import org.tn5250j.CodePage;
+
 /* package */ class JavaCodePageFactory extends AbstractCodePage {
 
     private final CharsetEncoder encoder;
     private final CharsetDecoder decoder;
 
-    /* package */ JavaCodePageFactory(String encoding, CharsetEncoder encoder, CharsetDecoder decoder) {
+    /* package */ JavaCodePageFactory(final String encoding, final CharsetEncoder encoder, final CharsetDecoder decoder) {
         super(encoding);
         this.encoder = encoder;
         this.decoder = decoder;
@@ -46,12 +48,12 @@ import java.nio.charset.CharsetEncoder;
      * @see org.tn5250j.encoding.CodePage#ebcdic2uni(int)
      */
     @Override
-    public char ebcdic2uni(int codepoint) {
+    public char ebcdic2uni(final byte codepoint) {
         try {
-            final ByteBuffer in = ByteBuffer.wrap(new byte[]{(byte) codepoint});
+            final ByteBuffer in = ByteBuffer.wrap(new byte[]{codepoint});
             final CharBuffer out = this.decoder.decode(in);
             return out.get(0);
-        } catch (Exception cce) {
+        } catch (final Exception cce) {
             return ' ';
         }
     }
@@ -60,24 +62,14 @@ import java.nio.charset.CharsetEncoder;
      * @see org.tn5250j.encoding.CodePage#uni2ebcdic(char)
      */
     @Override
-    public byte uni2ebcdic(char character) {
+    public byte uni2ebcdic(final char character) {
         try {
             final CharBuffer in = CharBuffer.wrap(new char[]{character});
             final ByteBuffer out = this.encoder.encode(in);
             return out.get(0);
-        } catch (Exception cce) {
+        } catch (final Exception cce) {
             return 0x0;
         }
-    }
-
-    @Override
-    public boolean isDoubleByteActive() {
-        return false;
-    }
-
-    @Override
-    public boolean secondByteNeeded() {
-        return false;
     }
 
     /**
@@ -92,7 +84,7 @@ import java.nio.charset.CharsetEncoder;
             final Charset cs = java.nio.charset.Charset.forName(encoding);
             dec = cs.newDecoder();
             enc = cs.newEncoder();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             enc = null;
             dec = null;
         }

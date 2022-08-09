@@ -123,7 +123,7 @@ import org.slf4j.LoggerFactory;
         }
 
         @Override
-        public char ebcdic2uni(final int index) {
+        public char ebcdic2uni(final byte index) {
             Object result;
             try {
                 result = tostringMethod.invoke(converter, new Object[]{new byte[]{(byte) (index & 0xFF)}});
@@ -150,16 +150,6 @@ import org.slf4j.LoggerFactory;
                 return 0x00;
 
             return ((byte[]) result)[0];
-        }
-
-        @Override
-        public boolean isDoubleByteActive() {
-            return false;
-        }
-
-        @Override
-        public boolean secondByteNeeded() {
-            return false;
         }
     }
 

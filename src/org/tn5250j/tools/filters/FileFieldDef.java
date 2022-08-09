@@ -43,21 +43,21 @@ public class FileFieldDef {
     private tnvt vt;
     private StringBuffer sbdata;
 
-    public FileFieldDef(tnvt v, char dec) {
+    public FileFieldDef(final tnvt v, final char dec) {
         decChar = dec;
         vt = v;
         translateIt = true;
     }
 
-    public String parseData(byte[] cByte) {
+    public String parseData(final byte[] cByte) {
 
         if (!translateIt) {
             return sbdata.toString();
         }
 
-        StringBuffer sb = new StringBuffer(bufferLength);
+        final StringBuffer sb = new StringBuffer(bufferLength);
 
-        int end = startOffset + length - 1;
+        final int end = startOffset + length - 1;
 
         switch (type) {
 
@@ -84,19 +84,19 @@ public class FileFieldDef {
                 //    byte 4 of 4 -> 7D    The D siginifies a negative number
                 //
                 for (int f = startOffset - 1; f < end - 1; f++) {
-                    byte bzd = cByte[f];
-                    int byteZ = (bzd >> 4) & 0x0f;  // get the zone portion
-                    int byteD = (bzd & 0x0f);        // get the digit portion
+                    final byte bzd = cByte[f];
+                    final int byteZ = (bzd >> 4) & 0x0f;  // get the zone portion
+                    final int byteD = (bzd & 0x0f);        // get the digit portion
 
                     sb.append(byteZ); // assign the zone portion as the first digit
                     sb.append(byteD); // assign the digit portion as the second digit
                 }
 
                 // here we obtain the last byte to determine the sign of the field
-                byte bzd = cByte[end - 1];
+                final byte bzd = cByte[end - 1];
 
-                int byteZ = (bzd >> 4) & 0x0f;  // get the zone portion
-                int byteD = (bzd & 0x0f);        // get the digit portion
+                final int byteZ = (bzd >> 4) & 0x0f;  // get the zone portion
+                final int byteD = (bzd & 0x0f);        // get the digit portion
                 sb.append(byteZ);                // append the zone portion as the
                 // the last digit of the number
                 // Here we interrogate the the DIGIT portion for the sign
@@ -152,14 +152,17 @@ public class FileFieldDef {
             default:
 
                 for (int f = startOffset - 1; f < end; f++) {
-                    sb.append(vt.getCodePage().ebcdic2uni(cByte[f] & 0xff));
+                    final char[] chars = vt.getCodePage().charsForNextByte(cByte[f]);
+                    if (chars != null) {
+                        sb.append(chars);
+                    }
                 }
 
         }
 
         if (decPos > 0) {
 
-            int o = sb.length();
+            final int o = sb.length();
             sb.insert(o - decPos, decChar);
 
         }
@@ -168,13 +171,14 @@ public class FileFieldDef {
         return data;
     }
 
-    public void setFieldData(String fd) {
+    public void setFieldData(final String fd) {
         if (sbdata == null)
             sbdata = new StringBuffer(length);
         sbdata.setLength(0);
         sbdata.append(fd);
     }
 
+    @Override
     public String toString() {
         return fieldName + " " +
                 startOffset + " " +
@@ -199,12 +203,12 @@ public class FileFieldDef {
         return fieldName;
     }
 
-    public void setFieldName(String name) {
+    public void setFieldName(final String name) {
 
         fieldName = name;
     }
 
-    public void setStartOffset(String pos) {
+    public void setStartOffset(final String pos) {
 
         startOffset = Integer.parseInt(pos);
     }
@@ -218,25 +222,25 @@ public class FileFieldDef {
 
     }
 
-    public void setFieldLength(String len) {
+    public void setFieldLength(final String len) {
 
         length = Integer.parseInt(len);
 
     }
 
-    public void setNumDigits(String num) {
+    public void setNumDigits(final String num) {
 
         numDigits = Integer.parseInt(num);
 
     }
 
-    public void setDecPositions(String dec) {
+    public void setDecPositions(final String dec) {
 
         decPos = Integer.parseInt(dec);
 
     }
 
-    public void setFieldType(String fType) {
+    public void setFieldType(final String fType) {
 
         type = fType.charAt(0);
 
@@ -246,13 +250,13 @@ public class FileFieldDef {
             bufferLength = length;
     }
 
-    public void setFieldText(String text) {
+    public void setFieldText(final String text) {
 
         txtDesc = text;
 
     }
 
-    public void setNeedsTranslation(boolean translate) {
+    public void setNeedsTranslation(final boolean translate) {
         translateIt = translate;
     }
 
@@ -260,7 +264,7 @@ public class FileFieldDef {
         return writeField;
     }
 
-    public void setWriteField(boolean value) {
+    public void setWriteField(final boolean value) {
 
         writeField = value;
 

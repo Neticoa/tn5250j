@@ -67,8 +67,8 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
      * @see org.tn5250j.cp.ICodepageConverter#ebcdic2uni(int)
      */
     @Override
-    public char ebcdic2uni(int index) {
-        index = index & 0xFF;
+    public char ebcdic2uni(final byte b) {
+        final int index = b & 0xFF;
         assert index < 256;
         return codepage[index];
     }
@@ -77,14 +77,4 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
      * @return The oringal 8bit codepage.
      */
     protected abstract char[] getCodePage();
-
-    @Override
-    public boolean isDoubleByteActive() {
-        return false;
-    }
-
-    @Override
-    public boolean secondByteNeeded() {
-        return false;
-    }
 }

@@ -31,8 +31,6 @@ import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftOut;
 
 import java.io.UnsupportedEncodingException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.ibm.as400.access.ConvTable;
 
@@ -42,10 +40,10 @@ import com.ibm.as400.access.ConvTable;
  */
 public abstract class AbstractConvTableCodePageConverter implements ICodepageConverter {
 
-    private final AtomicBoolean doubleByteActive = new AtomicBoolean(false);
-    private final AtomicBoolean secondByteNeeded = new AtomicBoolean(false);
-    private final AtomicInteger lastByte = new AtomicInteger(0);
+    private boolean doubleByteActive;
+    private byte[] buff;
     private final ConvTable convTable;
+    private byte previousByte;
 
     public AbstractConvTableCodePageConverter(final String encoding) {
         try {
@@ -77,38 +75,38 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
     }
 
     @Override
-    public char ebcdic2uni(final int index) {
+    public char[] charsForNextByte(final byte index) {
         if (isShiftIn(index)) {
-            doubleByteActive.set(true);
-            secondByteNeeded.set(false);
-            return 0;
+            doubleByteActive = true;
+            buff = null;
+            return null;
         }
         if (isShiftOut(index)) {
-            doubleByteActive.set(false);
-            secondByteNeeded.set(false);
-            return 0;
+            doubleByteActive = false;
+            buff = null;
+            return null;
         }
-        if (isDoubleByteActive()) {
-            if (!secondByteNeeded()) {
-                lastByte.set(index);
-                secondByteNeeded.set(true);
-                return 0;
+        if (doubleByteActive) {
+            char[] result = null;
+
+            if (buff == null) {
+                buff = new byte[]{SHIFT_IN, 0, 0, SHIFT_OUT};
             } else {
-                secondByteNeeded.set(false);
-                return convTable.byteArrayToString(new byte[]{SHIFT_IN, lastByte.byteValue(), (byte) (index & 0xff), SHIFT_OUT}, 0, 4).charAt(0);
+                buff[1] = previousByte;
+                buff[2] = index;
+                result = (convTable.byteArrayToString(buff, 0, buff.length) + " ").toCharArray();
+                buff = null;
             }
+
+            previousByte = index;
+            return result;
         }
 
-        return convTable.byteArrayToString(new byte[]{(byte) (index & 0xff)}, 0, 1).charAt(0);
+        return convTable.byteArrayToString(new byte[]{index}, 0, 1).toCharArray();
     }
 
     @Override
-    public boolean isDoubleByteActive() {
-        return doubleByteActive.get();
-    }
-
-    @Override
-    public boolean secondByteNeeded() {
-        return secondByteNeeded.get();
+    public char ebcdic2uni(final byte index) {
+        return convTable.byteArrayToString(new byte[]{index}, 0, 1).charAt(0);
     }
 }

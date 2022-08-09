@@ -714,7 +714,10 @@ public class FTP5250Prot {
                         //   we have to offset the buffer by 0 which makes it 164 - 1
                         //   or 163
                         for (int f = 0; f < 10; f++) {
-                            sb.append(vt.getCodePage().ebcdic2uni(abyte0[163 + f] & 0xff));
+                            final char[] chars = vt.getCodePage().charsForNextByte(abyte0[163 + f]);
+                            if (chars != null) {
+                                sb.append(chars);
+                            }
                         }
 
                         printFTPInfo(sb + " " + As400Util.packed2int(abyte0, 345, 5));

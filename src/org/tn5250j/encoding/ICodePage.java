@@ -8,7 +8,15 @@ public interface ICodePage {
      * @param index single or may be more bytes character.
      * @return java character.
      */
-    char ebcdic2uni(int index);
+    char ebcdic2uni(byte index);
+
+    /**
+     * @param b byte.
+     * @return character array or null if unable to convert supplied bytes to character array.
+     */
+    default char[] charsForNextByte(final byte b) {
+        return new char[] {ebcdic2uni(b)};
+    }
 
     /**
      * Convert a Unicode character in it's byte representation.
@@ -22,8 +30,4 @@ public interface ICodePage {
     }
 
     byte uni2ebcdic(char index);
-
-    boolean isDoubleByteActive();
-
-    boolean secondByteNeeded();
 }

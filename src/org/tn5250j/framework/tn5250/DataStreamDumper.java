@@ -109,11 +109,16 @@ public class DataStreamDumper {
 
                     h.setLength(0);
                 }
-                final char ac = codePage.ebcdic2uni(abyte0[x]);
-                if (ac < ' ')
-                    h.append('.');
-                else
-                    h.append(ac);
+                final char[] ac = codePage.charsForNextByte(abyte0[x]);
+                if (ac != null) {
+                    for (final char c : ac) {
+                        if (!ByteExplainer.isDataUnicode(c)) {
+                            h.append('.');
+                        } else {
+                            h.append(c);
+                        }
+                    }
+                }
                 if (x % 4 == 0) {
                     System.out.print(" ");
                     dw.write((" ").getBytes());

@@ -58,7 +58,7 @@ public class HexCharMapDialog {
         final Set<CollationKey> set = new TreeSet<CollationKey>();
         final StringBuilder sb = new StringBuilder();
         for (int x = 0; x < 256; x++) {
-            final char ac = codepage.ebcdic2uni(x);
+            final char ac = codepage.ebcdic2uni((byte) x);
             if (!Character.isISOControl(ac)) {
                 sb.setLength(0);
                 if (Integer.toHexString(ac).length() == 1) {

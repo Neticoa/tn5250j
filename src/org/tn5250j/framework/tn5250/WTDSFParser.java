@@ -353,7 +353,10 @@ public class WTDSFParser {
                                         final StringBuffer hfBuffer = new StringBuffer(ml);
                                         while (ml-- > 0) {
                                             //LDC - 13/02/2003 - Convert it to unicode
-                                            hfBuffer.append(codePage.ebcdic2uni(segment[pos++]));
+                                            final char[] chars = codePage.charsForNextByte(segment[pos++]);
+                                            if (chars != null) {
+                                                hfBuffer.append(chars);
+                                            }
 //                                    hfBuffer.append(getASCIIChar(segment[pos++]));
 
                                         }
@@ -861,8 +864,7 @@ public class WTDSFParser {
                             cnt++;
                         }
 
-                        String s = "";
-                        byte byte0 = 0;
+                        final StringBuilder s = new StringBuilder();
                         fld++;
 
                         screen52.setCursor(chcRowStart, chcColStart);
@@ -877,14 +879,15 @@ public class WTDSFParser {
                             screen52.setCursor(chcRowStart, chcColStart + 3);
 
                             for (; cnt < minLen; cnt++) {
-
-                                byte0 = segment[pos++];
-                                s += vt.codePage.ebcdic2uni(byte0);
-                                screen52.setChar(vt.codePage.ebcdic2uni(byte0));
+                                final char[] chars = vt.codePage.charsForNextByte(segment[pos++]);
+                                if (chars != null) {
+                                    s.append(chars);
+                                    screen52.setChars(chars);
+                                }
 
                             }
 
-                            addChoiceField(chcRowStart, chcColStart, chcRow, chcCol, s);
+                            addChoiceField(chcRowStart, chcColStart, chcRow, chcCol, s.toString());
                         }
 
 //         screen52.getScreenFields().getCurrentField().setMDT();

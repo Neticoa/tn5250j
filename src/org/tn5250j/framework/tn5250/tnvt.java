@@ -69,7 +69,6 @@ import static org.tn5250j.TN5250jConstants.PF9;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isAttribute;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isDataEBCDIC;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isDataUnicode;
-import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 import java.io.BufferedInputStream;
@@ -1277,8 +1276,8 @@ public final class tnvt implements Runnable {
             if (sfParser != null && sfParser.isGuisExists())
                 sfParser.clearGuiStructs();
 
-            int b = 32;
-            int la = 32;
+            byte b = 32;
+            byte la = 32;
             final int len = rows * cols;
             for (int y = 0; y < len; y++) {
 
@@ -1287,7 +1286,7 @@ public final class tnvt implements Runnable {
 
                     log.info(" gui restored at " + y + " - " + screen52.getRow(y) + "," +
                             screen52.getCol(y));
-                    final int command = bk.getNextByte();
+                    bk.getNextByte(); // command
                     final byte[] seg = bk.getSegment();
 
                     if (seg.length > 0) {
@@ -1309,7 +1308,7 @@ public final class tnvt implements Runnable {
                         // character. If not,
                         //  do not convert the character.
                         //  The characters on screen are in unicode
-                        char ch = (char) b;
+                        char ch = (char) (b & 0xFF);
                         if (isDataEBCDIC(b))
                             ch = codePage.ebcdic2uni(b);
 
@@ -1600,7 +1599,7 @@ public final class tnvt implements Runnable {
 
         boolean error = false;
         boolean done = false;
-        int attr;
+        byte attr;
         byte control1 = 0;
         final int saRows = screen52.getRows();
         final int saCols = screen52.getColumns();
@@ -1651,12 +1650,12 @@ public final class tnvt implements Runnable {
 
                     case 19: // IC - Insert Cursor
                         log.debug("IC - Insert Cursor");
-                        final int icX = bk.getNextByte();
-                        final int icY = bk.getNextByte() & 0xff;
+                        final byte icX = bk.getNextByte();
+                        final byte icY = bk.getNextByte();
                         if (icX <= saRows && icY <= saCols) {
 
                             log.debug(" IC " + icX + " " + icY);
-                            screen52.setPendingInsert(true, icX, icY);
+                            screen52.setPendingInsert(true, icX & 0xff, icY & 0xff);
                         } else {
                             sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x22,
                                     " IC/IM position invalid ");
@@ -1667,12 +1666,12 @@ public final class tnvt implements Runnable {
 
                     case 20: // MC - Move Cursor
                         log.debug("MC - Move Cursor");
-                        final int imcX = bk.getNextByte();
-                        final int imcY = bk.getNextByte() & 0xff;
+                        final byte imcX = bk.getNextByte();
+                        final byte imcY = bk.getNextByte();
                         if (imcX <= saRows && imcY <= saCols) {
 
                             log.debug(" MC " + imcX + " " + imcY);
-                            screen52.setPendingInsert(false, imcX, imcY);
+                            screen52.setPendingInsert(false, imcX & 0xff, imcY & 0xff);
                         } else {
                             sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x22,
                                     " IC/IM position invalid ");
@@ -1692,15 +1691,15 @@ public final class tnvt implements Runnable {
 
                     case 29: // SF - Start of Field
                         log.debug("SF - Start of Field");
-                        int fcw1 = 0;
-                        int fcw2 = 0;
-                        int ffw1 = 0;
-                        final int ffw0 = bk.getNextByte() & 0xff; // FFW
+                        byte fcw1 = 0;
+                        byte fcw2 = 0;
+                        byte ffw1 = 0;
+                        final byte ffw0 = bk.getNextByte(); // FFW
 
                         if ((ffw0 & 0x40) == 0x40) {
-                            ffw1 = bk.getNextByte() & 0xff; // FFW 1
+                            ffw1 = bk.getNextByte(); // FFW 1
 
-                            fcw1 = bk.getNextByte() & 0xff; // check for field
+                            fcw1 = bk.getNextByte(); // check for field
                             // control word
 
                             // check if the first fcw1 is an 0x81 if it is then get
@@ -1708,25 +1707,25 @@ public final class tnvt implements Runnable {
                             // next pair for checking
                             if (fcw1 == 0x81) {
                                 bk.getNextByte();
-                                fcw1 = bk.getNextByte() & 0xff; // check for field
+                                fcw1 = bk.getNextByte(); // check for field
                                 // control word
                             }
 
                             if (!isAttribute(fcw1)) {
 
-                                fcw2 = bk.getNextByte() & 0xff; // FCW 2
-                                attr = bk.getNextByte() & 0xff; // attribute field
+                                fcw2 = bk.getNextByte(); // FCW 2
+                                attr = bk.getNextByte(); // attribute field
 
                                 while (!isAttribute(attr)) {
-                                    log.info(Integer.toHexString(fcw1) + " "
-                                            + Integer.toHexString(fcw2)
+                                    log.info(Integer.toHexString(fcw1 & 0xff) + " "
+                                            + Integer.toHexString(fcw2 & 0xff)
                                             + " ");
-                                    log.info(Integer.toHexString(attr)
+                                    log.info(Integer.toHexString(attr & 0xff)
                                             + " "
                                             + Integer.toHexString(bk
                                             .getNextByte() & 0xff));
                                     //                           bk.getNextByte();
-                                    attr = bk.getNextByte() & 0xff; // attribute
+                                    attr = bk.getNextByte(); // attribute
                                     // field
                                 }
                             } else {
@@ -1739,7 +1738,7 @@ public final class tnvt implements Runnable {
 
                         final int fLength = (bk.getNextByte() & 0xff) << 8
                                 | bk.getNextByte() & 0xff;
-                        screen52.addField(attr, fLength, ffw0, ffw1, fcw1, fcw2);
+                        screen52.addField(attr & 0xff, fLength, ffw0 & 0xff, ffw1 & 0xff, fcw1 & 0xff, fcw2 & 0xff);
 
                         break;
 
@@ -1800,14 +1799,14 @@ public final class tnvt implements Runnable {
                     //                              " Attempt to send FF to screen");
                     //                           }
                     //                           else
-                    screen52.setChar(byte0);
+                    screen52.setChar(0xFF & byte0);
                 } else
                     //LDC - 13/02/2003 - Convert it to unicode
                     //screen52.setChar(getASCIIChar(byte0));
                     setCharFromBuffer(byte0);
             } else {
                 if (byte0 == 0)
-                    screen52.setChar(byte0);
+                    screen52.setChar(0xFF & byte0);
                 else
                     //LDC - 13/02/2003 - Convert it to unicode
                     //screen52.setChar(getASCIIChar(byte0));
@@ -1817,14 +1816,12 @@ public final class tnvt implements Runnable {
     }
 
     private void setCharFromBuffer(final byte byte0) {
-        char c = codePage.ebcdic2uni(byte0);
-        if (isShiftIn(byte0)) {
-            codePage.ebcdic2uni(bk.getNextByte());
+        char[] c = codePage.charsForNextByte(byte0);
+        while (c == null) {
+            c = codePage.charsForNextByte(bk.getNextByte());
         }
-        if (codePage.isDoubleByteActive() && codePage.secondByteNeeded()) {
-            c = codePage.ebcdic2uni(bk.getNextByte());
-        }
-        screen52.setChar(c);
+
+        screen52.setChars(c);
     }
 
     private boolean processSetBufferAddressOrder() throws Exception {
@@ -1920,27 +1917,27 @@ public final class tnvt implements Runnable {
         final int row = screen52.getCurrentRow();
         final int col = screen52.getCurrentCol();
 
-        final int toRow = bk.getNextByte();
+        final int toRow = bk.getNextByte() & 0xff;
         final int toCol = bk.getNextByte() & 0xff;
         if (toRow >= row) {
-            int repeat = bk.getNextByte();
-
             // a little intelligence here I hope
             if (row == 1 && col == 2 && toRow == screen52.getRows()
                     && toCol == screen52.getColumns())
 
                 screen52.clearScreen();
             else {
-                if (repeat != 0) {
+                char[] repeat = null;
+                while (repeat == null) {
                     //LDC - 13/02/2003 - convert it to unicode
-                    repeat = codePage.ebcdic2uni(repeat);
+                    repeat = codePage.charsForNextByte(bk.getNextByte());
                     //repeat = getASCIIChar(repeat);
                 }
 
                 int times = ((toRow * screen52.getColumns()) + toCol)
                         - ((row * screen52.getColumns()) + col);
-                while (times-- >= 0) {
-                    screen52.setChar(repeat);
+                while (times >= 0) {
+                    screen52.setChars(repeat);
+                    times -= repeat.length;
                 }
 
             }

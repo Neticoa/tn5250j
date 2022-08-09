@@ -348,14 +348,13 @@ public class KeyConfigureController implements Initializable {
                 supportAplColorCodesInSEU(collator, sb, set);
 
                 for (int x = 0; x < 256; x++) {
-                    final char c = codePage.ebcdic2uni(x);
-                    final char ac = codePage.ebcdic2uni(x);
+                    final char c = codePage.ebcdic2uni((byte) x);
                     if (!Character.isISOControl(c)) {
                         sb.setLength(0);
-                        if (Integer.toHexString(ac).length() == 1) {
-                            sb.append("0x0" + Integer.toHexString(ac).toUpperCase());
+                        if (Integer.toHexString(c).length() == 1) {
+                            sb.append("0x0" + Integer.toHexString(c).toUpperCase());
                         } else {
-                            sb.append("0x" + Integer.toHexString(ac).toUpperCase());
+                            sb.append("0x" + Integer.toHexString(c).toUpperCase());
                         }
 
                         sb.append(" - " + c + " - " + getUnicodeString(c));

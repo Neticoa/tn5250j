@@ -304,6 +304,12 @@ public interface Screen5250Facade {
 
     void setChar(final int cByte);
 
+    default void setChars(final char[] chars) {
+        for (final char c : chars) {
+            setChar(c);
+        }
+    }
+
     /**
      * This routine is based on offset 1,1 not 0,0 it will translate to offset
      * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
