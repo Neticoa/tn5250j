@@ -28,6 +28,7 @@ package org.tn5250j;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.event.ScreenListener;
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.SessionConfigEvent;
@@ -114,11 +115,15 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         loadProps();
 
         final Dimension2D cellBounds = getCellBounds();
-        columnWidth = (int) Math.ceil(cellBounds.getWidth());
-        rowHeight = (int) Math.ceil(cellBounds.getHeight());
+        columnWidth = cellBounds.getWidth();
+        rowHeight = cellBounds.getHeight();
 
         screen.addOIAListener(this);
         screen.addScreenListener(this);
+    }
+
+    protected ICodePage getCodePage() {
+        return gui.getSession().getConnectionProperties().getCodec();
     }
 
     protected abstract Dimension2D getCellBounds();
@@ -654,7 +659,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
      * @param updateFont font is updated.
      */
     protected void resizeScreenArea(final double width, final double height, final boolean updateFont) {
-        final Font k = GUIGraphicsUtils.getDerivedFont(font, width, height,
+        final Font k = GUIGraphicsUtils.getDerivedFont(getCodePage(), font, width, height,
                 screen.getRows(), screen.getColumns(), ps132);
 
         if (font.getSize() != k.getSize() || updateFont) {
@@ -812,25 +817,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_FIELD);
             }
         }
-    }
-
-    /**
-     * @param row row.
-     * @param col column.
-     * @return cursor rectangle.
-     */
-    public final Rectangle2D modelToView(final int row, final int col) {
-        // right now row and column is 1,1 offset based.  This will need
-        //   to be changed to 0,0 offset based by subtracting 1 from them
-        //   when the screen is being passed this way
-        //     r.x      =  (col - 1) * columnWidth;
-        //     r.y      =  (row - 1) * rowHeight;
-        return new Rectangle2D(
-            col * columnWidth,
-            row * rowHeight,
-            columnWidth,
-            rowHeight
-        );
     }
 
     protected Color getColor(final char color, final boolean background) {

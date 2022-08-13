@@ -5,6 +5,8 @@ package org.tn5250j;
 
 import java.util.Map;
 
+import org.tn5250j.encoding.CharMappings;
+
 /**
  * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
@@ -44,9 +46,10 @@ public class SessionDescriptorFactory {
                 e.printStackTrace();
             }
         }
-        if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE)) {
-            d.setCodePage(findCodePage(sesProps.get(TN5250jConstants.SESSION_CODE_PAGE)));
-        }
+
+        d.setCodePage(findCodePage(sesProps.getOrDefault(TN5250jConstants.SESSION_CODE_PAGE,
+                CodePage.DEFAULT.getCodePage())));
+        d.setCodec(CharMappings.getCodePage(d.getCodePage().getCodePage()));
 
         if (sesProps.containsKey(TN5250jConstants.SESSION_DEVICE_NAME)) {
             d.setDeviceName(sesProps.get(TN5250jConstants.SESSION_DEVICE_NAME));
@@ -79,14 +82,17 @@ public class SessionDescriptorFactory {
      * @return code page.
      */
     private static CodePage findCodePage(final String codePageProperty) {
+        CodePage page = CodePage.DEFAULT;
         for (final CodePage cp : CodePage.values()) {
             final String codePage = cp.getCodePage();
             if (codePage.equals(codePageProperty) || codePageProperty.equalsIgnoreCase("Cp"
                     + codePage)) {
-                return cp;
+                page = cp;
+                break;
             }
         }
-        return CodePage.DEFAULT;
+
+        return page;
     }
 
     /**

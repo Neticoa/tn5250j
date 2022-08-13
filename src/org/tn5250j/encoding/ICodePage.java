@@ -1,5 +1,9 @@
 package org.tn5250j.encoding;
 
+import javafx.geometry.Dimension2D;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
 public interface ICodePage {
 
     /**
@@ -26,4 +30,18 @@ public interface ICodePage {
     boolean isDoubleByteActive();
 
     boolean secondByteNeeded();
+
+    default boolean showSpaceBeforeUnicodeChar() {
+        return false;
+    }
+
+    default Dimension2D getMaxCharBounds(final Font font) {
+        final Text text = new Text("W");
+        text.setFont(font);
+        final double w = text.getBoundsInLocal().getWidth();
+
+        text.setText("Wg");
+        final double h = text.getBoundsInLocal().getHeight();
+        return new Dimension2D(w, h);
+    }
 }

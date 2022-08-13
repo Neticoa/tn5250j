@@ -28,14 +28,18 @@ package org.tn5250j.tools;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 
+import javafx.geometry.Bounds;
+import javafx.geometry.Dimension2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class GUIGraphicsUtils {
 
@@ -1031,7 +1035,7 @@ public class GUIGraphicsUtils {
             g.setFill(oldColor);
         }
     }
-    public static Font getDerivedFont(final Font font,
+    public static Font getDerivedFont(final ICodePage codePage, final Font font,
             final double width, final double height,
             final int numRows, final int numCols,
             float pointSize) {
@@ -1061,8 +1065,9 @@ public class GUIGraphicsUtils {
                 k = UiUtils.deriveFont(font, j);
                 final FontMetrics l = FontMetrics.deriveFrom(k);
 
-                sw = FontMetrics.getStringBounds("W", k).getWidth() + 2;
-                sh = FontMetrics.getStringBounds("y", k).getHeight() + l.getDescent() + l.getLeading();
+                final Dimension2D maxCharBounds = codePage.getMaxCharBounds(k);
+                sw = maxCharBounds.getWidth() + 2;
+                sh = maxCharBounds.getHeight() + l.getDescent() + l.getLeading();
                 if (w < sw || h < sh) {
                     break;
                 }
@@ -1159,5 +1164,11 @@ public class GUIGraphicsUtils {
             tnicon.add(new Image(GUIGraphicsUtils.class.getClassLoader().getResource("tn5250j-48x48.png").toString()));
         }
         return tnicon;
+    }
+
+    public static Bounds getCharBounds(final Font font, final char ch) {
+        final Text text = new Text(new String(new char[] {ch}));
+        text.setFont(font);
+        return text.getLayoutBounds();
     }
 }

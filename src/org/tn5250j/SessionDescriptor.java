@@ -3,6 +3,8 @@
  */
 package org.tn5250j;
 
+import org.tn5250j.encoding.ICodePage;
+
 /**
  * @author Vyacheslav Soldatov &lt;vyacheslav.soldatov@inbox.ru&gt;
  *
@@ -18,9 +20,10 @@ public class SessionDescriptor {
     private String host;
     private int port = 23;
     private SessionProxy proxy;
-    private CodePage codePage = CodePage.DEFAULT;
+    private ICodePage codec;
     private String deviceName;
     private ConnectUser connectUser;
+    private CodePage codePage;
 
     public SessionDescriptor() {
         super();
@@ -155,15 +158,15 @@ public class SessionDescriptor {
     /**
      * @return code page.
      */
-    public CodePage getCodePage() {
-        return codePage;
+    public ICodePage getCodec() {
+        return codec;
     }
 
     /**
      * @param page code page.
      */
-    public void setCodePage(final CodePage page) {
-        this.codePage = page;
+    public void setCodec(final ICodePage page) {
+        this.codec = page;
     }
 
     /**
@@ -192,5 +195,19 @@ public class SessionDescriptor {
      */
     public ConnectUser getConnectUser() {
         return connectUser;
+    }
+
+    /**
+     * @param codePage code page.
+     */
+    public void setCodePage(final CodePage codePage) {
+        this.codePage = codePage;
+    }
+
+    /**
+     * @return the code page.
+     */
+    public CodePage getCodePage() {
+        return codePage;
     }
 }

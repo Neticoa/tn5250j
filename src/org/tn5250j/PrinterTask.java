@@ -29,6 +29,7 @@ import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.sessionsettings.PrinterAttributesHelper;
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 import javafx.print.JobSettings;
 import javafx.print.PageLayout;
@@ -128,8 +129,8 @@ class PrinterTask {
         g2.setLineWidth(1);
 
         // get the width and height of the character bounds
-        final double w1 = FontMetrics.getStringBounds("W", font).getWidth();
-        final double h1 = (FontMetrics.getStringBounds("y", font).getHeight() +
+        final double w1 = GUIGraphicsUtils.getCharBounds(font, 'W').getWidth();
+        final double h1 = (GUIGraphicsUtils.getCharBounds(font, 'y').getHeight() +
                 f.getDescent() + f.getLeading());
 
         // loop through all the screen characters and print them out.
@@ -169,8 +170,8 @@ class PrinterTask {
             k = UiUtils.deriveFont(font, j);
             final FontMetrics l = FontMetrics.deriveFrom(k);
 
-            if ((w < FontMetrics.getStringBounds("W", k).getWidth()) ||
-                    h < (FontMetrics.getStringBounds("y", k).getHeight() + l.getDescent() + l.getLeading()) ) {
+            if ((w < GUIGraphicsUtils.getCharBounds(k, 'W').getWidth()) ||
+                    h < (GUIGraphicsUtils.getCharBounds(k, 'y').getHeight() + l.getDescent() + l.getLeading()) ) {
                 break;
             }
         }

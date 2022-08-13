@@ -41,7 +41,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
@@ -59,13 +58,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     @Override
     protected Dimension2D getCellBounds() {
-        final Text text = new Text("W");
-        text.setFont(getFont());
-        final double w = text.getBoundsInLocal().getWidth() + 1;
-
-        text.setText("Wg");
-        final double h = text.getBoundsInLocal().getHeight();
-        return new Dimension2D(w, h);
+        final Dimension2D bounds = getCodePage().getMaxCharBounds(getFont());
+        return new Dimension2D(bounds.getWidth(), bounds.getHeight());
     }
 
     @Override
@@ -194,7 +188,26 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         }
     }
 
-    protected final void drawChar(final int pos, final int row, final int col) {
+    /**
+     * @param row row.
+     * @param col column.
+     * @return cursor rectangle.
+     */
+    private Rectangle2D modelToView(final int row, final int col) {
+        // right now row and column is 1,1 offset based.  This will need
+        //   to be changed to 0,0 offset based by subtracting 1 from them
+        //   when the screen is being passed this way
+        //     r.x      =  (col - 1) * columnWidth;
+        //     r.y      =  (row - 1) * rowHeight;
+        return new Rectangle2D(
+            col * columnWidth,
+            row * rowHeight,
+            columnWidth,
+            rowHeight
+        );
+    }
+
+    private void drawChar(final int pos, final int row, final int col) {
         final char sChar = updateRect.text[pos];
 
         final boolean attributePlace = updateRect.isAttr[pos] == 0 ? false : true;
@@ -408,23 +421,27 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
             } else {
                 if (sChar != 0x0) {
                     // use this until we define colors for gui stuff
-                    if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField))
-
+                    if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField)) {
                         g.setFill(Color.BLACK);
-                    else
+                    }else {
                         g.setFill(fg);
+                    }
 
                     try {
-                        if (useGui)
+                        if (sChar != ' ') {
+                            if (useGui) {
 
-                            if (sChar == 0x1C)
-                                g.fillText(new String(dupChar), x + 1, cy - 2);
-                            else
-                                g.fillText(new String(new char[] {sChar}), x + 1, cy - 2);
-                        else if (sChar == 0x1C)
-                            g.fillText(new String(dupChar), x, cy - 2);
-                        else
-                            g.fillText(new String(new char[] {sChar}), x, cy - 2);
+                                if (sChar == 0x1C) {
+                                    g.fillText(new String(dupChar), x + 1, cy - 2);
+                                } else {
+                                    g.fillText(new String(new char[] {sChar}), x + 1, cy - 2);
+                                }
+                            } else if (sChar == 0x1C) {
+                                g.fillText(new String(dupChar), x, cy - 2);
+                            } else {
+                                g.fillText(new String(new char[] {sChar}), x, cy - 2);
+                            }
+                        }
                     } catch (final IllegalArgumentException iae) {
                         System.out.println(" drawChar iae " + iae.getMessage());
 

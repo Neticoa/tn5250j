@@ -31,10 +31,14 @@ import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftOut;
 
 import java.io.UnsupportedEncodingException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 import com.ibm.as400.access.ConvTable;
+
+import javafx.geometry.Bounds;
+import javafx.geometry.Dimension2D;
+import javafx.scene.text.Font;
 
 /**
  * @author nitram509
@@ -42,10 +46,10 @@ import com.ibm.as400.access.ConvTable;
  */
 public abstract class AbstractConvTableCodePageConverter implements ICodepageConverter {
 
-    private final AtomicBoolean doubleByteActive = new AtomicBoolean(false);
-    private final AtomicBoolean secondByteNeeded = new AtomicBoolean(false);
-    private final AtomicInteger lastByte = new AtomicInteger(0);
-    private final ConvTable convTable;
+    private boolean doubleByteActive;
+    private boolean secondByteNeeded;
+    private byte lastByte;
+    private ConvTable convTable;
 
     public AbstractConvTableCodePageConverter(final String encoding) {
         try {
@@ -79,36 +83,53 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
     @Override
     public char ebcdic2uni(final int index) {
         if (isShiftIn(index)) {
-            doubleByteActive.set(true);
-            secondByteNeeded.set(false);
+            doubleByteActive = true;
+            secondByteNeeded = false;
             return 0;
         }
         if (isShiftOut(index)) {
-            doubleByteActive.set(false);
-            secondByteNeeded.set(false);
+            doubleByteActive = false;
+            secondByteNeeded = false;
             return 0;
         }
         if (isDoubleByteActive()) {
             if (!secondByteNeeded()) {
-                lastByte.set(index);
-                secondByteNeeded.set(true);
+                lastByte = (byte) index;
+                secondByteNeeded = true;
                 return 0;
             } else {
-                secondByteNeeded.set(false);
-                return convTable.byteArrayToString(new byte[]{SHIFT_IN, lastByte.byteValue(), (byte) (index & 0xff), SHIFT_OUT}, 0, 4).charAt(0);
+                secondByteNeeded = false;
+                return convTable.byteArrayToString(new byte[]{SHIFT_IN, lastByte, (byte) index, SHIFT_OUT}, 0, 4).charAt(0);
             }
         }
 
-        return convTable.byteArrayToString(new byte[]{(byte) (index & 0xff)}, 0, 1).charAt(0);
+        return convTable.byteArrayToString(new byte[]{(byte) index}, 0, 1).charAt(0);
     }
 
     @Override
     public boolean isDoubleByteActive() {
-        return doubleByteActive.get();
+        return doubleByteActive;
     }
 
     @Override
     public boolean secondByteNeeded() {
-        return secondByteNeeded.get();
+        return secondByteNeeded;
+    }
+
+    @Override
+    public boolean showSpaceBeforeUnicodeChar() {
+        return true;
+    }
+
+    @Override
+    public Dimension2D getMaxCharBounds(final Font font) {
+        final double minX = GUIGraphicsUtils.getCharBounds(font, '\u006a').getMinX();
+
+        final Bounds ch8000 = GUIGraphicsUtils.getCharBounds(font, '\u8000');
+        final double maxX = ch8000.getMaxX();
+        final double minY = ch8000.getMinY();
+        final double maxY = ch8000.getMaxY();
+
+        return new Dimension2D(maxX - minX, maxY - minY);
     }
 }

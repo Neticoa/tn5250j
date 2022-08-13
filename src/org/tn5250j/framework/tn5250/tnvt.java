@@ -90,9 +90,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tn5250j.ConnectUser;
 import org.tn5250j.Session5250;
+import org.tn5250j.SessionDescriptor;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.Terminal;
-import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
 
@@ -169,7 +169,7 @@ public final class tnvt implements Runnable {
     private boolean keepTrucking = true;
     private boolean pendingUnlock = false;
     private boolean[] dataIncluded;
-    protected ICodePage codePage;
+    protected final ICodePage codePage;
     private boolean firstScreen;
     private String sslType;
     private WTDSFParser sfParser;
@@ -181,20 +181,33 @@ public final class tnvt implements Runnable {
      * @param type enhance or not.
      * @param terminal terminal type.
      */
-    public tnvt(final Session5250 session, final Screen5250Facade screen52, final boolean type, final Terminal terminal) {
+    public tnvt(final Session5250 session, final Screen5250Facade screen52, final SessionDescriptor sesProps) {
 
         controller = session;
         if (log.isInfoEnabled()) {
             log.info(" new session -> " + controller.getSessionName());
         }
 
-        enhanced = type;
-        this.terminal = terminal;
-        setCodePage("37");
+        enhanced = sesProps.isEnhanced();
+        this.terminal = sesProps.getTerminal();
         this.screen52 = screen52;
         dataIncluded = new boolean[24];
 
         user = session.getConnectionProperties().getConnectUser();
+
+        codePage = sesProps.getCodec();
+
+        final String cp = sesProps.getCodePage().getCodePage().toLowerCase();
+        for (final KbdTypesCodePages kbdtyp : KbdTypesCodePages.values()) {
+            if (("cp" + kbdtyp.codepage).equals(cp) || kbdtyp.ccsid.equals(cp)) {
+                kbdTypesCodePage = kbdtyp;
+                break;
+            }
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Choosed keyboard mapping " + kbdTypesCodePage.toString() + " for code page " + cp);
+        }
 
         baosp = new Buffer();
         baosrsp = new Buffer();
@@ -1822,6 +1835,9 @@ public final class tnvt implements Runnable {
             codePage.ebcdic2uni(bk.getNextByte());
         }
         if (codePage.isDoubleByteActive() && codePage.secondByteNeeded()) {
+            if (codePage.showSpaceBeforeUnicodeChar()) {
+                screen52.setChar(' ');
+            }
             c = codePage.ebcdic2uni(bk.getNextByte());
         }
         screen52.setChar(c);
@@ -2542,20 +2558,6 @@ public final class tnvt implements Runnable {
             }
             devNameUsed = sb.toString();
             return devNameUsed;
-        }
-    }
-
-    public final void setCodePage(String cp) {
-        codePage = CharMappings.getCodePage(cp);
-        cp = cp.toLowerCase();
-        for (final KbdTypesCodePages kbdtyp : KbdTypesCodePages.values()) {
-            if (("cp" + kbdtyp.codepage).equals(cp) || kbdtyp.ccsid.equals(cp)) {
-                kbdTypesCodePage = kbdtyp;
-                break;
-            }
-        }
-        if (log.isInfoEnabled()) {
-            log.info("Choosed keyboard mapping " + kbdTypesCodePage.toString() + " for code page " + cp);
         }
     }
 
