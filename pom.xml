@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.metrixware.emulator</groupId>
 	<artifactId>tn5250.javafx</artifactId>
-	<version>0.8.2</version>
+	<version>0.8.3-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -28,7 +28,7 @@
 		<connection>scm:git:https://github.com/Neticoa/tn5250j.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/Neticoa/tn5250j.git</developerConnection>
 		<url>https://github.com/Neticoa/tn5250j.git</url>
-		<tag>tn5250.javafx-0.8.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<dependencies>
 		<dependency>
