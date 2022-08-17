@@ -178,8 +178,7 @@ public final class tnvt implements Runnable {
     /**
      * @param session session.
      * @param screen52 screen GUI facade.
-     * @param type enhance or not.
-     * @param terminal terminal type.
+     * @param sesProps session properties.
      */
     public tnvt(final Session5250 session, final Screen5250Facade screen52, final SessionDescriptor sesProps) {
 
