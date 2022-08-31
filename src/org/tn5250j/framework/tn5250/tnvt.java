@@ -88,6 +88,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tn5250j.CodePage;
 import org.tn5250j.ConnectUser;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionDescriptor;
@@ -169,7 +170,7 @@ public final class tnvt implements Runnable {
     private boolean keepTrucking = true;
     private boolean pendingUnlock = false;
     private boolean[] dataIncluded;
-    protected final ICodePage codePage;
+    protected final ICodePage iCodePage;
     private boolean firstScreen;
     private String sslType;
     private WTDSFParser sfParser;
@@ -194,9 +195,9 @@ public final class tnvt implements Runnable {
 
         user = session.getConnectionProperties().getConnectUser();
 
-        codePage = sesProps.getCodec();
-
-        final String cp = sesProps.getCodePage().getCodePage().toLowerCase();
+        iCodePage = sesProps.getCodec();
+        CodePage codePage = sesProps.getCodePage();
+        final String cp = codePage.getCodePage().toLowerCase();
         for (final KbdTypesCodePages kbdtyp : KbdTypesCodePages.values()) {
             if (("cp" + kbdtyp.codepage).equals(cp) || kbdtyp.ccsid.equals(cp)) {
                 kbdTypesCodePage = kbdtyp;
@@ -204,6 +205,15 @@ public final class tnvt implements Runnable {
             }
         }
 
+    	// FIXME... This is a mess: CCSID, CODEPAGE, ESID, LID
+        // See https://www.ibm.com/docs/en/i/7.1?topic=information-ccsid-values-defined-i
+        // See https://www.ibm.com/docs/en/i/7.1?topic=information-associated-ccsids
+        // See https://www.ibm.com/docs/en/i/7.1?topic=information-encoding-schemes-ccsids
+        // See https://www.ibm.com/docs/en/i/7.1?topic=information-language-identifiers-associated-default-ccsids
+        // See 
+        if (kbdTypesCodePage == null)
+        	kbdTypesCodePage = KbdTypesCodePages.FIX0;
+        
         if (log.isInfoEnabled()) {
             log.info("Choosed keyboard mapping " + kbdTypesCodePage.toString() + " for code page " + cp);
         }
@@ -449,7 +459,7 @@ public final class tnvt implements Runnable {
         screen52.setOiaKeyBoardLocked(true);
         pendingUnlock = false;
 
-        screen52.readFormatTable(baosp, readType, codePage);
+        screen52.readFormatTable(baosp, readType, iCodePage);
 
         try {
 
@@ -488,7 +498,7 @@ public final class tnvt implements Runnable {
         if (dataIncluded(aid))
 
             screen52.readFormatTable(baosp, readType,
-                    codePage);
+                    iCodePage);
 
         try {
 
@@ -650,7 +660,7 @@ public final class tnvt implements Runnable {
                 dsq.clear();
             }
             for (int i = 0, l = sr.length(); i < l; i++) {
-                baosp.write(codePage.char2bytes(sr.charAt(i)));
+                baosp.write(iCodePage.char2bytes(sr.charAt(i)));
             }
             bytes = baosp.toByteArray();
         }
@@ -740,7 +750,7 @@ public final class tnvt implements Runnable {
     }
 
     public final void toggleDebug() {
-        producer.toggleDebug(codePage);
+        producer.toggleDebug(iCodePage);
     }
 
     // write gerneral data stream
@@ -1141,7 +1151,7 @@ public final class tnvt implements Runnable {
                 // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
                 final char ch = screen52.getPlanesChar(i);
                 if (isDataUnicode(ch)) {
-                    out.write(codePage.char2bytes(ch));
+                    out.write(iCodePage.char2bytes(ch));
                 } else {
                     out.write((byte) ch);
                 }
@@ -1185,7 +1195,7 @@ public final class tnvt implements Runnable {
                     // (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
                     final char ch = screen52.getPlanesChar(i);
                     if (isDataUnicode(ch)) {
-                        out.write(codePage.char2bytes(ch));
+                        out.write(iCodePage.char2bytes(ch));
                     } else {
                         out.write((byte) ch);
                     }
@@ -1323,7 +1333,7 @@ public final class tnvt implements Runnable {
                         //  The characters on screen are in unicode
                         char ch = (char) b;
                         if (isDataEBCDIC(b))
-                            ch = codePage.ebcdic2uni(b);
+                            ch = iCodePage.ebcdic2uni(b);
 
                         screen52.setPlanesScreenCharAndAttr(y, ch, la, false);
                     }
@@ -1765,7 +1775,7 @@ public final class tnvt implements Runnable {
                         for (int i = 0; i < 9; i++) {
                             final byte b = bk.getNextByte();
                             pco[i] = ((b & 0xff));
-                            final char c = codePage.ebcdic2uni(b);
+                            final char c = iCodePage.ebcdic2uni(b);
                             value.append(c);
                         }
 
@@ -1829,15 +1839,15 @@ public final class tnvt implements Runnable {
     }
 
     private void setCharFromBuffer(final byte byte0) {
-        char c = codePage.ebcdic2uni(byte0);
+        char c = iCodePage.ebcdic2uni(byte0);
         if (isShiftIn(byte0)) {
-            codePage.ebcdic2uni(bk.getNextByte());
+            iCodePage.ebcdic2uni(bk.getNextByte());
         }
-        if (codePage.isDoubleByteActive() && codePage.secondByteNeeded()) {
-            if (codePage.showSpaceBeforeUnicodeChar()) {
+        if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
+            if (iCodePage.showSpaceBeforeUnicodeChar()) {
                 screen52.setChar(' ');
             }
-            c = codePage.ebcdic2uni(bk.getNextByte());
+            c = iCodePage.ebcdic2uni(bk.getNextByte());
         }
         screen52.setChar(c);
     }
@@ -1948,7 +1958,7 @@ public final class tnvt implements Runnable {
             else {
                 if (repeat != 0) {
                     //LDC - 13/02/2003 - convert it to unicode
-                    repeat = codePage.ebcdic2uni(repeat);
+                    repeat = iCodePage.ebcdic2uni(repeat);
                     //repeat = getASCIIChar(repeat);
                 }
 
@@ -2238,13 +2248,13 @@ public final class tnvt implements Runnable {
         abyte0[27] = 0; //       ""
         abyte0[28] = 0; //       ""
         abyte0[29] = 1; // Device type - 0x01 5250 Emulator
-        abyte0[30] = codePage.uni2ebcdic('5'); // Device type character
-        abyte0[31] = codePage.uni2ebcdic('2'); //          ""
-        abyte0[32] = codePage.uni2ebcdic('5'); //          ""
-        abyte0[33] = codePage.uni2ebcdic('1'); //          ""
-        abyte0[34] = codePage.uni2ebcdic('0'); //          ""
-        abyte0[35] = codePage.uni2ebcdic('1'); //          ""
-        abyte0[36] = codePage.uni2ebcdic('1'); //          ""
+        abyte0[30] = iCodePage.uni2ebcdic('5'); // Device type character
+        abyte0[31] = iCodePage.uni2ebcdic('2'); //          ""
+        abyte0[32] = iCodePage.uni2ebcdic('5'); //          ""
+        abyte0[33] = iCodePage.uni2ebcdic('1'); //          ""
+        abyte0[34] = iCodePage.uni2ebcdic('0'); //          ""
+        abyte0[35] = iCodePage.uni2ebcdic('1'); //          ""
+        abyte0[36] = iCodePage.uni2ebcdic('1'); //          ""
 
         abyte0[37] = 2; // Keyboard Id - 0x02 Standard Keyboard
         abyte0[38] = 0; // extended keyboard id
@@ -2561,7 +2571,7 @@ public final class tnvt implements Runnable {
     }
 
     public final ICodePage getCodePage() {
-        return codePage;
+        return iCodePage;
     }
 
     /**

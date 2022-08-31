@@ -83,7 +83,18 @@ public enum KbdTypesCodePages {
     UKB("English (United Kingdom)", "UKB", "697", "285", "285"),
     UKI("English (United Kingdom) MNCS", "UKI", "697", "500", "500"),
     USB("English (United States and Canada)", "USB", "697", "37", "37"),
-    USI("English (United States and Canada) MNCS", "USI", "697", "500", "500");
+    USI("English (United States and Canada) MNCS", "USI", "697", "500", "500"),
+
+	
+	// Temporary fix for releasing Cobos4i 5.3 see ticket #1539
+    FIX0("French (Azerty)", "FAB", "697", "1140", "1140"),
+    FIX2("French (Azerty)", "FAB", "697", "1142", "1142"),
+    FIX3("French (Azerty)", "FAB", "697", "1143", "1143"),
+    FIX4("French (Azerty)", "FAB", "697", "1144", "1144"),
+    FIX5("French (Azerty)", "FAB", "697", "1145", "1145"),
+    FIX6("French (Azerty)", "FAB", "697", "1146", "1146"),
+    FIX7("French (Azerty)", "FAB", "697", "1147", "1147"),
+    FIX8("French (Azerty)", "FAB", "697", "1148", "1148");
 
     public final String description;
     public final String kbdType;
