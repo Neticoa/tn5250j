@@ -72,7 +72,7 @@ public class WTDSFParser {
 
         this.vt = vt;
         screen52 = vt.screen52;
-        codePage = vt.codePage;
+        codePage = vt.iCodePage;
 
     }
 
@@ -879,8 +879,8 @@ public class WTDSFParser {
                             for (; cnt < minLen; cnt++) {
 
                                 byte0 = segment[pos++];
-                                s += vt.codePage.ebcdic2uni(byte0);
-                                screen52.setChar(vt.codePage.ebcdic2uni(byte0));
+                                s += vt.iCodePage.ebcdic2uni(byte0);
+                                screen52.setChar(vt.iCodePage.ebcdic2uni(byte0));
 
                             }
 
