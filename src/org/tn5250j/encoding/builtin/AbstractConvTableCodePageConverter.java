@@ -118,7 +118,7 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
 
     @Override
     public boolean showSpaceBeforeUnicodeChar() {
-        return true;
+        return false;
     }
 
     @Override
