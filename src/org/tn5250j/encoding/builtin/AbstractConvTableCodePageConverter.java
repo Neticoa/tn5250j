@@ -117,11 +117,6 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
     }
 
     @Override
-    public boolean showSpaceBeforeUnicodeChar() {
-        return false;
-    }
-
-    @Override
     public Dimension2D getMaxCharBounds(final Font font) {
         final double minX = GUIGraphicsUtils.getCharBounds(font, '\u006a').getMinX();
 

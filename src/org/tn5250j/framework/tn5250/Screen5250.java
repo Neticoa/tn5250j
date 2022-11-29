@@ -3030,14 +3030,14 @@ public class Screen5250 implements Screen5250Facade {
     }
 
     @Override
-    public void setChar(final int cByte) {
+    public void setChar(final char cByte) {
         if (lastPos > 0) {
             lastAttr = planes.getCharAttr(lastPos - 1);
         }
-        if (cByte > 0 && (char) cByte < ' ') {
-            planes.setScreenCharAndAttr(lastPos, (char) 0x00, 33, false);
+        if (cByte > 0 && cByte < ' ') {
+            planes.setScreenCharAndAttr(lastPos, (char) 0, 33, false);
         } else {
-            planes.setScreenCharAndAttr(lastPos, (char) cByte, lastAttr, false);
+            planes.setScreenCharAndAttr(lastPos, cByte, lastAttr, false);
             if (guiInterface && !isInField(lastPos, false)) {
                 planes.setUseGUI(lastPos, NO_GUI);
             }

@@ -31,10 +31,6 @@ public interface ICodePage {
 
     boolean secondByteNeeded();
 
-    default boolean showSpaceBeforeUnicodeChar() {
-        return false;
-    }
-
     default Dimension2D getMaxCharBounds(final Font font) {
         final Text text = new Text("W");
         text.setFont(font);

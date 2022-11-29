@@ -302,7 +302,7 @@ public interface Screen5250Facade {
 
     void setAttr(final int cByte);
 
-    void setChar(final int cByte);
+    void setChar(final char cByte);
 
     /**
      * This routine is based on offset 1,1 not 0,0 it will translate to offset

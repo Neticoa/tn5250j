@@ -70,6 +70,7 @@ import static org.tn5250j.framework.tn5250.ByteExplainer.isAttribute;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isDataEBCDIC;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isDataUnicode;
 import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
+import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftOut;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 import java.io.BufferedInputStream;
@@ -196,7 +197,7 @@ public final class tnvt implements Runnable {
         user = session.getConnectionProperties().getConnectUser();
 
         iCodePage = sesProps.getCodec();
-        CodePage codePage = sesProps.getCodePage();
+        final CodePage codePage = sesProps.getCodePage();
         final String cp = codePage.getCodePage().toLowerCase();
         for (final KbdTypesCodePages kbdtyp : KbdTypesCodePages.values()) {
             if (("cp" + kbdtyp.codepage).equals(cp) || kbdtyp.ccsid.equals(cp)) {
@@ -210,10 +211,10 @@ public final class tnvt implements Runnable {
         // See https://www.ibm.com/docs/en/i/7.1?topic=information-associated-ccsids
         // See https://www.ibm.com/docs/en/i/7.1?topic=information-encoding-schemes-ccsids
         // See https://www.ibm.com/docs/en/i/7.1?topic=information-language-identifiers-associated-default-ccsids
-        // See 
+        // See
         if (kbdTypesCodePage == null)
         	kbdTypesCodePage = KbdTypesCodePages.FIX0;
-        
+
         if (log.isInfoEnabled()) {
             log.info("Choosed keyboard mapping " + kbdTypesCodePage.toString() + " for code page " + cp);
         }
@@ -1822,14 +1823,14 @@ public final class tnvt implements Runnable {
                     //                              " Attempt to send FF to screen");
                     //                           }
                     //                           else
-                    screen52.setChar(byte0);
+                    screen52.setChar((char)(byte0 & 0xFF));
                 } else
                     //LDC - 13/02/2003 - Convert it to unicode
                     //screen52.setChar(getASCIIChar(byte0));
                     setCharFromBuffer(byte0);
             } else {
                 if (byte0 == 0)
-                    screen52.setChar(byte0);
+                    screen52.setChar((char)(byte0 & 0xFF));
                 else
                     //LDC - 13/02/2003 - Convert it to unicode
                     //screen52.setChar(getASCIIChar(byte0));
@@ -1840,16 +1841,16 @@ public final class tnvt implements Runnable {
 
     private void setCharFromBuffer(final byte byte0) {
         char c = iCodePage.ebcdic2uni(byte0);
-        if (isShiftIn(byte0)) {
-            iCodePage.ebcdic2uni(bk.getNextByte());
-        }
-        if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
-            if (iCodePage.showSpaceBeforeUnicodeChar()) {
-                screen52.setChar(' ');
+
+        if (!isShiftOut(byte0)) {
+            if (isShiftIn(byte0)) {
+                iCodePage.ebcdic2uni(bk.getNextByte());
             }
-            c = iCodePage.ebcdic2uni(bk.getNextByte());
+            if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
+                c = iCodePage.ebcdic2uni(bk.getNextByte());
+            }
+            screen52.setChar(c);
         }
-        screen52.setChar(c);
     }
 
     private boolean processSetBufferAddressOrder() throws Exception {
@@ -1965,7 +1966,7 @@ public final class tnvt implements Runnable {
                 int times = ((toRow * screen52.getColumns()) + toCol)
                         - ((row * screen52.getColumns()) + col);
                 while (times-- >= 0) {
-                    screen52.setChar(repeat);
+                    screen52.setChar((char) (repeat & 0xFF));
                 }
 
             }
