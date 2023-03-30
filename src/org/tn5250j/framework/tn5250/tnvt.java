@@ -1839,17 +1839,31 @@ public final class tnvt implements Runnable {
         }
     }
 
+    /**
+     * This function handle the char from buffer
+     * it takes care of a shift-in, shift-ou mechanisme
+     * to handle dbcs properly with a hack consisting of adding 
+     * simple space
+     * @param byte0
+     */
     private void setCharFromBuffer(final byte byte0) {
         char c = iCodePage.ebcdic2uni(byte0);
 
         if (!isShiftOut(byte0)) {
             if (isShiftIn(byte0)) {
-                iCodePage.ebcdic2uni(bk.getNextByte());
+                screen52.setChar(' '); // fix redmine 1834 for katakan char
+                c = iCodePage.ebcdic2uni(bk.getNextByte());
             }
             if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
                 c = iCodePage.ebcdic2uni(bk.getNextByte());
+                screen52.setChar(c); // fix redmine 1834 for katakana char
+                screen52.setChar(' '); //fix redmine 1834 for katakana char
+                return;
             }
             screen52.setChar(c);
+        }
+        else {
+        	screen52.setChar(' ');  //fix redmine 1834 for katakana char
         }
     }
 
