@@ -472,6 +472,19 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
         // Start loading properties
         sesProps.put(TN5250jConstants.SESSION_HOST, session);
+        
+        // add support for dbcs from command line 
+        // usage: add -dbcs as command line parameter 
+        // step 1: set a breakpoint in the class My5250 at the line containing:
+        // sessionArgs = new String[TN5250jConstants.NUM_PARMS];
+        // launch the programm in debug mode
+        // click the "connect" button in the first screen
+        // when the code get at the line with the breakpoint
+        // open the variables view in debug mode 
+        // click "selArgs" section
+        // and add the parameter -dbcs
+        if (isSpecified("-dbcs", args))
+            sesProps.put(TN5250jConstants.SESSION_TERMINAL, "IBM_5555_C01");
 
         if (isSpecified("-e", args))
             sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
