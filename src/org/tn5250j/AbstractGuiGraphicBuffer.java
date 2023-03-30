@@ -671,8 +671,23 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             final Dimension2D cellBounds = getCellBounds();
             columnWidth = (int) Math.ceil(cellBounds.getWidth());
             rowHeight = (int) Math.ceil(cellBounds.getHeight());
+            
+            /**
+             * See AbstractConvTableCodePageConverter, method getMaxCharbounds
+             * There, you increase the char/cell size by tweaking the maxX and maxY
+             * values. But if you do that, you should come back here
+             * to recalculate the font so that the resize event can be effective.
+             * This is still a work in progress but not a big deal
+             */
+            
+            font = GUIGraphicsUtils.getDerivedFont(getCodePage(), font,
+            		columnWidth * screen.getColumns(), 
+            		rowHeight * (screen.getRows() + 2),
+                    screen.getRows(), screen.getColumns(), ps132);
+            
 
             // set the offsets for the screen centering.
+            // +2 is for the separator (in blue) and the status line
             redrawResized(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
         }
     }
