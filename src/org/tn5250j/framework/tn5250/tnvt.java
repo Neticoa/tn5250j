@@ -1840,8 +1840,9 @@ public final class tnvt implements Runnable {
     }
 
     /**
-     * This function handle the char from buffer
-     * it takes care of a shift-in, shift-ou mechanisme
+     * This function is a hack to handle the char from buffer 
+     * in dbcs
+     * it takes care of a shift-in, shift-ou mechanism
      * to handle dbcs properly with a hack consisting of adding 
      * simple space
      * @param byte0
@@ -1851,19 +1852,19 @@ public final class tnvt implements Runnable {
 
         if (!isShiftOut(byte0)) {
             if (isShiftIn(byte0)) {
-                screen52.setChar(' '); // fix redmine 1834 for katakan char
+                screen52.setChar(' '); // fix redmine 1834 for katakan char's misalignment
                 c = iCodePage.ebcdic2uni(bk.getNextByte());
             }
             if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
                 c = iCodePage.ebcdic2uni(bk.getNextByte());
-                screen52.setChar(c); // fix redmine 1834 for katakana char
-                screen52.setChar(' '); //fix redmine 1834 for katakana char
+                screen52.setChar(c); // fix redmine 1834 for katakana char's misalignment
+                screen52.setChar(' '); //fix redmine 1834 for katakana char's misalignment
                 return;
             }
             screen52.setChar(c);
         }
         else {
-        	screen52.setChar(' ');  //fix redmine 1834 for katakana char
+        	screen52.setChar(' ');  //fix redmine 1834 for katakana char's misalignment
         }
     }
 
