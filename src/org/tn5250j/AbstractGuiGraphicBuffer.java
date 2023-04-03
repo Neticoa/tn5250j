@@ -680,10 +680,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
              * This is still a work in progress but not a big deal
              */
             
-            font = GUIGraphicsUtils.getDerivedFont(getCodePage(), font,
+            /*font = GUIGraphicsUtils.getDerivedFont(getCodePage(), font,
             		columnWidth * screen.getColumns(), 
             		rowHeight * (screen.getRows() + 2),
                     screen.getRows(), screen.getColumns(), ps132);
+            */
             
 
             // set the offsets for the screen centering.

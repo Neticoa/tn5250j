@@ -121,13 +121,13 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
         final double minX = GUIGraphicsUtils.getCharBounds(font, '\u006a').getMinX();
 
         final Bounds ch8000 = GUIGraphicsUtils.getCharBounds(font, '\u8000');
-        final double maxX = ch8000.getMaxX() + 2; // uncomment this if you want to increase the char size
-        //final double maxX = ch8000.getMaxX();
+        //final double maxX = ch8000.getMaxX() + 2; // uncomment this if you want to increase the char size
+        final double maxX = ch8000.getMaxX();
         final double minY = ch8000.getMinY();
-        final double maxY = ch8000.getMaxY() + 6; // uncomment this if you want to increase the char size
+        //final double maxY = ch8000.getMaxY() + 6; // uncomment this if you want to increase the char size
         // increasing the maxX and the maxY can reduce the annoying the padding issue, but you must 
         // recalculate the font in AbstractGuiGraphicBuffer (resizeScreenArea).
-        //final double maxY = ch8000.getMaxY();
+        final double maxY = ch8000.getMaxY();
 
 
         return new Dimension2D(maxX - minX, maxY - minY);
