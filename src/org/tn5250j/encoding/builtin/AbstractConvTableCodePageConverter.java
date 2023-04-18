@@ -74,11 +74,29 @@ public abstract class AbstractConvTableCodePageConverter implements ICodepageCon
             return char2bytes(index);
         }
     }
+    
+    @Override
+    public byte[] string2bytes(final String str) {
+        return convTable.stringToByteArray(str);
+    }
+    
+    
 
     @Override
     public byte uni2ebcdic(final char index) {
         return (byte) index;
     }
+    
+    @Override
+    public byte[] uni2ebcdic(String str) {
+    	byte[] b = new byte[str.length()];
+    	for(int i = 0; i < str.length(); i++) {
+    		b[i] = uni2ebcdic(str.charAt(i));
+    	}
+    	return b;
+
+    }
+
 
     @Override
     public char ebcdic2uni(final int index) {

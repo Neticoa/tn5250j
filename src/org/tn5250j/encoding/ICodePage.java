@@ -24,8 +24,14 @@ public interface ICodePage {
     default byte[] char2bytes(final char index) {
         return new byte[] {uni2ebcdic(index)};
     }
+    
+    default byte[] string2bytes(final String str) {
+        return uni2ebcdic(str);
+    }
 
     byte uni2ebcdic(char index);
+    byte[] uni2ebcdic(String str);
+
 
     boolean isDoubleByteActive();
 

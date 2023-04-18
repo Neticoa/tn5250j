@@ -25,8 +25,12 @@
  */
 package org.tn5250j;
 
+import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftIn;
+import static org.tn5250j.framework.tn5250.ByteExplainer.isShiftOut;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250Facade;
 import org.tn5250j.framework.tn5250.ScreenOIA;
@@ -208,8 +212,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     }
 
     private void drawChar(final int pos, final int row, final int col) {
-        final char sChar = updateRect.text[pos];
-
+         final char sChar = updateRect.text[pos];    	
+        
         final boolean attributePlace = updateRect.isAttr[pos] == 0 ? false : true;
         final int whichGui = updateRect.graphic[pos];
         final boolean useGui = whichGui == 0 ? false : true;
@@ -435,6 +439,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                                     g.fillText(new String(dupChar), x + 1, cy - 2);
                                 } else {
                                     g.fillText(new String(new char[] {sChar}), x + 1, cy - 2);
+
                                     /* hack to adjust font : use it, if you are using a font with dynamic width support
                                      * ex: IBMPlexSansJP
                                 	String str = new String(new char[] {sChar});
@@ -442,11 +447,14 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                                     g.setFont(newFont);
                                     g.fillText(str, x, cy - 2);
                                     */
+                                	
+                               
                                 }
                             } else if (sChar == 0x1C) {
                                 g.fillText(new String(dupChar), x, cy - 2);
                             } else {
                                 g.fillText(new String(new char[] {sChar}), x, cy - 2);
+
                                 /* hack to adjust font : use it, if you are using a font with dynamic width support
                                  * ex: IBMPlexSansJP
                             	String str = new String(new char[] {sChar});
@@ -454,6 +462,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                                 g.setFont(newFont);
                                 g.fillText(str, x, cy - 2);
                                 */
+                            	
+                            	
                             }
                         }
                     } catch (final IllegalArgumentException iae) {

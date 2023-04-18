@@ -69,6 +69,17 @@ import java.nio.charset.CharsetEncoder;
             return 0x0;
         }
     }
+    
+    @Override
+    public byte[] uni2ebcdic(String str) {
+    	byte[] b = new byte[str.length()];
+    	for(int i = 0; i < str.length(); i++) {
+    		b[i] = uni2ebcdic(str.charAt(i));
+    	}
+    	return b;
+
+    }
+
 
     @Override
     public boolean isDoubleByteActive() {

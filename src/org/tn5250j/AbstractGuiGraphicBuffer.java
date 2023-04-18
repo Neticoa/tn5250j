@@ -96,6 +96,8 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected boolean colSep = false;
     protected boolean underLine = false;
     protected boolean nonDisplay = false;
+  
+
     protected Color fg;
     protected Color bg;
 
@@ -876,5 +878,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         underLine = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0;
         colSep = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_COL_SEP) != 0;
         nonDisplay = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0;
+
+
     }
 }

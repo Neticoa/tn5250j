@@ -656,6 +656,9 @@ public class ScreenFields {
                             baosp.write(sf.selectionIndex + 0x1F);
 
                         } else {
+                        	
+                        	baosp.write(codePage.string2bytes(sb.toString()));
+                        	/*
                             for (int k = 0; k < len3; k++) {
                                 c = sb.charAt(k);
                                 // here we have to check for special instances of the
@@ -682,7 +685,7 @@ public class ScreenFields {
                                         baosp.write(codePage.char2bytes(c));
 
                                 }
-                            }
+                            }*/
                         }
                     }
                 }

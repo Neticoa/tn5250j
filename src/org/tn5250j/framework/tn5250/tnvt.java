@@ -297,6 +297,7 @@ public final class tnvt implements Runnable {
             if (sslType != null)
                 sc.setSSLType(sslType);
             sock = sc.createSocket(s, port);
+            
 
             if (sock == null) {
                 log.warn("I did not get a socket");
@@ -1867,7 +1868,27 @@ public final class tnvt implements Runnable {
         	screen52.setChar(' ');  //fix redmine 1834 for katakana char's misalignment
         }
     }
+    
+    /*
+    private void setCharFromBuffer(final byte byte0) {
+        char c = iCodePage.ebcdic2uni(byte0);
 
+        if (!isShiftOut(byte0)) {
+            if (isShiftIn(byte0)) {
+              
+            	screen52.setChar((char)byte0);
+                iCodePage.ebcdic2uni(bk.getNextByte());
+            }
+            if (iCodePage.isDoubleByteActive() && iCodePage.secondByteNeeded()) {
+                c = iCodePage.ebcdic2uni(bk.getNextByte());
+            }
+            screen52.setChar(c);
+        }
+        else {
+        	screen52.setChar((char)byte0);
+        }
+    }
+	*/
     private boolean processSetBufferAddressOrder() throws Exception {
         log.debug("SBA - set buffer address order (row column)");
         final int saRow = bk.getNextByte();

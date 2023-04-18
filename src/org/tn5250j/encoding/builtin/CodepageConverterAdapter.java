@@ -72,6 +72,17 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
         assert index < 256;
         return codepage[index];
     }
+    
+    @Override
+    public byte[] uni2ebcdic(String str) {
+    	byte[] b = new byte[str.length()];
+    	for(int i = 0; i < str.length(); i++) {
+    		b[i] = uni2ebcdic(str.charAt(i));
+    	}
+    	return b;
+
+    }
+
 
     /**
      * @return The oringal 8bit codepage.

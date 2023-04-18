@@ -284,6 +284,7 @@ public interface TN5250jConstants {
     int EXTENDED_5250_BLINK = 0x04;
     int EXTENDED_5250_COL_SEP = 0x02;
     int EXTENDED_5250_NON_DSP = 0x01;
+    
 
     char ATTR_32 = (COLOR_BG_BLACK << 8 & 0xff00) |
             (COLOR_FG_GREEN & 0xff);
@@ -344,6 +345,7 @@ public interface TN5250jConstants {
             (COLOR_FG_BLACK & 0xff);
     char ATTR_62 = (COLOR_BG_BLACK << 8 & 0xff00) |
             (COLOR_FG_BLUE & 0xff);
+    
 
     int NO_GUI = 0;
     int UPPER_LEFT = 1;

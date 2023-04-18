@@ -283,7 +283,7 @@ public class ScreenPlanes {
         char cs = 0;
         char ul = 0;
         char nd = 0;
-
+        
         if (attr == 0)
             return;
 
@@ -425,15 +425,19 @@ public class ScreenPlanes {
                 nd = EXTENDED_5250_NON_DSP;
                 cs = EXTENDED_5250_COL_SEP;
                 break;
+           
             default:
                 c = (COLOR_BG_BLACK << 8 & 0xff00) |
                         (COLOR_FG_YELLOW & 0xff);
                 break;
+                
+               
 
         }
 
         screenColor[pos] = c;
         screenExtended[pos] = (char) (ul | cs | nd);
+
     }
 
     protected void initalizePlanes() {

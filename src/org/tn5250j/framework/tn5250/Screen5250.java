@@ -44,6 +44,9 @@ import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
+import static org.tn5250j.framework.tn5250.ByteExplainer.SHIFT_IN;
+import static org.tn5250j.framework.tn5250.ByteExplainer.SHIFT_OUT;
+
 
 import javafx.geometry.Rectangle2D;
 
@@ -1386,6 +1389,8 @@ public class Screen5250 implements Screen5250Facade {
                 switch (screenFields.getCurrentFieldShift()) {
                     case 0: // Alpha shift
                     case 2: // Numeric Shift
+                    	 //updateField = true;
+                         //break;
                     case 4: // Kakana Shift
                         updateField = true;
                         break;
@@ -3034,6 +3039,7 @@ public class Screen5250 implements Screen5250Facade {
         if (lastPos > 0) {
             lastAttr = planes.getCharAttr(lastPos - 1);
         }
+        
         if (cByte > 0 && cByte < ' ') {
             planes.setScreenCharAndAttr(lastPos, (char) 0, 33, false);
         } else {
@@ -3042,6 +3048,7 @@ public class Screen5250 implements Screen5250Facade {
                 planes.setUseGUI(lastPos, NO_GUI);
             }
         }
+
         setDirty(lastPos);
         advancePos();
     }

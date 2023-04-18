@@ -418,6 +418,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final Sessions sess = manager.getSessions();
         if (sel != null) {
             final String selArgs = sessions.get(sel);
+            //String selArgs = sessions.get(sel).concat("-dbcs");
             sessionArgs = new String[TN5250jConstants.NUM_PARMS];
             parseArgs(selArgs, sessionArgs);
 
