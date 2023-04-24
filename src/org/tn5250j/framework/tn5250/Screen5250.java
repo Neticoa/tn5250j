@@ -1389,9 +1389,7 @@ public class Screen5250 implements Screen5250Facade {
                 switch (screenFields.getCurrentFieldShift()) {
                     case 0: // Alpha shift
                     case 2: // Numeric Shift
-                    	 //updateField = true;
-                         //break;
-                    case 4: // Kakana Shift
+                    case 4: // Katakana Shift
                         updateField = true;
                         break;
                     case 1: // Alpha Only
