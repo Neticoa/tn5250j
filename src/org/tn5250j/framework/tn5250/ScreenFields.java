@@ -29,6 +29,9 @@ import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
+import java.lang.Character.UnicodeBlock;
+import java.util.HashSet;
+
 import org.tn5250j.encoding.ICodePage;
 
 public class ScreenFields {
@@ -584,6 +587,7 @@ public class ScreenFields {
             screen.gotoField(currentField);
         }
     }
+    
 
     protected void readFormatTable(final Buffer baosp, final int readType, final ICodePage codePage) {
 
@@ -656,8 +660,41 @@ public class ScreenFields {
                             baosp.write(sf.selectionIndex + 0x1F);
 
                         } else {
-                        	
-                        	baosp.write(codePage.string2bytes(sb.toString()));
+
+							// fix to remove extra space when editing
+							StringBuilder sbcleaned = new StringBuilder();
+
+							@SuppressWarnings("serial")
+							HashSet<UnicodeBlock> japaneseUnicodeBlocks = new HashSet<UnicodeBlock>() {
+								{
+									add(UnicodeBlock.HIRAGANA);
+									add(UnicodeBlock.KATAKANA);
+									add(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS);
+								}
+							};
+
+							for (int i = 0; i < sb.toString().length(); i++) {
+
+								int ascii = (int) sb.toString().charAt(i);
+
+								try {
+									// 32 is ascii code for the space that need to be removed
+
+									if (!(ascii == 32 && japaneseUnicodeBlocks
+											.contains(UnicodeBlock.of(sb.toString().charAt(i + 1))))) {
+										sbcleaned.append(sb.toString().charAt(i));
+									}
+
+								} catch (Exception e) {
+									// TODO: handle exception
+									e.printStackTrace();
+								}
+
+							}
+
+							byte[] bytes = codePage.string2bytes(sbcleaned.toString());
+
+							baosp.write(bytes);
                         	/*
                             for (int k = 0; k < len3; k++) {
                                 c = sb.charAt(k);
