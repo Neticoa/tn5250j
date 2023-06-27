@@ -30,7 +30,9 @@ import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
 import java.lang.Character.UnicodeBlock;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.tn5250j.encoding.ICodePage;
 
@@ -660,41 +662,87 @@ public class ScreenFields {
                             baosp.write(sf.selectionIndex + 0x1F);
 
                         } else {
-
 							// fix to remove extra space when editing
 							StringBuilder sbcleaned = new StringBuilder();
 
-							@SuppressWarnings("serial")
-							HashSet<UnicodeBlock> japaneseUnicodeBlocks = new HashSet<UnicodeBlock>() {
-								{
-									add(UnicodeBlock.HIRAGANA);
-									add(UnicodeBlock.KATAKANA);
-									add(UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS);
-								}
-							};
+							// Explanation
+							// 0 - a set of dbcs char is a list of dbcs char. For example: こんにちは
+							// 1 - before and after every set of dbcs characteres a space is added for
+							// visual purpose
+							// 2 - each dbcs char visually take 2 places ie: after each dbcs char there is
+							// space
+							// 3 - we want to remove the space before every set of dbcs char: 
+							//     <spacetoberemove>DBCS<space>DBCS<space>DBCS<spacetoberemoved><spacetoberemoved>
+							// 4 - we also want to remove the space after every set of dbcs char, but here
+							//	   we would remove two spaces,
+							//     because remember each dbcs has 2 places, that means that at the end of set,
+							//     we should remove two spaces,
+							//     whereas at the beginning we only remove one space
+							// 5 - any other space that doesn't fall under the requirement above should be
+							// kept.
 
 							for (int i = 0; i < sb.toString().length(); i++) {
 
 								int ascii = (int) sb.toString().charAt(i);
+								boolean isPreviousCharDbcs = false;
+								boolean isDoublePreviousCharDbcs = false;
+								boolean isNextCharDbcs = false;
 
 								try {
-									// 32 is ascii code for the space that need to be removed
+									// 4 -> because for each dbcs we have a si and so + two bytes for the char
+									// for a sbcs char the lenght should be : 1
+									isPreviousCharDbcs = codePage
+											.string2bytes(String.valueOf(sb.toString().charAt(i - 1))).length == 4;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 
-									if (!(ascii == 32 && japaneseUnicodeBlocks
-											.contains(UnicodeBlock.of(sb.toString().charAt(i + 1))))) {
+								try {
+									isDoublePreviousCharDbcs = codePage
+											.string2bytes(String.valueOf(sb.toString().charAt(i - 2))).length == 4;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+
+								try {
+									isNextCharDbcs = codePage
+											.string2bytes(String.valueOf(sb.toString().charAt(i + 1))).length == 4;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+
+								try {
+									// 32 is ascii code for the space that need to be checked for removal or not
+									// keep anything that is not space
+									if (ascii != 32) {
 										sbcleaned.append(sb.toString().charAt(i));
 									}
-
+									// skip space before a set of dbcs
+									if (ascii == 32 && isNextCharDbcs && !isPreviousCharDbcs){
+										continue;
+									}
+									
+									// skip space after a set of dbcs
+									if (ascii == 32 && isPreviousCharDbcs && !isNextCharDbcs){
+										continue;
+									}
+									
+									// skip the second space at the end of a set of dbcs
+									if (ascii == 32 && !isNextCharDbcs){
+										if (!(isPreviousCharDbcs || isDoublePreviousCharDbcs)) {
+											// keep any other space that does'nt fall under the above conditions
+											sbcleaned.append(sb.toString().charAt(i));
+										}
+									}
 								} catch (Exception e) {
 									// TODO: handle exception
 									e.printStackTrace();
 								}
-
 							}
 
 							byte[] bytes = codePage.string2bytes(sbcleaned.toString());
-
 							baosp.write(bytes);
+
                         	/*
                             for (int k = 0; k < len3; k++) {
                                 c = sb.charAt(k);
@@ -730,4 +778,10 @@ public class ScreenFields {
         }
     }
 
+    
+    
+
+
+    
+  
 }
