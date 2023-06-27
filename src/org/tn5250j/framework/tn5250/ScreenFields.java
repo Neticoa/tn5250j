@@ -29,10 +29,6 @@ import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
 import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
-import java.lang.Character.UnicodeBlock;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import org.tn5250j.encoding.ICodePage;
 
